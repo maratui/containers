@@ -108,7 +108,8 @@ void    test_pair_compare_1(void)
         std::pair<char, int>    sp1 = std::make_pair('A', -12);
         std::pair<char, int>    sp2 = sp1;
         ft::pair<char, int>     fp1 = ft::make_pair('A', -12);
-        ft::pair<char, int>     fp2 = fp1;
+        ft::pair<char, int>     fp2;
+fp2 = fp1;
         
         if ((sp1 == sp2) == (fp1 == fp2))
             std::cout << GREEN "OK" DEFAULT << ' ' << std::flush;
@@ -148,7 +149,8 @@ void    test_pair_compare_2(void)
         std::pair<char, int>    sp1 = std::make_pair('A', -12);
         std::pair<char, int>    sp2 = sp1;
         ft::pair<char, int>     fp1 = ft::make_pair('A', -12);
-        ft::pair<char, int>     fp2 = fp1;
+        ft::pair<char, int>     fp2;
+fp2 = fp1;
         
         if ((sp1 != sp2) == (fp1 != fp2))
             std::cout << GREEN "OK" DEFAULT << ' ' << std::flush;
@@ -188,7 +190,8 @@ void    test_pair_compare_3(void)
         std::pair<char, int>    sp1 = std::make_pair('A', -12);
         std::pair<char, int>    sp2 = sp1;
         ft::pair<char, int>     fp1 = ft::make_pair('A', -12);
-        ft::pair<char, int>     fp2 = fp1;
+       ft::pair <char, int>     fp2;
+fp2 = fp1;
         
         if ((sp1 > sp2) == (fp1 > fp2))
             std::cout << GREEN "OK" DEFAULT << ' ' << std::flush;
@@ -228,7 +231,8 @@ void    test_pair_compare_4(void)
         std::pair<char, int>    sp1 = std::make_pair('A', -12);
         std::pair<char, int>    sp2 = sp1;
         ft::pair<char, int>     fp1 = ft::make_pair('A', -12);
-        ft::pair<char, int>     fp2 = fp1;
+        ft::pair<char, int>     fp2;
+fp2 = fp1;
         
         if ((sp1 <= sp2) == (fp1 <= fp2))
             std::cout << GREEN "OK" DEFAULT << ' ' << std::flush;
@@ -268,7 +272,8 @@ void    test_pair_compare_5(void)
         std::pair<char, int>    sp1 = std::make_pair('A', -12);
         std::pair<char, int>    sp2 = sp1;
         ft::pair<char, int>     fp1 = ft::make_pair('A', -12);
-        ft::pair<char, int>     fp2 = fp1;
+        ft::pair<char, int>     fp2;
+fp2 = fp1;
         
         if ((sp1 < sp2) == (fp1 < fp2))
             std::cout << GREEN "OK" DEFAULT << ' ' << std::flush;
@@ -308,7 +313,8 @@ void    test_pair_compare_6(void)
         std::pair<char, int>    sp1 = std::make_pair('A', -12);
         std::pair<char, int>    sp2 = sp1;
         ft::pair<char, int>     fp1 = ft::make_pair('A', -12);
-        ft::pair<char, int>     fp2 = fp1;
+        ft::pair<char, int>     fp2;
+fp2 = fp1;
         
         if ((sp1 >= sp2) == (fp1 >= fp2))
             std::cout << GREEN "OK" DEFAULT << ' ' << std::flush;

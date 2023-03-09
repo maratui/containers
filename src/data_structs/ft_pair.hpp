@@ -31,7 +31,7 @@ namespace ft
         ~pair( void )
         {}
 
-        /* assignment operator */
+        /* assignment operator 
         pair&   operator=(const pair& p)
         {
             if (this == &p)
@@ -40,6 +40,7 @@ namespace ft
             this->second = p.second;
             return (*this);
         }
+*/
     };
 
     /* non-member functions */
@@ -48,7 +49,7 @@ namespace ft
     ft::pair<T1, T2>    make_pair( T1 t, T2 u)
     {
         ft::pair<T1, T2>    out(t, u);
-        return (out);
+        return out;
     }
 
     // compare operators

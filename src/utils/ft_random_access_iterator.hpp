@@ -31,7 +31,7 @@ namespace ft
             : _ptr(ptr)
         {}
 
-        random_access_iterator( const random_access_iterator& iter)
+        random_access_iterator(const random_access_iterator& iter)
             : _ptr(iter._ptr)
         {}
 
@@ -92,7 +92,7 @@ namespace ft
             return (*this);
         }
     
-        random_access_iterator operator+(const difference_type& m) const
+        random_access_iterator operator+(const difference_type& m)
         {
             return (this->_ptr + m);
         }

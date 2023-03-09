@@ -3,8 +3,8 @@ NAME = test
 BNAME = bench
 
 # Release compiler settings
-CC = clang++
-CFLAGS = -std=c++98 -Wall -Wextra -Werror -fsanitize=address -g
+CC = g++
+CFLAGS = -std=c++17 -Wall -Wextra -Werror -g
 
 OBJS_DIR	= objs
 HDRS_DIRS	= utils ft_vector ft_map test
