@@ -1563,10 +1563,14 @@ namespace   ft
                 descendent->_right->_parent = parent;
 
             // swap all fields
-            char    buffer[sizeof(_node_type)];
-            memcpy(buffer, parent, sizeof(_node_type));
-            memcpy(parent, descendent, sizeof(_node_type));
-            memcpy(descendent, buffer, sizeof(_node_type));
+            //char    buffer[sizeof(_node_type)];
+            //memcpy(buffer, parent, sizeof(_node_type));
+            //memcpy(parent, descendent, sizeof(_node_type));
+            //memcpy(descendent, buffer, sizeof(_node_type));
+            _RB_node<U>* buffer;
+            buffer = parent;
+            parent = descendent;
+            descendent = buffer;
 
             // if cycled (descendent was a child of parent)
             if (parent->_parent == parent)
