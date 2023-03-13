@@ -1,79 +1,49 @@
-# Programm name
-NAME = test
-BNAME = bench
-
-# Release compiler settings
 CC = g++
-CFLAGS = -std=c++17 -Wall -Wextra -Werror -g
+CFLAGS = -std=c++17 -Wall -Wextra -Werror
+CLIBS  = $(shell pkg-config --cflags --libs gtest)
+SRC  := $(shell find -name "s21*.h" | sed 's/\.\///')
+OBJS := $(SRC:%.h=build/%.o)
 
-OBJS_DIR	= objs
-HDRS_DIRS	= utils ft_vector ft_map test
+all: test
 
-# Headers dependences
-HDRS := ft_vector.hpp ft_map.hpp ft_stack.hpp ft_set.hpp\
-		$(addprefix data_structs/, ft_pair.hpp ft_rb_tree.hpp) \
-		$(addprefix utils/, ft_meta.hpp ft_utils.hpp \
-							ft_iterator.hpp ft_random_access_iterator.hpp\
-							ft_reverse_iterator.hpp\
-							) \
-		tests/tests.hpp
-
-# SRCS
-TEST_SRCS := $(addprefix tests/, main.cpp \
-						vector_tests.cpp \
-						pair_tests.cpp \
-						tree_tests.cpp \
-						map_tests.cpp \
-						stack_tests.cpp \
-						set_tests.cpp \
-					)
-
-BENCH_SRCS := tests/benchmark.cpp
-
-# OBJS
-TEST_OBJS := $(addprefix $(OBJS_DIR)/, \
-				$(notdir $(patsubst %.cpp, %.o, $(TEST_SRCS))))
-BENCH_OBJS := $(addprefix $(OBJS_DIR)/, \
-				$(notdir $(patsubst %.cpp, %.o, $(BENCH_SRCS))))
-
-VPATH := . ./tests/
-
-# compile rules
-$(OBJS_DIR)/%.o: %.cpp $(HDRS) Makefile
-	$(CC) $(CFLAGS) -o $@ -c $<
-
-all: $(NAME)
-
-# unit tests rule
-$(NAME): $(OBJS_DIR) $(TEST_OBJS)
-	$(CC) $(CFLAGS) $(TEST_OBJS) -o $(NAME)
-
-# benchmark rules
-$(BNAME)_std: $(OBJS_DIR) $(BENCH_OBJS)
-	$(CC) $(CFLAGS) $(BENCH_OBJS) -D STD -o $(BNAME)_std
-
-$(BNAME)_ft: $(OBJS_DIR) $(BENCH_OBJS)
-	$(CC) $(CFLAGS) $(BENCH_OBJS) -D FT -o $(BNAME)_ft
-
-benchmark: $(OBJS_DIR) $(BENCH_OBJS) 	$(BNAME)_std $(BNAME)_ft
-	@echo "==================="
-	@echo -n "std: "; time ./$(BNAME)_std $$RANDOM
-	@echo "==================="
-	@echo -n "ft: "; time ./$(BNAME)_ft $$RANDOM
-	@echo "==================="
-
-# additional rules
 clean:
-	rm -f $(OBJS)
+	rm -f *.a
+	rm -rf build
 
-fclean:	clean
-	rm -f $(NAME)
-	rm -f $(BNAME)_*
-	rm -rf $(OBJS_DIR)
+test: clean s21_containers.a
+	$(CC) $(CFLAGS) tests.cpp -o build/tests s21_matrix_oop.a $(CLIBS)
+	./build/tests
 
-re:		fclean	$(NAME)
+s21_containers.a: $(OBJS)
+	ar -rcs s21_containers.a $(OBJS)
 
-$(OBJS_DIR):
-	mkdir $(OBJS_DIR)
+build/%.o: %.h
+	mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -c $< -o $@
 
-.PHONY:	benchmark fclean clean re all
+gcov-report: CFLAGS+= --coverage
+gcov-report: test
+	lcov -t "tests" -o ./build/gcov-report.info -c -d . --no-external
+	genhtml -o ./build/report ./build/gcov-report.info
+	#open ./build/report/index.html
+
+codestyle:
+	cp ../materials/linters/.clang-format ./
+	clang-format -i ./*.h
+	rm -f ./.clang-format
+
+clang-format:
+	cp ../materials/linters/.clang-format ./
+	clang-format -n ./*.h
+	rm -f ./.clang-format
+
+cppcheck:
+	cppcheck --enable=all --suppress=missingIncludeSystem --std=c++17 --language=c++ ./*.h ./*.cpp
+
+valgrind: CFLAGS+= -g
+valgrind: test
+	valgrind --leak-check=full --leak-resolution=high -s -q ./build/tests
+
+leaks: test
+	CK_FORK=no leaks -atExit -- ./build/tests
+
