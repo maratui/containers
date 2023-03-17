@@ -1,25 +1,16 @@
 CC = g++
 CFLAGS = -std=c++17 -Wall -Wextra -Werror
 CLIBS  = $(shell pkg-config --cflags --libs gtest)
-SRC  := $(shell find -name "s21*.h" | sed 's/\.\///')
-OBJS := $(SRC:%.h=build/%.o)
 
 all: test
 
 clean:
-	rm -f *.a
 	rm -rf build
 
-test: clean s21_containers.a
-	$(CC) $(CFLAGS) tests.cpp -o build/tests s21_matrix_oop.a $(CLIBS)
+test: clean
+	mkdir -p build
+	$(CC) $(CFLAGS) tests.cpp -o build/tests $(CLIBS)
 	./build/tests
-
-s21_containers.a: $(OBJS)
-	ar -rcs s21_containers.a $(OBJS)
-
-build/%.o: %.h
-	mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -c $< -o $@
 
 gcov-report: CFLAGS+= --coverage
 gcov-report: test
@@ -27,7 +18,7 @@ gcov-report: test
 	genhtml -o ./build/report ./build/gcov-report.info
 	#open ./build/report/index.html
 
-codestyle:
+googlestyle:
 	cp ../materials/linters/.clang-format ./
 	clang-format -i ./*.h
 	rm -f ./.clang-format
