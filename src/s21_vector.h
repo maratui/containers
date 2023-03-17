@@ -29,15 +29,18 @@ class vector {
   vector() : m_size(0U), m_capacity(0U), arr(nullptr) {}
   explicit vector(size_type n)
       : m_size(n), m_capacity(n), arr(n ? new T[n] : nullptr) {}
-  explicit vector(std::initializer_list<value_type> const &items) {
-    arr = new value_type[items.size()];
-    for (auto i = 0, it = items.begin(); it != items.end(); i++, it++)
-      arr[i] = *it;
-    m_size = items.size();
-    m_capacity = items.size();
+  explicit vector(std::initializer_list<value_type> const &items)
+      : m_size(items.size()),
+        m_capacity(items.size()),
+        arr(items.size() ? new T[items.size()] : nullptr) {
+    if (arr)
+      for (auto i = 0, it = items.begin(); it != items.end(); i++, it++)
+        arr[i] = *it;
   }
-  vector(const vector &v) : m_size(v.m_size), m_capacity(v.m_capacity) {
-    arr = m_size ? new T[m_size] : nullptr;
+  vector(const vector &v)
+      : m_size(v.m_size),
+        m_capacity(v.m_capacity),
+        arr(v.m_size ? new T[v.m_size] : nullptr) {
     if (arr) std::memcpy(arr, v.arr, m_size * sizeof(T));
   };
   vector(vector &&v) : m_size(v.m_size), m_capacity(v.m_capacity), arr(v.arr) {
