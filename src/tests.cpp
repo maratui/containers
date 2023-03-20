@@ -104,7 +104,37 @@ TEST(TestS21Containers, Vector) {
   ASSERT_THROW(std_const_vector.at(1), std::out_of_range);
   ASSERT_THROW(s21_const_vector.at(1), std::out_of_range);
   ASSERT_EQ(std_const_vector.at(0), s21_const_vector.at(0));
-}
+
+  ASSERT_NO_THROW(std_copy_constructor[4]);
+  ASSERT_NO_THROW(s21_copy_constructor[4]);
+  ASSERT_EQ(std_copy_constructor[4], s21_copy_constructor[4]);
+  ASSERT_NO_THROW(std_copy_constructor[5]);
+  ASSERT_NO_THROW(s21_copy_constructor[5]);
+
+  ASSERT_NO_THROW(std_const_vector[0]);
+  ASSERT_NO_THROW(s21_const_vector[0]);
+  ASSERT_EQ(std_const_vector[0], s21_const_vector[0]);
+  ASSERT_NO_THROW(std_const_vector[1]);
+  ASSERT_NO_THROW(s21_const_vector[1]);
+
+  ASSERT_EQ(std_copy_constructor.front(), s21_copy_constructor.front());
+  ASSERT_EQ(std_const_vector.front(), s21_const_vector.front());
+ 
+  ASSERT_EQ(std_copy_constructor.back(), s21_copy_constructor.back());
+  ASSERT_EQ(std_const_vector.back(), s21_const_vector.back());
+
+  ASSERT_EQ(*std_copy_constructor.data(), *s21_copy_constructor.data());
+  ASSERT_EQ(*std_const_vector.data(), *s21_const_vector.data());
+  ASSERT_NE(std_copy_constructor.data(), s21_copy_constructor.data());
+  ASSERT_NE(std_const_vector.data(), s21_const_vector.data());
+
+  ASSERT_EQ(*std_copy_constructor.begin(), *s21_copy_constructor.begin());
+  ASSERT_EQ(*std_const_vector.begin(), *s21_const_vector.begin());
+//  ASSERT_NE(std_copy_constructor.begin(), s21_copy_constructor.begin());
+//  ASSERT_NE(std_const_vector.begin(), s21_const_vector.begin());
+
+
+} 
 
 int main(int argc, char** argv) {
   testing::InitGoogleTest(&argc, argv);
