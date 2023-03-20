@@ -12,6 +12,10 @@ test: clean
 	$(CC) $(CFLAGS) tests.cpp -o build/tests $(CLIBS)
 	./build/tests
 
+s21_containers.o: clean
+	mkdir -p build
+	$(CC) $(CFLAGS) s21_containers.h -o build/s21_containers.o
+
 gcov-report: CFLAGS+= --coverage
 gcov-report: test
 	lcov -t "tests" -o ./build/gcov-report.info -c -d . --no-external

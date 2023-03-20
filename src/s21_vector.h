@@ -1,6 +1,8 @@
 #ifndef SRC_S21_VECTOR_H
 #define SRC_S21_VECTOR_H
 
+#include <stdexcept>
+
 namespace s21 {
 template <class T>
 class vector {
