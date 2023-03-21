@@ -130,9 +130,23 @@ TEST(TestS21Containers, Vector) {
 
   ASSERT_EQ(*std_copy_constructor.begin(), *s21_copy_constructor.begin());
   ASSERT_EQ(*std_const_vector.begin(), *s21_const_vector.begin());
-//  ASSERT_NE(std_copy_constructor.begin(), s21_copy_constructor.begin());
-//  ASSERT_NE(std_const_vector.begin(), s21_const_vector.begin());
+  ASSERT_EQ(std_copy_constructor.end() - std_copy_constructor.begin(), s21_copy_constructor.end() - s21_copy_constructor.begin());
+  ASSERT_EQ(std_const_vector.end() - std_const_vector.begin(), s21_const_vector.end() - s21_const_vector.begin());
 
+  ASSERT_FALSE(std_copy_constructor.empty());
+  ASSERT_FALSE(s21_copy_constructor.empty());
+  ASSERT_FALSE(std_const_vector.empty());
+  ASSERT_FALSE(s21_const_vector.empty());
+  ASSERT_TRUE(std_move_constructor.empty());
+  ASSERT_TRUE(s21_move_constructor.empty());
+ 
+  ASSERT_EQ(std_copy_constructor.size(), s21_copy_constructor.size());
+  ASSERT_EQ(std_const_vector.size(), s21_const_vector.size());
+  ASSERT_EQ(std_move_constructor.size(), s21_move_constructor.size());
+
+  ASSERT_EQ(std_copy_constructor.max_size(), s21_copy_constructor.max_size());
+  ASSERT_EQ(std_const_vector.max_size(), s21_const_vector.max_size());
+ 
 
 } 
 

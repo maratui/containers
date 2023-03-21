@@ -1,6 +1,7 @@
 #ifndef SRC_S21_VECTOR_H
 #define SRC_S21_VECTOR_H
 
+#include <memory>
 #include <stdexcept>
 
 namespace s21 {
@@ -103,11 +104,37 @@ class vector {
 
   T *data() const noexcept { return arr; }
 
-  iterator begin() const { return arr; }
+  iterator begin() const noexcept { return arr; }
 
-  iterator end() const { return arr + m_size; }
+  iterator end() const noexcept { return arr + m_size; }
 
-  size_type size() { return m_size; }
+  bool empty() const noexcept {
+    bool ret;
+
+    if (m_size > 0)
+      ret = false;
+    else
+      ret = true;
+
+    return ret;
+  }
+
+  size_type size() const noexcept { return m_size; }
+
+  size_type max_size() const noexcept {
+    std::allocator<value_type> alloc;
+
+    return alloc.max_size();
+  }
+
+  void reserve(size_type size) {
+    vector new_vector(size);
+
+    new_vector.copy_vector(*this);
+    new_vector.m_size = this->m_size;
+    *this = std::move(new_vector);
+  }
+
   size_type capacity() { return m_capacity; }
   void push_back(value_type v);
 };
