@@ -27,9 +27,10 @@ class vector {
     if (!arr && capacity) this->arr = new value_type[capacity];
   }
 
-  void copy_vector(const vector &v) noexcept {
+  void copy_vector_(const vector &v) noexcept {
     if (arr && m_capacity >= v.m_size)
       for (size_type i = 0; i < v.m_size; ++i) arr[i] = v.arr[i];
+    m_size = v.m_size;
   }
 
   void check_bounds_(size_type pos) const {
@@ -40,6 +41,12 @@ class vector {
   void delete_value_() {
     delete[] arr;
     set_private_fields_(0U, 0U, nullptr);
+  }
+
+  void reserve_(size_type size) {
+    vector new_vector(size);
+    new_vector.copy_vector_(*this);
+    *this = std::move(new_vector);
   }
 
  public:
@@ -60,7 +67,7 @@ class vector {
 
   vector(const vector &v) {
     set_private_fields_(v.m_size, v.m_capacity, nullptr);
-    copy_vector(v);
+    copy_vector_(v);
   }
 
   vector(vector &&v) {
@@ -74,7 +81,7 @@ class vector {
     if (this != &v) {
       delete[] arr;
       set_private_fields_(v.m_size, v.m_capacity, nullptr);
-      copy_vector(v);
+      copy_vector_(v);
     }
 
     return *this;
@@ -128,14 +135,15 @@ class vector {
   }
 
   void reserve(size_type size) {
-    vector new_vector(size);
-
-    new_vector.copy_vector(*this);
-    new_vector.m_size = this->m_size;
-    *this = std::move(new_vector);
+    if (size > this->m_capacity) reserve_(size);
   }
 
-  size_type capacity() { return m_capacity; }
+  size_type capacity() const noexcept { return m_capacity; }
+
+  void shrink_to_fit() {
+    if (m_capacity > m_size) reserve_(m_size);
+  }
+
   void push_back(value_type v);
 };
 }  // namespace s21

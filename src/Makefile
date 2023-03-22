@@ -24,12 +24,12 @@ gcov-report: test
 
 googlestyle:
 	cp ../materials/linters/.clang-format ./
-	clang-format -i ./*.h
+	clang-format -i ./*.h ./*.cpp
 	rm -f ./.clang-format
 
 clang-format:
 	cp ../materials/linters/.clang-format ./
-	clang-format -n ./*.h
+	clang-format -n ./*.h ./*.cpp
 	rm -f ./.clang-format
 
 cppcheck:
