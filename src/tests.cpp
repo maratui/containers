@@ -1,29 +1,48 @@
 #include <gtest/gtest.h>
 
+#include <type_traits>
+
 #include "./s21_containers.h"
 
-TEST(TestS21Containers, Vector) {
+template <typename T>
+void test_vector(std::initializer_list<T> const& items) {
+  T temp;
+
   //---------------------------------------------------------------------------
 
-  std::vector<int> std_default_constructor;
-  s21::vector<int> s21_default_constructor;
+  std::vector<T> std_default_constructor;
+  s21::vector<T> s21_default_constructor;
   ASSERT_EQ(std_default_constructor.size(), s21_default_constructor.size());
   ASSERT_EQ(std_default_constructor.capacity(),
             s21_default_constructor.capacity());
 
+  std::vector<T> const std_const_default_constructor;
+  s21::vector<T> const s21_const_default_constructor;
+  ASSERT_EQ(std_const_default_constructor.size(),
+            s21_const_default_constructor.size());
+  ASSERT_EQ(std_const_default_constructor.capacity(),
+            s21_const_default_constructor.capacity());
+
   //---------------------------------------------------------------------------
 
-  std::vector<int> std_parameterized_constructor(100);
-  s21::vector<int> s21_parameterized_constructor(100);
+  std::vector<T> std_parameterized_constructor(100);
+  s21::vector<T> s21_parameterized_constructor(100);
   ASSERT_EQ(std_parameterized_constructor.size(),
             s21_parameterized_constructor.size());
   ASSERT_EQ(std_parameterized_constructor.capacity(),
             s21_parameterized_constructor.capacity());
 
+  std::vector<T> const std_const_parameterized_constructor(100);
+  s21::vector<T> const s21_const_parameterized_constructor(100);
+  ASSERT_EQ(std_const_parameterized_constructor.size(),
+            s21_const_parameterized_constructor.size());
+  ASSERT_EQ(std_const_parameterized_constructor.capacity(),
+            s21_const_parameterized_constructor.capacity());
+
   //---------------------------------------------------------------------------
 
-  std::vector<int> std_initializer_list_constructor{1, 2, 3, 4, 5};
-  s21::vector<int> s21_initializer_list_constructor{1, 2, 3, 4, 5};
+  std::vector<T> std_initializer_list_constructor(items);
+  s21::vector<T> s21_initializer_list_constructor(items);
   ASSERT_EQ(std_initializer_list_constructor.size(),
             s21_initializer_list_constructor.size());
   ASSERT_EQ(std_initializer_list_constructor.capacity(),
@@ -32,10 +51,20 @@ TEST(TestS21Containers, Vector) {
     ASSERT_EQ(std_initializer_list_constructor.at(i),
               s21_initializer_list_constructor.at(i));
 
+  std::vector<T> const std_const_initializer_list_constructor(items);
+  s21::vector<T> const s21_const_initializer_list_constructor(items);
+  ASSERT_EQ(std_const_initializer_list_constructor.size(),
+            s21_const_initializer_list_constructor.size());
+  ASSERT_EQ(std_const_initializer_list_constructor.capacity(),
+            s21_const_initializer_list_constructor.capacity());
+  for (size_t i = 0; i < std_const_initializer_list_constructor.size(); i++)
+    ASSERT_EQ(std_const_initializer_list_constructor.at(i),
+              s21_const_initializer_list_constructor.at(i));
+
   //---------------------------------------------------------------------------
 
-  std::vector<int> std_copy_constructor(std_initializer_list_constructor);
-  s21::vector<int> s21_copy_constructor(s21_initializer_list_constructor);
+  std::vector<T> std_copy_constructor(std_initializer_list_constructor);
+  s21::vector<T> s21_copy_constructor(s21_initializer_list_constructor);
   ASSERT_EQ(std_copy_constructor.size(), s21_copy_constructor.size());
   ASSERT_EQ(std_copy_constructor.capacity(), s21_copy_constructor.capacity());
   ASSERT_EQ(s21_initializer_list_constructor.size(),
@@ -48,11 +77,30 @@ TEST(TestS21Containers, Vector) {
     ASSERT_EQ(s21_initializer_list_constructor.at(i),
               s21_copy_constructor.at(i));
 
+  std::vector<T> const std_const_copy_constructor(
+      std_const_initializer_list_constructor);
+  s21::vector<T> const s21_const_copy_constructor(
+      s21_const_initializer_list_constructor);
+  ASSERT_EQ(std_const_copy_constructor.size(),
+            s21_const_copy_constructor.size());
+  ASSERT_EQ(std_const_copy_constructor.capacity(),
+            s21_const_copy_constructor.capacity());
+  ASSERT_EQ(s21_const_initializer_list_constructor.size(),
+            s21_const_copy_constructor.size());
+  ASSERT_EQ(s21_const_initializer_list_constructor.capacity(),
+            s21_const_copy_constructor.capacity());
+  for (size_t i = 0; i < std_const_copy_constructor.size(); i++)
+    ASSERT_EQ(std_const_copy_constructor.at(i),
+              s21_const_copy_constructor.at(i));
+  for (size_t i = 0; i < s21_initializer_list_constructor.size(); i++)
+    ASSERT_EQ(s21_const_initializer_list_constructor.at(i),
+              s21_const_copy_constructor.at(i));
+
   //---------------------------------------------------------------------------
 
-  std::vector<int> std_move_constructor(
+  std::vector<T> std_move_constructor(
       std::move(std_initializer_list_constructor));
-  s21::vector<int> s21_move_constructor(
+  s21::vector<T> s21_move_constructor(
       std::move(s21_initializer_list_constructor));
   ASSERT_EQ(std_move_constructor.size(), s21_move_constructor.size());
   ASSERT_EQ(std_move_constructor.capacity(), s21_move_constructor.capacity());
@@ -67,10 +115,33 @@ TEST(TestS21Containers, Vector) {
   ASSERT_EQ(0, s21_initializer_list_constructor.size());
   ASSERT_EQ(0, s21_initializer_list_constructor.capacity());
 
+  std::vector<T> const std_const_move_constructor(
+      std::move(std_const_initializer_list_constructor));
+  s21::vector<T> const s21_const_move_constructor(
+      std::move(s21_const_initializer_list_constructor));
+  ASSERT_EQ(std_const_move_constructor.size(),
+            s21_const_move_constructor.size());
+  ASSERT_EQ(std_const_move_constructor.capacity(),
+            s21_const_move_constructor.capacity());
+  ASSERT_EQ(s21_const_copy_constructor.size(),
+            s21_const_move_constructor.size());
+  ASSERT_EQ(s21_const_copy_constructor.capacity(),
+            s21_const_move_constructor.capacity());
+  for (size_t i = 0; i < std_const_move_constructor.size(); i++)
+    ASSERT_EQ(std_const_move_constructor.at(i),
+              s21_const_move_constructor.at(i));
+  for (size_t i = 0; i < s21_const_copy_constructor.size(); i++)
+    ASSERT_EQ(s21_const_copy_constructor.at(i),
+              s21_const_move_constructor.at(i));
+  ASSERT_EQ(5, std_const_initializer_list_constructor.size());
+  ASSERT_EQ(5, std_const_initializer_list_constructor.capacity());
+  ASSERT_EQ(5, s21_const_initializer_list_constructor.size());
+  ASSERT_EQ(5, s21_const_initializer_list_constructor.capacity());
+
   //---------------------------------------------------------------------------
 
-  std::vector<int> std_operator_overload;
-  s21::vector<int> s21_operator_overload;
+  std::vector<T> std_operator_overload;
+  s21::vector<T> s21_operator_overload;
   std_operator_overload = std_move_constructor;
   s21_operator_overload = s21_move_constructor;
   ASSERT_EQ(std_operator_overload.size(), s21_operator_overload.size());
@@ -81,6 +152,18 @@ TEST(TestS21Containers, Vector) {
     ASSERT_EQ(std_operator_overload.at(i), s21_operator_overload.at(i));
   for (size_t i = 0; i < s21_copy_constructor.size(); i++)
     ASSERT_EQ(s21_move_constructor.at(i), s21_operator_overload.at(i));
+
+  ASSERT_NO_THROW(std_operator_overload = std_const_move_constructor);
+  ASSERT_NO_THROW(s21_operator_overload = s21_const_move_constructor);
+  ASSERT_EQ(std_operator_overload.size(), s21_operator_overload.size());
+  ASSERT_EQ(std_operator_overload.capacity(), s21_operator_overload.capacity());
+  ASSERT_EQ(s21_const_move_constructor.size(), s21_operator_overload.size());
+  ASSERT_EQ(s21_const_move_constructor.capacity(),
+            s21_operator_overload.capacity());
+  for (size_t i = 0; i < std_operator_overload.size(); i++)
+    ASSERT_EQ(std_operator_overload.at(i), s21_operator_overload.at(i));
+  for (size_t i = 0; i < s21_copy_constructor.size(); i++)
+    ASSERT_EQ(s21_const_move_constructor.at(i), s21_operator_overload.at(i));
 
   std_operator_overload = std::move(std_move_constructor);
   s21_operator_overload = std::move(s21_move_constructor);
@@ -97,6 +180,21 @@ TEST(TestS21Containers, Vector) {
   ASSERT_EQ(0, s21_move_constructor.size());
   ASSERT_EQ(0, s21_move_constructor.capacity());
 
+  std_operator_overload = std::move(std_const_move_constructor);
+  s21_operator_overload = std::move(s21_const_move_constructor);
+  ASSERT_EQ(std_operator_overload.size(), s21_operator_overload.size());
+  ASSERT_EQ(std_operator_overload.capacity(), s21_operator_overload.capacity());
+  ASSERT_EQ(s21_copy_constructor.size(), s21_operator_overload.size());
+  ASSERT_EQ(s21_copy_constructor.capacity(), s21_operator_overload.capacity());
+  for (size_t i = 0; i < std_operator_overload.size(); i++)
+    ASSERT_EQ(std_operator_overload.at(i), s21_operator_overload.at(i));
+  for (size_t i = 0; i < s21_copy_constructor.size(); i++)
+    ASSERT_EQ(s21_copy_constructor.at(i), s21_operator_overload.at(i));
+  ASSERT_EQ(5, std_const_move_constructor.size());
+  ASSERT_EQ(5, std_const_move_constructor.capacity());
+  ASSERT_EQ(5, s21_const_move_constructor.size());
+  ASSERT_EQ(5, s21_const_move_constructor.capacity());
+
   s21_operator_overload = s21_operator_overload;
   ASSERT_EQ(std_copy_constructor.size(), s21_operator_overload.size());
   ASSERT_EQ(std_copy_constructor.capacity(), s21_operator_overload.capacity());
@@ -112,6 +210,10 @@ TEST(TestS21Containers, Vector) {
 
   //---------------------------------------------------------------------------
 
+  temp = std_copy_constructor.at(3);
+  std_copy_constructor.at(3) = temp;
+  temp = s21_copy_constructor.at(3);
+  s21_copy_constructor.at(3) = temp;
   ASSERT_NO_THROW(std_copy_constructor.at(4));
   ASSERT_NO_THROW(s21_copy_constructor.at(4));
   ASSERT_THROW(std_copy_constructor.at(5), std::out_of_range);
@@ -122,73 +224,121 @@ TEST(TestS21Containers, Vector) {
     ASSERT_STREQ("Incorrect input, index is outside the vector", e.what());
   }
 
-  std::vector<int> const std_const_vector{1};
-  s21::vector<int> const s21_const_vector{1};
-  ASSERT_NO_THROW(std_const_vector.at(0));
-  ASSERT_NO_THROW(s21_const_vector.at(0));
-  ASSERT_THROW(std_const_vector.at(1), std::out_of_range);
-  ASSERT_THROW(s21_const_vector.at(1), std::out_of_range);
-  ASSERT_EQ(std_const_vector.at(0), s21_const_vector.at(0));
+  temp = std_const_copy_constructor.at(3);
+  temp = s21_const_copy_constructor.at(3);
+  ASSERT_NO_THROW(std_const_copy_constructor.at(0));
+  ASSERT_NO_THROW(s21_const_copy_constructor.at(0));
+  ASSERT_THROW(std_const_copy_constructor.at(5), std::out_of_range);
+  ASSERT_THROW(s21_const_copy_constructor.at(5), std::out_of_range);
+  ASSERT_EQ(std_const_copy_constructor.at(0), s21_const_copy_constructor.at(0));
 
   //---------------------------------------------------------------------------
 
+  temp = std_copy_constructor[3];
+  std_copy_constructor[3] = temp;
+  temp = s21_copy_constructor[3];
+  s21_copy_constructor[3] = temp;
   ASSERT_NO_THROW(std_copy_constructor[4]);
   ASSERT_NO_THROW(s21_copy_constructor[4]);
   ASSERT_EQ(std_copy_constructor[4], s21_copy_constructor[4]);
   ASSERT_NO_THROW(std_copy_constructor[5]);
   ASSERT_NO_THROW(s21_copy_constructor[5]);
 
-  ASSERT_NO_THROW(std_const_vector[0]);
-  ASSERT_NO_THROW(s21_const_vector[0]);
-  ASSERT_EQ(std_const_vector[0], s21_const_vector[0]);
-  ASSERT_NO_THROW(std_const_vector[1]);
-  ASSERT_NO_THROW(s21_const_vector[1]);
+  temp = std_const_copy_constructor[3];
+  temp = s21_const_copy_constructor[3];
+  ASSERT_NO_THROW(std_const_copy_constructor[0]);
+  ASSERT_NO_THROW(s21_const_copy_constructor[0]);
+  ASSERT_EQ(std_const_copy_constructor[0], s21_const_copy_constructor[0]);
+  ASSERT_NO_THROW(std_const_copy_constructor[5]);
+  ASSERT_NO_THROW(s21_const_copy_constructor[5]);
 
   //---------------------------------------------------------------------------
 
+  temp = std_copy_constructor.front();
+  std_copy_constructor.front() = temp;
+  temp = s21_copy_constructor.front();
+  s21_copy_constructor.front() = temp;
   ASSERT_EQ(std_copy_constructor.front(), s21_copy_constructor.front());
-  ASSERT_EQ(std_const_vector.front(), s21_const_vector.front());
+
+  temp = std_const_copy_constructor.front();
+  temp = s21_const_copy_constructor.front();
+  ASSERT_EQ(std_const_copy_constructor.front(),
+            s21_const_copy_constructor.front());
 
   //---------------------------------------------------------------------------
 
+  temp = std_copy_constructor.back();
+  std_copy_constructor.back() = temp;
+  temp = s21_copy_constructor.back();
+  s21_copy_constructor.back() = temp;
   ASSERT_EQ(std_copy_constructor.back(), s21_copy_constructor.back());
-  ASSERT_EQ(std_const_vector.back(), s21_const_vector.back());
+
+  temp = std_const_copy_constructor.back();
+  temp = s21_const_copy_constructor.back();
+  ASSERT_EQ(std_const_copy_constructor.back(),
+            s21_const_copy_constructor.back());
 
   //---------------------------------------------------------------------------
 
+  temp = std_copy_constructor.data()[0];
+  std_copy_constructor.data()[0] = temp;
+  temp = s21_copy_constructor.data()[0];
+  s21_copy_constructor.data()[0] = temp;
   ASSERT_EQ(*std_copy_constructor.data(), *s21_copy_constructor.data());
-  ASSERT_EQ(*std_const_vector.data(), *s21_const_vector.data());
   ASSERT_NE(std_copy_constructor.data(), s21_copy_constructor.data());
-  ASSERT_NE(std_const_vector.data(), s21_const_vector.data());
+
+  temp = (std_const_copy_constructor.data() + 1)[0];
+  temp = (s21_const_copy_constructor.data() + 1)[0];
+  ASSERT_EQ(*std_const_copy_constructor.data(),
+            *s21_const_copy_constructor.data());
+  ASSERT_NE(std_const_copy_constructor.data(),
+            s21_const_copy_constructor.data());
 
   //---------------------------------------------------------------------------
 
+  temp = std_copy_constructor.begin()[0];
+  std_copy_constructor.begin()[0] = temp;
+  temp = s21_copy_constructor.begin()[0];
+  s21_copy_constructor.begin()[0] = temp;
+  temp = (std_copy_constructor.end() - 1)[0];
+  (std_copy_constructor.end() - 1)[0] = temp;
+  temp = (s21_copy_constructor.end() - 1)[0];
+  (s21_copy_constructor.end() - 1)[0] = temp;
   ASSERT_EQ(*std_copy_constructor.begin(), *s21_copy_constructor.begin());
-  ASSERT_EQ(*std_const_vector.begin(), *s21_const_vector.begin());
   ASSERT_EQ((std_copy_constructor.end() - std_copy_constructor.begin()),
             (s21_copy_constructor.end() - s21_copy_constructor.begin()));
-  ASSERT_EQ((std_const_vector.end() - std_const_vector.begin()),
-            (s21_const_vector.end() - s21_const_vector.begin()));
+
+  temp = std_const_copy_constructor.begin()[0];
+  temp = s21_const_copy_constructor.begin()[0];
+  temp = (std_const_copy_constructor.end() - 1)[0];
+  temp = (s21_const_copy_constructor.end() - 1)[0];
+  ASSERT_EQ(*std_const_copy_constructor.begin(),
+            *s21_const_copy_constructor.begin());
+  ASSERT_EQ(
+      (std_const_copy_constructor.end() - std_const_copy_constructor.begin()),
+      (s21_const_copy_constructor.end() - s21_const_copy_constructor.begin()));
 
   //---------------------------------------------------------------------------
 
   ASSERT_FALSE(std_copy_constructor.empty());
   ASSERT_FALSE(s21_copy_constructor.empty());
-  ASSERT_FALSE(std_const_vector.empty());
-  ASSERT_FALSE(s21_const_vector.empty());
+  ASSERT_FALSE(std_const_copy_constructor.empty());
+  ASSERT_FALSE(s21_const_copy_constructor.empty());
   ASSERT_TRUE(std_move_constructor.empty());
   ASSERT_TRUE(s21_move_constructor.empty());
 
   //---------------------------------------------------------------------------
 
   ASSERT_EQ(std_copy_constructor.size(), s21_copy_constructor.size());
-  ASSERT_EQ(std_const_vector.size(), s21_const_vector.size());
+  ASSERT_EQ(std_const_copy_constructor.size(),
+            s21_const_copy_constructor.size());
   ASSERT_EQ(std_move_constructor.size(), s21_move_constructor.size());
 
   //---------------------------------------------------------------------------
 
   ASSERT_EQ(std_copy_constructor.max_size(), s21_copy_constructor.max_size());
-  ASSERT_EQ(std_const_vector.max_size(), s21_const_vector.max_size());
+  ASSERT_EQ(std_const_copy_constructor.max_size(),
+            s21_const_copy_constructor.max_size());
 
   //---------------------------------------------------------------------------
 
@@ -239,11 +389,14 @@ TEST(TestS21Containers, Vector) {
   //---------------------------------------------------------------------------
 
   ASSERT_EQ(std_copy_constructor.capacity(), s21_copy_constructor.capacity());
-  ASSERT_EQ(std_const_vector.capacity(), s21_const_vector.capacity());
+  ASSERT_EQ(std_const_copy_constructor.capacity(),
+            s21_const_copy_constructor.capacity());
   ASSERT_EQ(std_move_constructor.capacity(), s21_move_constructor.capacity());
 
   //---------------------------------------------------------------------------
 
+  ASSERT_EQ(5, std_copy_constructor.size());
+  ASSERT_EQ(7, std_copy_constructor.capacity());
   std_copy_constructor.shrink_to_fit();
   s21_copy_constructor.shrink_to_fit();
   ASSERT_EQ(std_copy_constructor.size(), s21_copy_constructor.size());
@@ -256,6 +409,24 @@ TEST(TestS21Containers, Vector) {
     ASSERT_EQ(std_copy_constructor.at(i), s21_copy_constructor.at(i));
 
   //---------------------------------------------------------------------------
+}
+
+TEST(TestS21Containers, Vector) {
+  // test_vector<bool>({false, true, false, true, true});
+  test_vector<signed char>({0, 1, -128, 4, 127});
+  test_vector<unsigned char>({0, 1, 0, 4, 255});
+  test_vector<char>({0, 1, -128, 4, 127});
+  test_vector<short>({0, 1, -32768, 4, 32767});
+  test_vector<unsigned short>({0, 1, 0, 4, 65535});
+  test_vector<int>({0, 1, -2147483648, 4, 2147483647});
+  test_vector<unsigned int>({0, 1, 0, 4, 4294967295});
+  test_vector<long>({0, 1, -2147483648, 4, 2147483647});
+  test_vector<unsigned long>({0, 1, 0, 4, 4294967295});
+  test_vector<long long>({0, 1, -2147483648, 4, 2147483647});
+  test_vector<unsigned long long>({0, 1, 0, 4, 4294967295});
+  //  test_vector<float>();
+  //  test_vector<double>();
+  //  test_vector<long double>();
 }
 
 int main(int argc, char** argv) {

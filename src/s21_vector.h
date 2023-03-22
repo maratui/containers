@@ -97,23 +97,34 @@ class vector {
     return *this;
   }
 
-  reference at(size_type pos) const {
+  reference at(size_type pos) {
+    check_bounds_(pos);
+
+    return arr[pos];
+  }
+  const_reference at(size_type pos) const {
     check_bounds_(pos);
 
     return arr[pos];
   }
 
-  reference operator[](size_type pos) const { return arr[pos]; }
+  reference operator[](size_type pos) { return arr[pos]; }
+  const_reference operator[](size_type pos) const { return arr[pos]; }
 
+  reference front() { return arr[0]; }
   const_reference front() const { return arr[0]; }
 
+  reference back() { return arr[m_size - 1]; }
   const_reference back() const { return arr[m_size - 1]; }
 
-  T *data() const noexcept { return arr; }
+  T *data() noexcept { return arr; }
+  const T *data() const noexcept { return arr; }
 
-  iterator begin() const noexcept { return arr; }
+  iterator begin() noexcept { return arr; }
+  const_iterator begin() const noexcept { return arr; }
 
-  iterator end() const noexcept { return arr + m_size; }
+  iterator end() noexcept { return arr + m_size; }
+  const_iterator end() const noexcept { return arr + m_size; }
 
   bool empty() const noexcept {
     bool ret;
