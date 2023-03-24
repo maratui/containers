@@ -409,13 +409,17 @@ void test_vector(std::initializer_list<T> const& items) {
     ASSERT_EQ(std_copy_constructor.at(i), s21_copy_constructor.at(i));
 
   //---------------------------------------------------------------------------
+
+  std::cout << std_copy_constructor.at(0) << std:: endl;
+  std_copy_constructor.clear();
+//  std::cout << std_copy_constructor.at(0) << std:: endl;
 }
 
 TEST(TestS21Containers, Vector) {
-  // test_vector<bool>({false, true, false, true, true});
+//   test_vector<bool>({0, 1, 0, 1, 1});
   test_vector<signed char>({0, 1, -128, 4, 127});
   test_vector<unsigned char>({0, 1, 0, 4, 255});
-  test_vector<char>({0, 1, -128, 4, 127});
+  test_vector<char>({0, 1, 0, 4, 255});
   test_vector<short>({0, 1, -32768, 4, 32767});
   test_vector<unsigned short>({0, 1, 0, 4, 65535});
   test_vector<int>({0, 1, -2147483648, 4, 2147483647});
@@ -424,9 +428,9 @@ TEST(TestS21Containers, Vector) {
   test_vector<unsigned long>({0, 1, 0, 4, 4294967295});
   test_vector<long long>({0, 1, -2147483648, 4, 2147483647});
   test_vector<unsigned long long>({0, 1, 0, 4, 4294967295});
-  //  test_vector<float>();
-  //  test_vector<double>();
-  //  test_vector<long double>();
+  test_vector<float>({0, 1, FLT_MIN, -FLT_MAX, FLT_MAX});
+  test_vector<double>({0, 1, DBL_MIN, -DBL_MAX, DBL_MAX});
+  test_vector<long double>({0, 1, DBL_MIN, -DBL_MAX, DBL_MAX});
 }
 
 int main(int argc, char** argv) {
