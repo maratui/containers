@@ -28,9 +28,11 @@ class vector {
   }
 
   void copy_vector_(const vector &v) noexcept {
-    if (arr && m_capacity >= v.m_size)
+    if (arr && m_capacity >= v.m_size) {
       for (size_type i = 0; i < v.m_size; ++i) arr[i] = v.arr[i];
-    m_size = v.m_size;
+      for (size_type i = v.m_size; i < m_capacity; ++i) arr[i] = 0;
+      m_size = v.m_size;
+    }
   }
 
   void check_bounds_(size_type pos) const {
@@ -160,12 +162,26 @@ class vector {
   }
 
   iterator insert(iterator pos, const_reference value) {
-    if (m_size == m_capacity) reserve_(m_capacity + 1);
-    for (auto i = this->end(); i > pos; --i)
-      *i = *(i - 1);
-    *pos = value;
-    m_size++;
-
+    iterator start;
+    iterator finish;
+  
+    start = this->begin();
+    finish = this->end();
+    if ((m_capacity == 0) || ((pos + 1) > start && (pos - 1) < finish)) {
+      if (m_size == m_capacity) {
+        if (m_capacity) m_capacity *= 2;
+        else
+          m_capacity = 1;
+        reserve_(m_capacity);
+        finish = this->end();
+      }
+      pos += this->begin() - start;
+      for (auto i = finish; i > pos; --i)
+        *i = *(i - 1);
+      *pos = value;
+      m_size++;
+    }
+  
     return pos;
   }
 
