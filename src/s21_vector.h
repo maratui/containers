@@ -155,6 +155,20 @@ class vector {
     if (m_capacity > m_size) reserve_(m_size);
   }
 
+  void clear() noexcept {
+    m_size = 0;
+  }
+
+  iterator insert(iterator pos, const_reference value) {
+    if (m_size == m_capacity) reserve_(m_capacity + 1);
+    for (auto i = this->end(); i > pos; --i)
+      *i = *(i - 1);
+    *pos = value;
+    m_size++;
+
+    return pos;
+  }
+
   void push_back(value_type v);
 };
 }  // namespace s21
