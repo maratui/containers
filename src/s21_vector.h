@@ -157,35 +157,42 @@ class vector {
     if (m_capacity > m_size) reserve_(m_size);
   }
 
-  void clear() noexcept {
-    m_size = 0;
-  }
+  void clear() noexcept { m_size = 0; }
 
   iterator insert(iterator pos, const_reference value) {
     iterator start;
     iterator finish;
-  
+
     start = this->begin();
     finish = this->end();
     if ((m_capacity == 0) || ((pos + 1) > start && (pos - 1) < finish)) {
       if (m_size == m_capacity) {
-        if (m_capacity) m_capacity *= 2;
+        if (m_capacity)
+          m_capacity *= 2;
         else
           m_capacity = 1;
         reserve_(m_capacity);
         finish = this->end();
       }
       pos += this->begin() - start;
-      for (auto i = finish; i > pos; --i)
-        *i = *(i - 1);
+      for (auto i = finish; i > pos; --i) *i = *(i - 1);
       *pos = value;
       m_size++;
     }
-  
+
     return pos;
   }
 
-  void push_back(value_type v);
+  void erase(iterator pos) {
+    iterator finish;
+
+    finish = end() - 1;
+    for (auto i = pos; i < finish; ++i) *i = *(i + 1);
+  }
+
+  void push_back(const_reference value) { insert(end(), value); }
+
+  void pop_back() { erase(end() - 1); }
 };
 }  // namespace s21
 

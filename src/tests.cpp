@@ -412,18 +412,15 @@ void test_vector(std::initializer_list<T> const& items) {
   std_copy_constructor.clear();
   s21_copy_constructor.clear();
   ASSERT_EQ(std_copy_constructor.size(), s21_copy_constructor.size());
-  ASSERT_EQ(std_copy_constructor.capacity(),  s21_copy_constructor.capacity());
+  ASSERT_EQ(std_copy_constructor.capacity(), s21_copy_constructor.capacity());
   ASSERT_EQ(0, s21_copy_constructor.size());
   ASSERT_EQ(5, s21_copy_constructor.capacity());
   for (size_t i = 0; i < std_copy_constructor.capacity(); i++)
     ASSERT_EQ(std_copy_constructor[i], s21_copy_constructor[i]);
-  ASSERT_EQ(*std_copy_constructor.begin(),
-            *s21_copy_constructor.begin());
-  ASSERT_EQ(
-      (std_copy_constructor.end() - std_copy_constructor.begin()),
-      (s21_copy_constructor.end() - s21_copy_constructor.begin()));
-  ASSERT_EQ(0,
-      (s21_copy_constructor.end() - s21_copy_constructor.begin()));
+  ASSERT_EQ(*std_copy_constructor.begin(), *s21_copy_constructor.begin());
+  ASSERT_EQ((std_copy_constructor.end() - std_copy_constructor.begin()),
+            (s21_copy_constructor.end() - s21_copy_constructor.begin()));
+  ASSERT_EQ(0, (s21_copy_constructor.end() - s21_copy_constructor.begin()));
 
   //---------------------------------------------------------------------------
 
@@ -433,28 +430,28 @@ void test_vector(std::initializer_list<T> const& items) {
     std_copy_constructor.insert(std_copy_constructor.begin(), i + 1);
     s21_copy_constructor.insert(s21_copy_constructor.begin(), i + 1);
     ASSERT_EQ(std_copy_constructor.size(), s21_copy_constructor.size());
-    ASSERT_EQ(std_copy_constructor.capacity(),  s21_copy_constructor.capacity());
+    ASSERT_EQ(std_copy_constructor.capacity(), s21_copy_constructor.capacity());
     for (size_t j = 0; j < std_copy_constructor.size(); j++)
       ASSERT_EQ(std_copy_constructor[j], s21_copy_constructor[j]);
   }
   std_copy_constructor.insert(std_copy_constructor.begin() + 5, 105);
   s21_copy_constructor.insert(s21_copy_constructor.begin() + 5, 105);
   ASSERT_EQ(std_copy_constructor.size(), s21_copy_constructor.size());
-  ASSERT_EQ(std_copy_constructor.capacity(),  s21_copy_constructor.capacity());
+  ASSERT_EQ(std_copy_constructor.capacity(), s21_copy_constructor.capacity());
   for (size_t j = 0; j < std_copy_constructor.size(); j++)
     ASSERT_EQ(std_copy_constructor[j], s21_copy_constructor[j]);
 
   std_copy_constructor.insert(std_copy_constructor.begin(), 101);
   s21_copy_constructor.insert(s21_copy_constructor.begin(), 101);
   ASSERT_EQ(std_copy_constructor.size(), s21_copy_constructor.size());
-  ASSERT_EQ(std_copy_constructor.capacity(),  s21_copy_constructor.capacity());
+  ASSERT_EQ(std_copy_constructor.capacity(), s21_copy_constructor.capacity());
   for (size_t j = 0; j < std_copy_constructor.size(); j++)
     ASSERT_EQ(std_copy_constructor[j], s21_copy_constructor[j]);
-  
+
   std_copy_constructor.insert(std_copy_constructor.end(), 111);
   s21_copy_constructor.insert(s21_copy_constructor.end(), 111);
   ASSERT_EQ(std_copy_constructor.size(), s21_copy_constructor.size());
-  ASSERT_EQ(std_copy_constructor.capacity(),  s21_copy_constructor.capacity());
+  ASSERT_EQ(std_copy_constructor.capacity(), s21_copy_constructor.capacity());
   for (size_t j = 0; j < std_copy_constructor.size(); j++)
     ASSERT_EQ(std_copy_constructor[j], s21_copy_constructor[j]);
 
@@ -463,51 +460,96 @@ void test_vector(std::initializer_list<T> const& items) {
   std_copy_constructor.insert(std_copy_constructor.end(), 222);
   s21_copy_constructor.insert(s21_copy_constructor.end(), 222);
   ASSERT_EQ(std_copy_constructor.size(), s21_copy_constructor.size());
-  ASSERT_EQ(std_copy_constructor.capacity(),  s21_copy_constructor.capacity());
+  ASSERT_EQ(std_copy_constructor.capacity(), s21_copy_constructor.capacity());
   for (size_t j = 0; j < std_copy_constructor.size(); j++)
     ASSERT_EQ(std_copy_constructor[j], s21_copy_constructor[j]);
 
   //---------------------------------------------------------------------------
 
-  std::cout << std_copy_constructor.capacity() << " ; " << std_copy_constructor.size() << std::endl;
-  for (size_t j = 0; j < std_copy_constructor.capacity(); j++) std::cout << std_copy_constructor[j] << " ";
+  //  std::cout << std_copy_constructor.capacity() << " ; " <<
+  //  std_copy_constructor.size() << std::endl; for (size_t j = 0; j <
+  //  std_copy_constructor.capacity(); j++) std::cout << std_copy_constructor[j]
+  //  << " ";
   std_copy_constructor.erase(std_copy_constructor.begin());
-  std::cout << std::endl;
-  std::cout << std_copy_constructor.capacity() << " ; " << std_copy_constructor.size() << std::endl;
-  for (size_t j = 0; j < std_copy_constructor.capacity(); j++) std::cout << std_copy_constructor[j] << " ";
-  std::cout << std::endl;
+  s21_copy_constructor.erase(s21_copy_constructor.begin());
+  for (size_t j = 0; j < std_copy_constructor.size(); j++)
+    ASSERT_EQ(std_copy_constructor[j], s21_copy_constructor[j]);
+  //  std::cout << std::endl;
+  //  std::cout << std_copy_constructor.capacity() << " ; " <<
+  //  std_copy_constructor.size() << std::endl; for (size_t j = 0; j <
+  //  std_copy_constructor.capacity(); j++) std::cout << std_copy_constructor[j]
+  //  << " "; std::cout << std::endl;
   std_copy_constructor.erase(std_copy_constructor.begin() + 5);
-  std::cout << std::endl;
-  std::cout << std_copy_constructor.capacity() << " ; " << std_copy_constructor.size() << std::endl;
-  for (size_t j = 0; j < std_copy_constructor.size(); j++) std::cout << std_copy_constructor[j] << " ";
-  std::cout << std::endl;
-  std_copy_constructor.erase(std_copy_constructor.end() - 1);
-  std::cout << std::endl;
-  std::cout << std_copy_constructor.capacity() << " ; " << std_copy_constructor.size() << std::endl;
-  for (size_t j = 0; j < std_copy_constructor.capacity(); j++) std::cout << std_copy_constructor[j] << " ";
-  std::cout << std::endl;
-  std::cout << std_copy_constructor.capacity() << " ; " << std_copy_constructor.size() << std::endl;
-  for (size_t j = 0; j < std_copy_constructor.size(); j++) std::cout << std_copy_constructor[j] << " ";
-  std::cout << std::endl;
+  s21_copy_constructor.erase(s21_copy_constructor.begin() + 5);
+  for (size_t j = 0; j < std_copy_constructor.size(); j++)
+    ASSERT_EQ(std_copy_constructor[j], s21_copy_constructor[j]);
 
+  //  std::cout << std::endl;
+  //  std::cout << std_copy_constructor.capacity() << " ; " <<
+  //  std_copy_constructor.size() << std::endl; for (size_t j = 0; j <
+  //  std_copy_constructor.size(); j++) std::cout << std_copy_constructor[j] <<
+  //  " "; std::cout << std::endl;
+  std_copy_constructor.erase(std_copy_constructor.end() - 1);
+  s21_copy_constructor.erase(s21_copy_constructor.end() - 1);
+  for (size_t j = 0; j < std_copy_constructor.size(); j++)
+    ASSERT_EQ(std_copy_constructor[j], s21_copy_constructor[j]);
+
+  //  std::cout << std::endl;
+  //  std::cout << std_copy_constructor.capacity() << " ; " <<
+  //  std_copy_constructor.size() << std::endl; for (size_t j = 0; j <
+  //  std_copy_constructor.capacity(); j++) std::cout << std_copy_constructor[j]
+  //  << " "; std::cout << std::endl; std::cout <<
+  //  std_copy_constructor.capacity() << " ; " << std_copy_constructor.size() <<
+  //  std::endl; for (size_t j = 0; j < std_copy_constructor.size(); j++)
+  //  std::cout << std_copy_constructor[j] << " "; std::cout << std::endl;
+
+  //-------------------------
+
+  std_copy_constructor.clear();
+  s21_copy_constructor.clear();
+  std_copy_constructor.shrink_to_fit();
+  s21_copy_constructor.shrink_to_fit();
+  for (auto i = 0; i < 21; i++) {
+    std_copy_constructor.push_back(i + 1);
+    s21_copy_constructor.push_back(i + 1);
+    ASSERT_EQ(std_copy_constructor.size(), s21_copy_constructor.size());
+    ASSERT_EQ(std_copy_constructor.capacity(), s21_copy_constructor.capacity());
+    for (size_t j = 0; j < std_copy_constructor.size(); j++)
+      ASSERT_EQ(std_copy_constructor[j], s21_copy_constructor[j]);
+  }
+  std_copy_constructor.shrink_to_fit();
+  s21_copy_constructor.shrink_to_fit();
+  std_copy_constructor.push_back(222);
+  s21_copy_constructor.push_back(222);
+  ASSERT_EQ(std_copy_constructor.size(), s21_copy_constructor.size());
+  ASSERT_EQ(std_copy_constructor.capacity(), s21_copy_constructor.capacity());
+  for (size_t j = 0; j < std_copy_constructor.size(); j++)
+    ASSERT_EQ(std_copy_constructor[j], s21_copy_constructor[j]);
+
+  //---------------
+
+  std_copy_constructor.pop_back();
+  s21_copy_constructor.pop_back();
+  for (size_t j = 0; j < std_copy_constructor.size(); j++)
+    ASSERT_EQ(std_copy_constructor[j], s21_copy_constructor[j]);
 }
 
 TEST(TestS21Containers, Vector) {
-//   test_vector<bool>({0, 1, 0, 1, 1});
-//  test_vector<signed char>({0, 1, -128, 4, 127});
-//  test_vector<unsigned char>({0, 1, 0, 4, 255});
-//  test_vector<char>({0, 1, 0, 4, 255});
-//  test_vector<short>({0, 1, -32768, 4, 32767});
-//  test_vector<unsigned short>({0, 1, 0, 4, 65535});
+  //   test_vector<bool>({0, 1, 0, 1, 1});
+  //  test_vector<signed char>({0, 1, -128, 4, 127});
+  //  test_vector<unsigned char>({0, 1, 0, 4, 255});
+  //  test_vector<char>({0, 1, 0, 4, 255});
+  //  test_vector<short>({0, 1, -32768, 4, 32767});
+  //  test_vector<unsigned short>({0, 1, 0, 4, 65535});
   test_vector<int>({0, 1, -2147483648, 4, 2147483647});
-//  test_vector<unsigned int>({0, 1, 0, 4, 4294967295});
-//  test_vector<long>({0, 1, -2147483648, 4, 2147483647});
-//  test_vector<unsigned long>({0, 1, 0, 4, 4294967295});
-//  test_vector<long long>({0, 1, -2147483648, 4, 2147483647});
-//  test_vector<unsigned long long>({0, 1, 0, 4, 4294967295});
-//  test_vector<float>({0, 1, FLT_MIN, -FLT_MAX, FLT_MAX});
-//  test_vector<double>({0, 1, DBL_MIN, -DBL_MAX, DBL_MAX});
-//  test_vector<long double>({0, 1, DBL_MIN, -DBL_MAX, DBL_MAX});
+  //  test_vector<unsigned int>({0, 1, 0, 4, 4294967295});
+  //  test_vector<long>({0, 1, -2147483648, 4, 2147483647});
+  //  test_vector<unsigned long>({0, 1, 0, 4, 4294967295});
+  //  test_vector<long long>({0, 1, -2147483648, 4, 2147483647});
+  //  test_vector<unsigned long long>({0, 1, 0, 4, 4294967295});
+  //  test_vector<float>({0, 1, FLT_MIN, -FLT_MAX, FLT_MAX});
+  //  test_vector<double>({0, 1, DBL_MIN, -DBL_MAX, DBL_MAX});
+  //  test_vector<long double>({0, 1, DBL_MIN, -DBL_MAX, DBL_MAX});
 }
 
 int main(int argc, char** argv) {
