@@ -188,11 +188,19 @@ class vector {
 
     finish = end() - 1;
     for (auto i = pos; i < finish; ++i) *i = *(i + 1);
+    m_size--;
   }
 
   void push_back(const_reference value) { insert(end(), value); }
 
   void pop_back() { erase(end() - 1); }
+
+  void swap(vector &other) {
+    vector tmp(other);
+
+    other = std::move(*this);
+    *this = std::move(tmp);
+  }
 };
 }  // namespace s21
 
