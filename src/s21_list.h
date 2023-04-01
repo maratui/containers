@@ -44,9 +44,8 @@ class list {
     item = head;
     do {
       m_size++;
-      item->value = l.item->value;
+      set_value_(l.item->value);
       l.item = l.item->next;
-      item = item->next;
     } while (l.item != nullptr && item != nullptr);
     item = nullptr;
   }
@@ -56,15 +55,24 @@ class list {
       throw std::out_of_range("Incorrect input, index is outside the vector");
   }
 
+  bool check_pos_(iterator pos) {
+    bool ret;
+
+    ret = false;
+    for (auto item = head; ret == false && item != tail; item = item->next) if (item == pos) ret = true;
+
+    return ret;
+  }
+
   void delete_() {
-    do {
+    while (head != nullptr) {
       head = head->next;
       delete head->back;
-    } while (head != nullptr);
+    } 
     set_private_fields_(0U, nullptr, nullptr);
   }
 
-  iterator reserve_(t_item *back, t_item *next) {
+  t_item *reserve_(t_item *back, t_item *next) {
     item = new t_item;
     item->back = back;
     item->next = next;
@@ -90,7 +98,7 @@ class list {
     n = items.size();
     set_private_fields_(n, nullptr, nullptr);
     if (head) {
-      item = head;
+      this->item = head;
       for (auto item = items.begin(), end = items.end(); item < end; item++)
         set_value_(*item);
     }
@@ -108,54 +116,37 @@ class list {
 
   ~list() { delete_(); }
 
-  vector &operator=(const vector &v) {
-    if (this != &v) {
-      delete[] arr;
-      set_private_fields_(v.m_size, v.m_capacity, nullptr);
-      copy_vector_(v);
+  list &operator=(const list &l) {
+    if (this != &l) {
+      delete_();
+      set_private_fields_(l.m_size, l.head, l.tail);
+      copy_(l);
     }
 
     return *this;
   }
 
-  vector &operator=(vector &&v) {
-    delete_value_();
-    if (this != &v) {
-      set_private_fields_(v.m_size, v.m_capacity, v.arr);
-      v.set_private_fields_(0U, 0U, nullptr);
+  list &operator=(list &&l) {
+    delete_();
+    if (this != &l) {
+      set_private_fields_(l.m_size, l.head, l.tail);
+      l.set_private_fields_(0U, nullptr, nullptr);
     }
 
     return *this;
   }
 
-  reference at(size_type pos) {
-    check_bounds_(pos);
+  reference front() { return head->value; }
+  const_reference front() const { return head->value; }
 
-    return arr[pos];
-  }
-  const_reference at(size_type pos) const {
-    check_bounds_(pos);
+  reference back() { return tail->value; }
+  const_reference back() const { return tail->value; }
 
-    return arr[pos];
-  }
+  iterator begin() noexcept { return head; }
+  const_iterator begin() const noexcept { return head; }
 
-  reference operator[](size_type pos) { return arr[pos]; }
-  const_reference operator[](size_type pos) const { return arr[pos]; }
-
-  reference front() { return arr[0]; }
-  const_reference front() const { return arr[0]; }
-
-  reference back() { return arr[m_size - 1]; }
-  const_reference back() const { return arr[m_size - 1]; }
-
-  T *data() noexcept { return arr; }
-  const T *data() const noexcept { return arr; }
-
-  iterator begin() noexcept { return arr; }
-  const_iterator begin() const noexcept { return arr; }
-
-  iterator end() noexcept { return arr + m_size; }
-  const_iterator end() const noexcept { return arr + m_size; }
+  iterator end() noexcept { return tail; }
+  const_iterator end() const noexcept { return tail; }
 
   bool empty() const noexcept {
     bool ret;
@@ -171,58 +162,43 @@ class list {
   size_type size() const noexcept { return m_size; }
 
   size_type max_size() const noexcept {
-    std::allocator<value_type> alloc;
+    std::allocator<t_item> alloc;
 
     return alloc.max_size();
-  }
-
-  void reserve(size_type size) {
-    if (size > this->m_capacity) reserve_(size);
-  }
-
-  size_type capacity() const noexcept { return m_capacity; }
-
-  void shrink_to_fit() {
-    if (m_capacity > m_size) reserve_(m_size);
   }
 
   void clear() noexcept { m_size = 0; }
 
   iterator insert(iterator pos, const_reference value) {
-    iterator start;
-    iterator finish;
-
-    start = this->begin();
-    finish = this->end();
-    if ((m_capacity == 0) || ((pos + 1) > start && (pos - 1) < finish)) {
-      if (m_size == m_capacity) {
-        if (m_capacity)
-          m_capacity *= 2;
-        else
-          m_capacity = 1;
-        reserve_(m_capacity);
-        finish = this->end();
-      }
-      pos += this->begin() - start;
-      for (auto i = finish; i > pos; --i) *i = *(i - 1);
-      *pos = value;
+    item = nullptr;
+    if (head == nullptr || check_pos_(pos)) {
+      if (head) reserve_(pos, pos->next);
+      else
+        reserve_(nullptr, nullptr);
+      item->value = value;
       m_size++;
     }
 
-    return pos;
+    return item;
   }
 
   void erase(iterator pos) {
-    iterator finish;
-
-    finish = end() - 1;
-    for (auto i = pos; i < finish; ++i) *i = *(i + 1);
-    m_size--;
+    if (check_pos_()) {
+      if (pos == head) {
+        head = pos->next;
+        head->back = nullptr;
+      } else {
+        pos->back->next = pos->next;
+        if (pos == tail) tail = pos->back;
+      }
+      delete pos;
+      m_size--;
+    }
   }
 
-  void push_back(const_reference value) { insert(end(), value); }
+  void push_back(const_reference value) { insert(tail, value); }
 
-  void pop_back() { erase(end() - 1); }
+  void pop_back() { erase(tail); }
 
   void swap(vector &other) {
     vector tmp(other);
