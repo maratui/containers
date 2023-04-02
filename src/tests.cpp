@@ -1,36 +1,34 @@
 #include <gtest/gtest.h>
 
 #include <type_traits>
-
+#include <list>
 #include "./s21_containers.h"
 
 template <typename T>
-void test_vector(std::initializer_list<T> const& items) {
+void test_list(std::initializer_list<T> const& items) {
   T temp;
 
   //---------------------------------------------------------------------------
 
-  std::vector<T> std_default_constructor;
-  s21::vector<T> s21_default_constructor;
+  std::list<T> std_default_constructor;
+  s21::list<T> s21_default_constructor;
   ASSERT_EQ(std_default_constructor.size(), s21_default_constructor.size());
-  ASSERT_EQ(std_default_constructor.capacity(),
-            s21_default_constructor.capacity());
 
-  std::vector<T> const std_const_default_constructor;
-  s21::vector<T> const s21_const_default_constructor;
+std::cout << *std_default_constructor.begin() << std::endl; 
+std::cout << *std_default_constructor.end() << std::endl;
+
+
+  std::list<T> const std_const_default_constructor;
+  s21::list<T> const s21_const_default_constructor;
   ASSERT_EQ(std_const_default_constructor.size(),
             s21_const_default_constructor.size());
-  ASSERT_EQ(std_const_default_constructor.capacity(),
-            s21_const_default_constructor.capacity());
 
   //---------------------------------------------------------------------------
 
-  std::vector<T> std_parameterized_constructor(100);
-  s21::vector<T> s21_parameterized_constructor(100);
+  std::list<T> std_parameterized_constructor(100);
+  s21::list<T> s21_parameterized_constructor(100);
   ASSERT_EQ(std_parameterized_constructor.size(),
             s21_parameterized_constructor.size());
-  ASSERT_EQ(std_parameterized_constructor.capacity(),
-            s21_parameterized_constructor.capacity());
 
   std::vector<T> const std_const_parameterized_constructor(100);
   s21::vector<T> const s21_const_parameterized_constructor(100);
@@ -588,14 +586,14 @@ void test_vector(std::initializer_list<T> const& items) {
   */
 }
 
-TEST(TestS21Containers, Vector) {
+TEST(TestS21Containers, list) {
   //   test_vector<bool>({0, 1, 0, 1, 1});
-    test_vector<signed char>({0, 1, -128, 4, 127});
-    test_vector<unsigned char>({0, 1, 0, 4, 255});
-    test_vector<char>({0, 1, 0, 4, 255});
-    test_vector<short>({0, 1, -32768, 4, 32767});
-    test_vector<unsigned short>({0, 1, 0, 4, 65535});
-  test_vector<int>({0, 1, -2147483648, 4, 2147483647});
+  //  test_vector<signed char>({0, 1, -128, 4, 127});
+  //  test_vector<unsigned char>({0, 1, 0, 4, 255});
+  //  test_vector<char>({0, 1, 0, 4, 255});
+  //  test_vector<short>({0, 1, -32768, 4, 32767});
+  //  test_vector<unsigned short>({0, 1, 0, 4, 65535});
+  test_list<int>({0, 1, -2147483648, 4, 2147483647});
 //  test_vector<unsigned int>({0, 1, 0, 4, 4294967295});
 //  test_vector<long>({0, 1, -2147483648, 4, 2147483647});
 //  test_vector<unsigned long>({0, 1, 0, 4, 4294967295});

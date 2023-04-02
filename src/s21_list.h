@@ -25,7 +25,7 @@ class list {
   using const_iterator = const t_item *;
   using size_type = size_t;
 
-  void set_private_fields_(size_type size, value_type *head, value_type *tail) noexcept {
+  void set_private_fields_(size_type size, t_item *head, t_item *tail) noexcept {
     m_size = size;
     this->head = head;
     this->tail = tail;
@@ -33,7 +33,7 @@ class list {
     if (size > 0 && head == nullptr) {
       head = reserve_(nullptr, nullptr);
       tail = head;
-      for (auto i = 1; i < size; i++)
+      for (size_type i = 1; i < size; i++)
         tail = reserve_(tail, nullptr);
     }
   }
@@ -172,9 +172,14 @@ class list {
   iterator insert(iterator pos, const_reference value) {
     item = nullptr;
     if (head == nullptr || check_pos_(pos)) {
-      if (head) reserve_(pos, pos->next);
-      else
+      if (head) {
+        reserve_(pos->back, pos);
+        if (pos == head) head = item;
+      } else {
         reserve_(nullptr, nullptr);
+        head = item;
+        tail = head;
+      }
       item->value = value;
       m_size++;
     }
@@ -196,12 +201,20 @@ class list {
     }
   }
 
-  void push_back(const_reference value) { insert(tail, value); }
+  void push_back(const_reference value) {
+    tail = reserve_(tail, nullptr);
+    tail->value = value;
+  }
 
   void pop_back() { erase(tail); }
 
-  void swap(vector &other) {
-    vector tmp(other);
+  void push_front(const_reference value) { insert(head, value); }
+
+  void pop_front() { erase(head); }
+
+
+  void swap(list &other) {
+    list tmp(other);
 
     other = std::move(*this);
     *this = std::move(tmp);
