@@ -4,9 +4,9 @@
 #include <memory>
 #include <stdexcept>
 
-namespace s21 {
+namespace S21 {
 template <class T>
-class vector {
+class Vector {
  private:
   size_t m_size;
   size_t m_capacity;
@@ -27,7 +27,7 @@ class vector {
     if (!arr && capacity) this->arr = new value_type[capacity];
   }
 
-  void copy_vector_(const vector &v) noexcept {
+  void copy_vector_(const Vector &v) noexcept {
     if (arr && m_capacity >= v.m_size) {
       for (size_type i = 0; i < v.m_size; ++i) arr[i] = v.arr[i];
       for (size_type i = v.m_size; i < m_capacity; ++i) arr[i] = 0;
@@ -46,17 +46,17 @@ class vector {
   }
 
   void reserve_(size_type size) {
-    vector new_vector(size);
+    Vector new_vector(size);
     new_vector.copy_vector_(*this);
     *this = std::move(new_vector);
   }
 
  public:
-  vector() { set_private_fields_(0U, 0U, nullptr); }
+  Vector() { set_private_fields_(0U, 0U, nullptr); }
 
-  explicit vector(size_type n) { set_private_fields_(n, n, nullptr); }
+  explicit Vector(size_type n) { set_private_fields_(n, n, nullptr); }
 
-  explicit vector(std::initializer_list<value_type> const &items) {
+  explicit Vector(std::initializer_list<value_type> const &items) {
     size_type n;
 
     n = items.size();
@@ -67,19 +67,19 @@ class vector {
         arr[i] = *item;
   }
 
-  vector(const vector &v) {
+  Vector(const Vector &v) {
     set_private_fields_(v.m_size, v.m_capacity, nullptr);
     copy_vector_(v);
   }
 
-  vector(vector &&v) {
+  Vector(Vector &&v) {
     set_private_fields_(v.m_size, v.m_capacity, v.arr);
     v.set_private_fields_(0U, 0U, nullptr);
   }
 
-  ~vector() { delete[] arr; }
+  ~Vector() { delete[] arr; }
 
-  vector &operator=(const vector &v) {
+  Vector &operator=(const Vector &v) {
     if (this != &v) {
       delete[] arr;
       set_private_fields_(v.m_size, v.m_capacity, nullptr);
@@ -89,7 +89,7 @@ class vector {
     return *this;
   }
 
-  vector &operator=(vector &&v) {
+  Vector &operator=(Vector &&v) {
     delete_value_();
     if (this != &v) {
       set_private_fields_(v.m_size, v.m_capacity, v.arr);
@@ -195,13 +195,13 @@ class vector {
 
   void pop_back() { erase(end() - 1); }
 
-  void swap(vector &other) {
-    vector tmp(other);
+  void swap(Vector &other) {
+    Vector tmp(other);
 
     other = std::move(*this);
     *this = std::move(tmp);
   }
 };
-}  // namespace s21
+}  // namespace S21
 
 #endif  // SRC_S21_VECTOR_H

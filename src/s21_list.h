@@ -4,7 +4,7 @@
 #include <memory>
 #include <stdexcept>
 
-namespace s21 {
+namespace S21 {
 template <class T>
 class list {
  private:
@@ -220,6 +220,6 @@ class list {
     *this = std::move(tmp);
   }
 };
-}  // namespace s21
+}  // namespace S21
 
 #endif  // SRC_S21_LIST_H

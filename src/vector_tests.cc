@@ -11,13 +11,13 @@ void test_vector(std::initializer_list<T> const& items) {
   //---------------------------------------------------------------------------
 
   std::vector<T> std_default_constructor;
-  s21::vector<T> s21_default_constructor;
+  S21::Vector<T> s21_default_constructor;
   ASSERT_EQ(std_default_constructor.size(), s21_default_constructor.size());
   ASSERT_EQ(std_default_constructor.capacity(),
             s21_default_constructor.capacity());
 
   std::vector<T> const std_const_default_constructor;
-  s21::vector<T> const s21_const_default_constructor;
+  S21::Vector<T> const s21_const_default_constructor;
   ASSERT_EQ(std_const_default_constructor.size(),
             s21_const_default_constructor.size());
   ASSERT_EQ(std_const_default_constructor.capacity(),
@@ -26,14 +26,14 @@ void test_vector(std::initializer_list<T> const& items) {
   //---------------------------------------------------------------------------
 
   std::vector<T> std_parameterized_constructor(100);
-  s21::vector<T> s21_parameterized_constructor(100);
+  S21::Vector<T> s21_parameterized_constructor(100);
   ASSERT_EQ(std_parameterized_constructor.size(),
             s21_parameterized_constructor.size());
   ASSERT_EQ(std_parameterized_constructor.capacity(),
             s21_parameterized_constructor.capacity());
 
   std::vector<T> const std_const_parameterized_constructor(100);
-  s21::vector<T> const s21_const_parameterized_constructor(100);
+  S21::Vector<T> const s21_const_parameterized_constructor(100);
   ASSERT_EQ(std_const_parameterized_constructor.size(),
             s21_const_parameterized_constructor.size());
   ASSERT_EQ(std_const_parameterized_constructor.capacity(),
@@ -42,7 +42,7 @@ void test_vector(std::initializer_list<T> const& items) {
   //---------------------------------------------------------------------------
 
   std::vector<T> std_initializer_list_constructor(items);
-  s21::vector<T> s21_initializer_list_constructor(items);
+  S21::Vector<T> s21_initializer_list_constructor(items);
   ASSERT_EQ(std_initializer_list_constructor.size(),
             s21_initializer_list_constructor.size());
   ASSERT_EQ(std_initializer_list_constructor.capacity(),
@@ -52,7 +52,7 @@ void test_vector(std::initializer_list<T> const& items) {
               s21_initializer_list_constructor.at(i));
 
   std::vector<T> const std_const_initializer_list_constructor(items);
-  s21::vector<T> const s21_const_initializer_list_constructor(items);
+  S21::Vector<T> const s21_const_initializer_list_constructor(items);
   ASSERT_EQ(std_const_initializer_list_constructor.size(),
             s21_const_initializer_list_constructor.size());
   ASSERT_EQ(std_const_initializer_list_constructor.capacity(),
@@ -64,7 +64,7 @@ void test_vector(std::initializer_list<T> const& items) {
   //---------------------------------------------------------------------------
 
   std::vector<T> std_copy_constructor(std_initializer_list_constructor);
-  s21::vector<T> s21_copy_constructor(s21_initializer_list_constructor);
+  S21::Vector<T> s21_copy_constructor(s21_initializer_list_constructor);
   ASSERT_EQ(std_copy_constructor.size(), s21_copy_constructor.size());
   ASSERT_EQ(std_copy_constructor.capacity(), s21_copy_constructor.capacity());
   ASSERT_EQ(s21_initializer_list_constructor.size(),
@@ -79,7 +79,7 @@ void test_vector(std::initializer_list<T> const& items) {
 
   std::vector<T> const std_const_copy_constructor(
       std_const_initializer_list_constructor);
-  s21::vector<T> const s21_const_copy_constructor(
+  S21::Vector<T> const s21_const_copy_constructor(
       s21_const_initializer_list_constructor);
   ASSERT_EQ(std_const_copy_constructor.size(),
             s21_const_copy_constructor.size());
@@ -100,7 +100,7 @@ void test_vector(std::initializer_list<T> const& items) {
 
   std::vector<T> std_move_constructor(
       std::move(std_initializer_list_constructor));
-  s21::vector<T> s21_move_constructor(
+  S21::Vector<T> s21_move_constructor(
       std::move(s21_initializer_list_constructor));
   ASSERT_EQ(std_move_constructor.size(), s21_move_constructor.size());
   ASSERT_EQ(std_move_constructor.capacity(), s21_move_constructor.capacity());
@@ -117,7 +117,7 @@ void test_vector(std::initializer_list<T> const& items) {
 
   std::vector<T> const std_const_move_constructor(
       std::move(std_const_initializer_list_constructor));
-  s21::vector<T> const s21_const_move_constructor(
+  S21::Vector<T> const s21_const_move_constructor(
       std::move(s21_const_initializer_list_constructor));
   ASSERT_EQ(std_const_move_constructor.size(),
             s21_const_move_constructor.size());
@@ -141,7 +141,7 @@ void test_vector(std::initializer_list<T> const& items) {
   //---------------------------------------------------------------------------
 
   std::vector<T> std_operator_overload;
-  s21::vector<T> s21_operator_overload;
+  S21::Vector<T> s21_operator_overload;
   std_operator_overload = std_move_constructor;
   s21_operator_overload = s21_move_constructor;
   ASSERT_EQ(std_operator_overload.size(), s21_operator_overload.size());
@@ -592,7 +592,7 @@ TEST(TestS21Containers, Vector) {
   //   test_vector<bool>({0, 1, 0, 1, 1});
     test_vector<signed char>({0, 1, -128, 4, 127});
     test_vector<unsigned char>({0, 1, 0, 4, 255});
-    test_vector<char>({0, 1, 0, 4, 255});
+    test_vector<char>({0, 1, 0, 4, 127});
     test_vector<short>({0, 1, -32768, 4, 32767});
     test_vector<unsigned short>({0, 1, 0, 4, 65535});
   test_vector<int>({0, 1, -2147483648, 4, 2147483647});

@@ -1,15 +1,16 @@
 CC = g++
 CFLAGS = -std=c++17 -Wall -Wextra -Werror
-CLIBS  = $(shell pkg-config --cflags --libs gtest)
+CLIBS  = -lgtest -lgtest_main
 
 all: test
 
 clean:
+	rm -f *.a *.gcda *.gcno
 	rm -rf build
 
-test: clean
+test: clean s21_containers.h
 	mkdir -p build
-	$(CC) $(CFLAGS) tests.cpp -o build/tests $(CLIBS)
+	$(CC) $(CFLAGS) vector_tests.cc -o build/tests $(CLIBS)
 	./build/tests
 
 s21_containers.o: clean
@@ -24,16 +25,16 @@ gcov-report: test
 
 googlestyle:
 	cp ../materials/linters/.clang-format ./
-	clang-format -i ./*.h ./*.cpp
+	clang-format -i ./*.h ./*.cc
 	rm -f ./.clang-format
 
 clang-format:
 	cp ../materials/linters/.clang-format ./
-	clang-format -n ./*.h ./*.cpp
+	clang-format -n ./*.h ./*.cc
 	rm -f ./.clang-format
 
 cppcheck:
-	cppcheck --enable=all --suppress=missingIncludeSystem --std=c++17 --language=c++ ./*.h
+	cppcheck --enable=all --suppress=missingIncludeSystem --std=c++17 --language=c++ ./*.h ./*.cc
 
 valgrind: CFLAGS+= -g
 valgrind: test
