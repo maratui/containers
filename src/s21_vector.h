@@ -7,11 +7,6 @@
 namespace S21 {
 template <class T>
 class Vector {
- private:
-  size_t m_size;
-  size_t m_capacity;
-  T *arr;
-
   using value_type = T;
   using reference = T &;
   using const_reference = const T &;
@@ -19,70 +14,36 @@ class Vector {
   using const_iterator = const T *;
   using size_type = size_t;
 
-  void set_private_fields_(size_type size, size_type capacity,
-                           value_type *arr) {
-    m_size = size;
-    m_capacity = capacity;
-    this->arr = arr;
-    if (!arr && capacity) this->arr = new value_type[capacity];
-  }
-
-  void copy_vector_(const Vector &v) noexcept {
-    if (arr && m_capacity >= v.m_size) {
-      for (size_type i = 0; i < v.m_size; ++i) arr[i] = v.arr[i];
-      for (size_type i = v.m_size; i < m_capacity; ++i) arr[i] = 0;
-      m_size = v.m_size;
-    }
-  }
-
-  void check_bounds_(size_type pos) const {
-    if (pos >= m_size)
-      throw std::out_of_range("Incorrect input, index is outside the vector");
-  }
-
-  void delete_value_() {
-    delete[] arr;
-    set_private_fields_(0U, 0U, nullptr);
-  }
-
-  void reserve_(size_type size) {
-    Vector new_vector(size);
-    new_vector.copy_vector_(*this);
-    *this = std::move(new_vector);
-  }
-
  public:
-  Vector() { set_private_fields_(0U, 0U, nullptr); }
-
-  explicit Vector(size_type n) { set_private_fields_(n, n, nullptr); }
-
+  Vector() {}
+  explicit Vector(size_type n) { SetPrivateFields_(n, n, nullptr); }
   explicit Vector(std::initializer_list<value_type> const &items) {
     size_type n;
 
     n = items.size();
-    set_private_fields_(n, n, nullptr);
-    if (arr)
+    SetPrivateFields_(n, n, nullptr);
+    if (array_)
       for (auto i = 0, item = items.begin(), end = items.end(); item < end;
            i++, item++)
-        arr[i] = *item;
+        array_[i] = *item;
   }
 
   Vector(const Vector &v) {
-    set_private_fields_(v.m_size, v.m_capacity, nullptr);
+    SetPrivateFields_(v.size_, v.capacity_, nullptr);
     copy_vector_(v);
   }
 
   Vector(Vector &&v) {
-    set_private_fields_(v.m_size, v.m_capacity, v.arr);
-    v.set_private_fields_(0U, 0U, nullptr);
+    SetPrivateFields_(v.size_, v.capacity_, v.array_);
+    v.SetPrivateFields_(0U, 0U, nullptr);
   }
 
-  ~Vector() { delete[] arr; }
+  ~Vector() { delete[] array_; }
 
   Vector &operator=(const Vector &v) {
     if (this != &v) {
-      delete[] arr;
-      set_private_fields_(v.m_size, v.m_capacity, nullptr);
+      delete[] array_;
+      SetPrivateFields_(v.size_, v.capacity_, nullptr);
       copy_vector_(v);
     }
 
@@ -92,8 +53,8 @@ class Vector {
   Vector &operator=(Vector &&v) {
     delete_value_();
     if (this != &v) {
-      set_private_fields_(v.m_size, v.m_capacity, v.arr);
-      v.set_private_fields_(0U, 0U, nullptr);
+      SetPrivateFields_(v.size_, v.capacity_, v.array_);
+      v.SetPrivateFields_(0U, 0U, nullptr);
     }
 
     return *this;
@@ -102,36 +63,36 @@ class Vector {
   reference at(size_type pos) {
     check_bounds_(pos);
 
-    return arr[pos];
+    return array_[pos];
   }
   const_reference at(size_type pos) const {
     check_bounds_(pos);
 
-    return arr[pos];
+    return array_[pos];
   }
 
-  reference operator[](size_type pos) { return arr[pos]; }
-  const_reference operator[](size_type pos) const { return arr[pos]; }
+  reference operator[](size_type pos) { return array_[pos]; }
+  const_reference operator[](size_type pos) const { return array_[pos]; }
 
-  reference front() { return arr[0]; }
-  const_reference front() const { return arr[0]; }
+  reference front() { return array_[0]; }
+  const_reference front() const { return array_[0]; }
 
-  reference back() { return arr[m_size - 1]; }
-  const_reference back() const { return arr[m_size - 1]; }
+  reference back() { return array_[size_ - 1]; }
+  const_reference back() const { return array_[size_ - 1]; }
 
-  T *data() noexcept { return arr; }
-  const T *data() const noexcept { return arr; }
+  T *data() noexcept { return array_; }
+  const T *data() const noexcept { return array_; }
 
-  iterator begin() noexcept { return arr; }
-  const_iterator begin() const noexcept { return arr; }
+  iterator begin() noexcept { return array_; }
+  const_iterator begin() const noexcept { return array_; }
 
-  iterator end() noexcept { return arr + m_size; }
-  const_iterator end() const noexcept { return arr + m_size; }
+  iterator end() noexcept { return array_ + size_; }
+  const_iterator end() const noexcept { return array_ + size_; }
 
   bool empty() const noexcept {
     bool ret;
 
-    if (m_size > 0)
+    if (size_ > 0)
       ret = false;
     else
       ret = true;
@@ -139,7 +100,7 @@ class Vector {
     return ret;
   }
 
-  size_type size() const noexcept { return m_size; }
+  size_type size() const noexcept { return size_; }
 
   size_type max_size() const noexcept {
     std::allocator<value_type> alloc;
@@ -148,16 +109,16 @@ class Vector {
   }
 
   void reserve(size_type size) {
-    if (size > this->m_capacity) reserve_(size);
+    if (size > this->capacity_) reserve_(size);
   }
 
-  size_type capacity() const noexcept { return m_capacity; }
+  size_type capacity() const noexcept { return capacity_; }
 
   void shrink_to_fit() {
-    if (m_capacity > m_size) reserve_(m_size);
+    if (capacity_ > size_) reserve_(size_);
   }
 
-  void clear() noexcept { m_size = 0; }
+  void clear() noexcept { size_ = 0; }
 
   iterator insert(iterator pos, const_reference value) {
     iterator start;
@@ -165,19 +126,19 @@ class Vector {
 
     start = this->begin();
     finish = this->end();
-    if ((m_capacity == 0) || ((pos + 1) > start && (pos - 1) < finish)) {
-      if (m_size == m_capacity) {
-        if (m_capacity)
-          m_capacity *= 2;
+    if ((capacity_ == 0) || ((pos + 1) > start && (pos - 1) < finish)) {
+      if (size_ == capacity_) {
+        if (capacity_)
+          capacity_ *= 2;
         else
-          m_capacity = 1;
-        reserve_(m_capacity);
+          capacity_ = 1;
+        reserve_(capacity_);
         finish = this->end();
       }
       pos += this->begin() - start;
       for (auto i = finish; i > pos; --i) *i = *(i - 1);
       *pos = value;
-      m_size++;
+      size_++;
     }
 
     return pos;
@@ -188,7 +149,7 @@ class Vector {
 
     finish = end() - 1;
     for (auto i = pos; i < finish; ++i) *i = *(i + 1);
-    m_size--;
+    size_--;
   }
 
   void push_back(const_reference value) { insert(end(), value); }
@@ -200,6 +161,43 @@ class Vector {
 
     other = std::move(*this);
     *this = std::move(tmp);
+  }
+
+ private:
+  size_type size_ = 0;
+  size_type capacity_ = 0;
+  value_type* array_ = nullptr;
+
+  void SetPrivateFields_(size_type size, size_type capacity,
+                           value_type *array) {
+    size_ = size;
+    capacity_ = capacity;
+    array_ = array;
+    if (!array_ && capacity_) array_ = new value_type[capacity_] {};
+  }
+
+  void copy_vector_(const Vector &v) noexcept {
+    if (array_ && capacity_ >= v.size_) {
+      for (size_type i = 0; i < v.size_; ++i) array_[i] = v.array_[i];
+      for (size_type i = v.size_; i < capacity_; ++i) array_[i] = 0;
+      size_ = v.size_;
+    }
+  }
+
+  void check_bounds_(size_type pos) const {
+    if (pos >= size_)
+      throw std::out_of_range("Incorrect input, index is outside the vector");
+  }
+
+  void delete_value_() {
+    delete[] array_;
+    SetPrivateFields_(0U, 0U, nullptr);
+  }
+
+  void reserve_(size_type size) {
+    Vector new_vector(size);
+    new_vector.copy_vector_(*this);
+    *this = std::move(new_vector);
   }
 };
 }  // namespace S21

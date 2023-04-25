@@ -1,5 +1,5 @@
 CC = g++
-CFLAGS = -std=c++17 -Wall -Wextra -Werror
+CFLAGS = -std=c++17 -Wall -Wextra -Werror -Wuninitialized
 CLIBS  = -lgtest -lgtest_main
 
 all: test
