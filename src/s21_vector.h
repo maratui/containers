@@ -99,13 +99,13 @@ class Vector {
   }
 
   void reserve(size_type size) {
-    if (size > this->capacity_) reserve_(size);
+    if (size > capacity_) Reserve_(size);
   }
 
   size_type capacity() const noexcept { return capacity_; }
 
   void shrink_to_fit() {
-    if (capacity_ > size_) reserve_(size_);
+    if (capacity_ > size_) Reserve_(size_);
   }
 
   void clear() noexcept { size_ = 0; }
@@ -122,7 +122,7 @@ class Vector {
           capacity_ *= 2;
         else
           capacity_ = 1;
-        reserve_(capacity_);
+        Reserve_(capacity_);
         finish = this->end();
       }
       pos += this->begin() - start;
@@ -182,10 +182,11 @@ class Vector {
           "Incorrect input, index is outside the vector size");
   }
 
-  void reserve_(size_type size) {
-    Vector new_vector(size);
-    new_vector.CopyVector_(*this);
-    *this = std::move(new_vector);
+  void Reserve_(size_type size) {
+    Vector vector(size);
+
+    vector.CopyVector_(*this);
+    *this = std::move(vector);
   }
 };
 }  // namespace S21
