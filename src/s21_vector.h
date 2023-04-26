@@ -22,10 +22,10 @@ class Vector {
   explicit Vector(std::initializer_list<value_type> const &items) {
     SetPrivateFields_(items.size(), items.size(), nullptr);
     if (array_) {
-      item_ = array_;
-      for (auto item = items.begin(), end = items.end(); item < end; item++)
-        *item_++ = *item;
-      item_ = nullptr;
+      auto iter = begin();
+      for (auto item = items.begin(), end = items.end(); item < end;
+           item++, iter++)
+        *iter = *item;
     }
   }
 
@@ -88,16 +88,7 @@ class Vector {
   iterator end() noexcept { return array_ + size_; }
   const_iterator end() const noexcept { return array_ + size_; }
 
-  bool empty() const noexcept {
-    bool ret;
-
-    if (size_ > 0)
-      ret = false;
-    else
-      ret = true;
-
-    return ret;
-  }
+  bool empty() const noexcept { return size_ == 0; }
 
   size_type size() const noexcept { return size_; }
 
@@ -166,14 +157,12 @@ class Vector {
   size_type size_ = 0;
   size_type capacity_ = 0;
   value_type *array_ = nullptr;
-  value_type *item_ = nullptr;
 
   void SetPrivateFields_(size_type size, size_type capacity,
                          value_type *array) {
     size_ = size;
     capacity_ = capacity;
     array_ = array;
-    item_ = nullptr;
     if (!array_ && capacity_) array_ = new value_type[capacity_]{};
   }
 

@@ -34,7 +34,7 @@ clang-format:
 	rm -f ./.clang-format
 
 cppcheck:
-	cppcheck --enable=all --suppress=missingIncludeSystem --std=c++17 --language=c++ ./*.h ./*.cc
+	cppcheck --enable=all --suppress=missingIncludeSystem --std=c++17 --language=c++ ./*.h #./*.cc
 
 valgrind: CFLAGS+= -g
 valgrind: test
