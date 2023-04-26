@@ -1,7 +1,8 @@
 #include <gtest/gtest.h>
 
-#include <type_traits>
 #include <list>
+#include <type_traits>
+
 #include "./s21_containers.h"
 
 template <typename T>
@@ -14,9 +15,8 @@ void test_list(std::initializer_list<T> const& items) {
   s21::list<T> s21_default_constructor;
   ASSERT_EQ(std_default_constructor.size(), s21_default_constructor.size());
 
-std::cout << *std_default_constructor.begin() << std::endl; 
-std::cout << *std_default_constructor.end() << std::endl;
-
+  std::cout << *std_default_constructor.begin() << std::endl;
+  std::cout << *std_default_constructor.end() << std::endl;
 
   std::list<T> const std_const_default_constructor;
   s21::list<T> const s21_const_default_constructor;
@@ -594,14 +594,14 @@ TEST(TestS21Containers, list) {
   //  test_vector<short>({0, 1, -32768, 4, 32767});
   //  test_vector<unsigned short>({0, 1, 0, 4, 65535});
   test_list<int>({0, 1, -2147483648, 4, 2147483647});
-//  test_vector<unsigned int>({0, 1, 0, 4, 4294967295});
-//  test_vector<long>({0, 1, -2147483648, 4, 2147483647});
-//  test_vector<unsigned long>({0, 1, 0, 4, 4294967295});
-//  test_vector<long long>({0, 1, -2147483648, 4, 2147483647});
-//  test_vector<unsigned long long>({0, 1, 0, 4, 4294967295});
-//  test_vector<float>({0, 1, FLT_MIN, -FLT_MAX, FLT_MAX});
-//  test_vector<double>({0, 1, DBL_MIN, -DBL_MAX, DBL_MAX});
-//  test_vector<long double>({0, 1, DBL_MIN, -DBL_MAX, DBL_MAX});
+  //  test_vector<unsigned int>({0, 1, 0, 4, 4294967295});
+  //  test_vector<long>({0, 1, -2147483648, 4, 2147483647});
+  //  test_vector<unsigned long>({0, 1, 0, 4, 4294967295});
+  //  test_vector<long long>({0, 1, -2147483648, 4, 2147483647});
+  //  test_vector<unsigned long long>({0, 1, 0, 4, 4294967295});
+  //  test_vector<float>({0, 1, FLT_MIN, -FLT_MAX, FLT_MAX});
+  //  test_vector<double>({0, 1, DBL_MIN, -DBL_MAX, DBL_MAX});
+  //  test_vector<long double>({0, 1, DBL_MIN, -DBL_MAX, DBL_MAX});
 }
 
 int main(int argc, char** argv) {

@@ -25,7 +25,8 @@ class list {
   using const_iterator = const t_item *;
   using size_type = size_t;
 
-  void set_private_fields_(size_type size, t_item *head, t_item *tail) noexcept {
+  void set_private_fields_(size_type size, t_item *head,
+                           t_item *tail) noexcept {
     m_size = size;
     this->head = head;
     this->tail = tail;
@@ -33,8 +34,7 @@ class list {
     if (size > 0 && head == nullptr) {
       head = reserve_(nullptr, nullptr);
       tail = head;
-      for (size_type i = 1; i < size; i++)
-        tail = reserve_(tail, nullptr);
+      for (size_type i = 1; i < size; i++) tail = reserve_(tail, nullptr);
     }
   }
 
@@ -59,7 +59,8 @@ class list {
     bool ret;
 
     ret = false;
-    for (auto item = head; ret == false && item != tail; item = item->next) if (item == pos) ret = true;
+    for (auto item = head; ret == false && item != tail; item = item->next)
+      if (item == pos) ret = true;
 
     return ret;
   }
@@ -68,7 +69,7 @@ class list {
     while (head != nullptr) {
       head = head->next;
       delete head->back;
-    } 
+    }
     set_private_fields_(0U, nullptr, nullptr);
   }
 
@@ -211,7 +212,6 @@ class list {
   void push_front(const_reference value) { insert(head, value); }
 
   void pop_front() { erase(head); }
-
 
   void swap(list &other) {
     list tmp(other);

@@ -16,27 +16,22 @@ class Vector {
 
  public:
   Vector() {}
+
   explicit Vector(size_type n) { SetPrivateFields_(n, n, nullptr); }
+
   explicit Vector(std::initializer_list<value_type> const &items) {
-    size_type n;
-
-    n = items.size();
-    SetPrivateFields_(n, n, nullptr);
-    if (array_)
-      for (auto i = 0, item = items.begin(), end = items.end(); item < end;
-           i++, item++)
-        array_[i] = *item;
+    SetPrivateFields_(items.size(), items.size(), nullptr);
+    if (array_) {
+      item_ = array_;
+      for (auto item = items.begin(), end = items.end(); item < end; item++)
+        *item_++ = *item;
+      item_ = nullptr;
+    }
   }
 
-  Vector(const Vector &v) {
-    SetPrivateFields_(v.size_, v.capacity_, nullptr);
-    copy_vector_(v);
-  }
+  Vector(const Vector &v) { *this = v; }
 
-  Vector(Vector &&v) {
-    SetPrivateFields_(v.size_, v.capacity_, v.array_);
-    v.SetPrivateFields_(0U, 0U, nullptr);
-  }
+  Vector(Vector &&v) noexcept { *this = std::move(v); }
 
   ~Vector() { delete[] array_; }
 
@@ -44,17 +39,19 @@ class Vector {
     if (this != &v) {
       delete[] array_;
       SetPrivateFields_(v.size_, v.capacity_, nullptr);
-      copy_vector_(v);
+      CopyVector_(v);
     }
 
     return *this;
   }
 
-  Vector &operator=(Vector &&v) {
-    delete_value_();
+  Vector &operator=(Vector &&v) noexcept {
+    delete[] array_;
     if (this != &v) {
       SetPrivateFields_(v.size_, v.capacity_, v.array_);
       v.SetPrivateFields_(0U, 0U, nullptr);
+    } else {
+      SetPrivateFields_(0U, 0U, nullptr);
     }
 
     return *this;
@@ -166,21 +163,25 @@ class Vector {
  private:
   size_type size_ = 0;
   size_type capacity_ = 0;
-  value_type* array_ = nullptr;
+  value_type *array_ = nullptr;
+  value_type *item_ = nullptr;
 
   void SetPrivateFields_(size_type size, size_type capacity,
-                           value_type *array) {
+                         value_type *array) {
     size_ = size;
     capacity_ = capacity;
     array_ = array;
-    if (!array_ && capacity_) array_ = new value_type[capacity_] {};
+    item_ = nullptr;
+    if (!array_ && capacity_) array_ = new value_type[capacity_]{};
   }
 
-  void copy_vector_(const Vector &v) noexcept {
-    if (array_ && capacity_ >= v.size_) {
-      for (size_type i = 0; i < v.size_; ++i) array_[i] = v.array_[i];
-      for (size_type i = v.size_; i < capacity_; ++i) array_[i] = 0;
-      size_ = v.size_;
+  void CopyVector_(const Vector &v) noexcept {
+    int m;
+
+    m = std::min(v.size_, std::min(capacity_, v.capacity_));
+    if (array_) {
+      for (auto j = 0; j < m; j++) array_[j] = v.array_[j];
+      size_ = m;
     }
   }
 
@@ -189,14 +190,9 @@ class Vector {
       throw std::out_of_range("Incorrect input, index is outside the vector");
   }
 
-  void delete_value_() {
-    delete[] array_;
-    SetPrivateFields_(0U, 0U, nullptr);
-  }
-
   void reserve_(size_type size) {
     Vector new_vector(size);
-    new_vector.copy_vector_(*this);
+    new_vector.CopyVector_(*this);
     *this = std::move(new_vector);
   }
 };
