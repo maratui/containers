@@ -58,24 +58,26 @@ class Vector {
   }
 
   reference at(size_type pos) {
-    check_bounds_(pos);
+    CheckSizeBounds_(pos);
 
     return array_[pos];
   }
   const_reference at(size_type pos) const {
-    check_bounds_(pos);
+    CheckSizeBounds_(pos);
 
     return array_[pos];
   }
 
-  reference operator[](size_type pos) { return array_[pos]; }
-  const_reference operator[](size_type pos) const { return array_[pos]; }
+  reference operator[](size_type pos) noexcept { return array_[pos]; }
+  const_reference operator[](size_type pos) const noexcept {
+    return array_[pos];
+  }
 
-  reference front() { return array_[0]; }
-  const_reference front() const { return array_[0]; }
+  reference front() noexcept { return array_[0]; }
+  const_reference front() const noexcept { return array_[0]; }
 
-  reference back() { return array_[size_ - 1]; }
-  const_reference back() const { return array_[size_ - 1]; }
+  reference back() noexcept { return array_[size_ - 1]; }
+  const_reference back() const noexcept { return array_[size_ - 1]; }
 
   T *data() noexcept { return array_; }
   const T *data() const noexcept { return array_; }
@@ -185,9 +187,10 @@ class Vector {
     }
   }
 
-  void check_bounds_(size_type pos) const {
+  void CheckSizeBounds_(size_type pos) const {
     if (pos >= size_)
-      throw std::out_of_range("Incorrect input, index is outside the vector");
+      throw std::out_of_range(
+          "Incorrect input, index is outside the vector size");
   }
 
   void reserve_(size_type size) {

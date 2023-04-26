@@ -221,7 +221,7 @@ void test_vector(std::initializer_list<T> const& items) {
   try {
     s21_operator_overload.at(5);
   } catch (const std::out_of_range& e) {
-    ASSERT_STREQ("Incorrect input, index is outside the vector", e.what());
+    ASSERT_STREQ("Incorrect input, index is outside the vector size", e.what());
   }
 
   temp = std_const_copy_constructor.at(3);
