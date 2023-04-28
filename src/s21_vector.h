@@ -22,7 +22,7 @@ class Vector {
   explicit Vector(std::initializer_list<value_type> const &items) {
     SetPrivateFields_(items.size(), items.size(), nullptr);
     if (array_) {
-      auto iter = begin();
+      auto iter = Begin();
       for (auto item = items.begin(), end = items.end(); item < end;
            item++, iter++)
         *iter = *item;
@@ -57,12 +57,12 @@ class Vector {
     return *this;
   }
 
-  reference at(size_type pos) {
+  reference At(size_type pos) {
     CheckSizeBounds_(pos);
 
     return array_[pos];
   }
-  const_reference at(size_type pos) const {
+  const_reference At(size_type pos) const {
     CheckSizeBounds_(pos);
 
     return array_[pos];
@@ -73,84 +73,79 @@ class Vector {
     return array_[pos];
   }
 
-  reference front() noexcept { return array_[0]; }
-  const_reference front() const noexcept { return array_[0]; }
+  reference Front() noexcept { return array_[0]; }
+  const_reference Front() const noexcept { return array_[0]; }
 
-  reference back() noexcept { return array_[size_ - 1]; }
-  const_reference back() const noexcept { return array_[size_ - 1]; }
+  reference Back() noexcept { return array_[size_ - 1]; }
+  const_reference Back() const noexcept { return array_[size_ - 1]; }
 
-  T *data() noexcept { return array_; }
-  const T *data() const noexcept { return array_; }
+  T *Data() noexcept { return array_; }
+  const T *Data() const noexcept { return array_; }
 
-  iterator begin() noexcept { return array_; }
-  const_iterator begin() const noexcept { return array_; }
+  iterator Begin() noexcept { return array_; }
+  const_iterator Begin() const noexcept { return array_; }
 
-  iterator end() noexcept { return array_ + size_; }
-  const_iterator end() const noexcept { return array_ + size_; }
+  iterator End() noexcept { return array_ + size_; }
+  const_iterator End() const noexcept { return array_ + size_; }
 
-  bool empty() const noexcept { return size_ == 0; }
+  bool Empty() const noexcept { return size_ == 0; }
 
-  size_type size() const noexcept { return size_; }
+  size_type Size() const noexcept { return size_; }
 
-  size_type max_size() const noexcept {
+  size_type MaxSize() const noexcept {
     std::allocator<value_type> alloc;
 
     return alloc.max_size();
   }
 
-  void reserve(size_type size) {
+  void Reserve(size_type size) {
     if (size > capacity_) Reserve_(size);
   }
 
-  size_type capacity() const noexcept { return capacity_; }
+  size_type Capacity() const noexcept { return capacity_; }
 
-  void shrink_to_fit() {
+  void ShrinkToFit() {
     if (capacity_ > size_) Reserve_(size_);
   }
 
-  void clear() noexcept { size_ = 0; }
+  void Clear() noexcept { size_ = 0; }
 
-  iterator insert(iterator pos, const_reference value) {
-    iterator start;
-    iterator finish;
-
-    start = this->begin();
-    finish = this->end();
-    if ((capacity_ == 0) || ((pos + 1) > start && (pos - 1) < finish)) {
+  iterator Insert(iterator pos, const_reference value) {
+    auto begin = Begin();
+    auto end = End();
+    if ((capacity_ == 0) || (pos >= begin && pos <= end)) {
       if (size_ == capacity_) {
-        if (capacity_)
+        if (capacity_ > 0)
           capacity_ *= 2;
         else
           capacity_ = 1;
         Reserve_(capacity_);
-        finish = this->end();
+        end = End();
+        pos += Begin() - begin;
       }
-      pos += this->begin() - start;
-      for (auto i = finish; i > pos; --i) *i = *(i - 1);
+      for (auto iter = end; iter > pos; --iter) *iter = *(iter - 1);
       *pos = value;
-      size_++;
+      size_ += 1;
     }
 
     return pos;
   }
 
-  void erase(iterator pos) {
-    iterator finish;
-
-    finish = end() - 1;
-    for (auto i = pos; i < finish; ++i) *i = *(i + 1);
-    size_--;
+  void Erase(iterator pos) noexcept {
+    auto end = End() - 1;
+    for (auto iter = pos; iter < end; iter++) *iter = *(iter + 1);
+    size_ -= 1;
   }
 
-  void push_back(const_reference value) { insert(end(), value); }
+  void PushBack(const_reference value) { Insert(End(), value); }
 
-  void pop_back() { erase(end() - 1); }
+  void PopBack() noexcept { Erase(End() - 1); }
 
-  void swap(Vector &other) {
-    Vector tmp(other);
+  void Swap(Vector &other) {
+    Vector vector(other);
 
     other = std::move(*this);
-    *this = std::move(tmp);
+    *this = std::move(vector);
   }
 
  private:
