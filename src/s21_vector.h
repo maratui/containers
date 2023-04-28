@@ -4,9 +4,11 @@
 #include <memory>
 #include <stdexcept>
 
+#include "./s21_sequence_container.h"
+
 namespace S21 {
 template <class T>
-class Vector {
+class Vector : public SequenceContainer {
   using value_type = T;
   using reference = T &;
   using const_reference = const T &;
@@ -17,45 +19,15 @@ class Vector {
  public:
   Vector() {}
 
-  explicit Vector(size_type n) { SetPrivateFields_(n, n, nullptr); }
+  explicit Vector(size_type n) : SequenceContainer(n) {}
 
-  explicit Vector(std::initializer_list<value_type> const &items) {
-    SetPrivateFields_(items.size(), items.size(), nullptr);
-    if (array_) {
-      auto iter = Begin();
-      for (auto item = items.begin(), end = items.end(); item < end;
-           item++, iter++)
-        *iter = *item;
-    }
-  }
+  explicit Vector(std::initializer_list<value_type> const &items) : SequenceContainer(items) {}
 
-  Vector(const Vector &v) { *this = v; }
+  Vector(const Vector &v) : SequenceContainer(v) {}
 
-  Vector(Vector &&v) noexcept { *this = std::move(v); }
+  Vector(Vector &&v) : SequenceContainer(v) noexcept {}
 
   ~Vector() { delete[] array_; }
-
-  Vector &operator=(const Vector &v) {
-    if (this != &v) {
-      delete[] array_;
-      SetPrivateFields_(v.size_, v.capacity_, nullptr);
-      CopyVector_(v);
-    }
-
-    return *this;
-  }
-
-  Vector &operator=(Vector &&v) noexcept {
-    delete[] array_;
-    if (this != &v) {
-      SetPrivateFields_(v.size_, v.capacity_, v.array_);
-      v.SetPrivateFields_(0U, 0U, nullptr);
-    } else {
-      SetPrivateFields_(0U, 0U, nullptr);
-    }
-
-    return *this;
-  }
 
   reference At(size_type pos) {
     CheckSizeBounds_(pos);
@@ -73,30 +45,8 @@ class Vector {
     return array_[pos];
   }
 
-  reference Front() noexcept { return array_[0]; }
-  const_reference Front() const noexcept { return array_[0]; }
-
-  reference Back() noexcept { return array_[size_ - 1]; }
-  const_reference Back() const noexcept { return array_[size_ - 1]; }
-
   T *Data() noexcept { return array_; }
   const T *Data() const noexcept { return array_; }
-
-  iterator Begin() noexcept { return array_; }
-  const_iterator Begin() const noexcept { return array_; }
-
-  iterator End() noexcept { return array_ + size_; }
-  const_iterator End() const noexcept { return array_ + size_; }
-
-  bool Empty() const noexcept { return size_ == 0; }
-
-  size_type Size() const noexcept { return size_; }
-
-  size_type MaxSize() const noexcept {
-    std::allocator<value_type> alloc;
-
-    return alloc.max_size();
-  }
 
   void Reserve(size_type size) {
     if (size > capacity_) Reserve_(size);
@@ -106,46 +56,6 @@ class Vector {
 
   void ShrinkToFit() {
     if (capacity_ > size_) Reserve_(size_);
-  }
-
-  void Clear() noexcept { size_ = 0; }
-
-  iterator Insert(iterator pos, const_reference value) {
-    auto begin = Begin();
-    auto end = End();
-    if ((capacity_ == 0) || (pos >= begin && pos <= end)) {
-      if (size_ == capacity_) {
-        if (capacity_ > 0)
-          capacity_ *= 2;
-        else
-          capacity_ = 1;
-        Reserve_(capacity_);
-        end = End();
-        pos += Begin() - begin;
-      }
-      for (auto iter = end; iter > pos; --iter) *iter = *(iter - 1);
-      *pos = value;
-      size_ += 1;
-    }
-
-    return pos;
-  }
-
-  void Erase(iterator pos) noexcept {
-    auto end = End() - 1;
-    for (auto iter = pos; iter < end; iter++) *iter = *(iter + 1);
-    size_ -= 1;
-  }
-
-  void PushBack(const_reference value) { Insert(End(), value); }
-
-  void PopBack() noexcept { Erase(End() - 1); }
-
-  void Swap(Vector &other) {
-    Vector vector(other);
-
-    other = std::move(*this);
-    *this = std::move(vector);
   }
 
  private:
