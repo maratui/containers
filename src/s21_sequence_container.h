@@ -5,20 +5,19 @@
 #include <stdexcept>
 
 namespace S21 {
-template <class T>
+template <class T, class I>
 class SequenceContainer {
   using value_type = T;
   using reference = T &;
   using const_reference = const T &;
-  using iterator = T *;
-  using const_iterator = const T *;
+  using iterator = I;
+  using const_iterator = const I;
   using size_type = size_t;
 
  public:
   SequenceContainer() {}
 
-  explicit SequenceContainer(size_type n) : size_(n) {
-  }
+  explicit SequenceContainer(size_type n) : size_(n) {}
   /*
     explicit SequenceContainer(std::initializer_list<value_type> const &items) :
       size_(items.size()) {
@@ -113,7 +112,7 @@ class SequenceContainer {
     */
  protected:
   size_type size_ = 0;
-  value_type *array_ = nullptr;
+  iterator array_ = nullptr;
 
   void virtual InsertReserve_() {}
 

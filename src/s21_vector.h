@@ -8,18 +8,16 @@
 
 namespace S21 {
 template <class T>
-class Vector : public SequenceContainer<T> {
+class Vector : public SequenceContainer<T, T*> {
   using value_type = T;
   using reference = T &;
   using const_reference = const T &;
-  using iterator = T *;
-  using const_iterator = const T *;
   using size_type = size_t;
 
  public:
-  Vector() {}
+  Vector() : SequenceContainer<T, T*>() {}
 
-  explicit Vector(size_type n) : SequenceContainer<T>(n) {CreatContainer_();}
+  explicit Vector(size_type n) : SequenceContainer<T, T*>(n) {CreatContainer_();}
 /* 
   explicit Vector(std::initializer_list<value_type> const &items){
     SetPrivateFields_(items.size(), nullptr);
@@ -40,12 +38,12 @@ class Vector : public SequenceContainer<T> {
     reference At(size_type pos) {
       CheckSizeBounds_(pos);
 
-      return SequenceContainer<T>::array_[pos];
+      return SequenceContainer<T, T*>::array_[pos];
     }
     const_reference At(size_type pos) const {
       CheckSizeBounds_(pos);
 
-      return SequenceContainer<T>::array_[pos];
+      return SequenceContainer<T, T*>::array_[pos];
     }
 /*
     reference operator[](size_type pos) noexcept { return SequenceContainer<T>::array_[pos]; }
@@ -69,28 +67,28 @@ class Vector : public SequenceContainer<T> {
     */
  protected:
   void CreatContainer_() {
-    if (!SequenceContainer<T>::array_ && capacity_) SequenceContainer<T>::array_ = new value_type[capacity_]{};
+    if (!SequenceContainer<T, T*>::array_ && capacity_) SequenceContainer<T, T*>::array_ = new value_type[capacity_]{};
   }
 
-  void InsertReserve_(iterator begin, iterator end, iterator pos) {
-    if (SequenceContainer<T>::size_ == capacity_) {
+  void InsertReserve_(T* begin, T* end, T* pos) {
+    if (SequenceContainer<T, T*>::size_ == capacity_) {
       if (capacity_ > 0)
         capacity_ *= 2;
       else
         capacity_ = 1;
       Reserve_(capacity_);
-      end = SequenceContainer<T>::End();
-      pos += SequenceContainer<T>::Begin() - begin;
+      end = SequenceContainer<T, T*>::End();
+      pos += SequenceContainer<T, T*>::Begin() - begin;
     }
   }
 
  private:
-  size_type capacity_ = SequenceContainer<T>::size_;
+  size_type capacity_ = SequenceContainer<T, T*>::size_;
 
   void SetPrivateFields_(size_type size, size_type capacity, value_type *array) {
-    SequenceContainer<T>::size_ = size;
+    SequenceContainer<T, T*>::size_ = size;
     capacity_ = capacity;
-    SequenceContainer<T>::array_ = array;
+    SequenceContainer<T, T*>::array_ = array;
     CreatContainer_();
   }
 
@@ -98,14 +96,14 @@ class Vector : public SequenceContainer<T> {
     int m;
 
     m = std::min(v.size_, std::min(capacity_, v.capacity_));
-    if (SequenceContainer<T>::array_) {
-      for (auto j = 0; j < m; j++) SequenceContainer<T>::array_[j] = v.array_[j];
-      SequenceContainer<T>::size_ = m;
+    if (SequenceContainer<T, T*>::array_) {
+      for (auto j = 0; j < m; j++) SequenceContainer<T, T*>::array_[j] = v.array_[j];
+      SequenceContainer<T, T*>::size_ = m;
     }
   }
 
   void CheckSizeBounds_(size_type pos) const {
-    if (pos >= SequenceContainer<T>::size_)
+    if (pos >= SequenceContainer<T, T*>::size_)
       throw std::out_of_range(
           "Incorrect input, index is outside the vector size");
   }
