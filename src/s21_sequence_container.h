@@ -1,6 +1,7 @@
 #ifndef SRC_S21_SEQUENCE_CONTAINER_H
 #define SRC_S21_SEQUENCE_CONTAINER_H
 
+#include <iostream>
 #include <memory>
 #include <stdexcept>
 
@@ -17,59 +18,59 @@ class SequenceContainer {
  public:
   SequenceContainer() {}
 
-  explicit SequenceContainer(size_type n) : size_(n) {}
+  explicit SequenceContainer(I (*CreatContainer)(I array, size_type n),
+                             size_type n)
+      : size_(n) {
+    array_ = CreatContainer(array_, n);
+  }
+
+  explicit SequenceContainer(I (*CreatContainer)(I array, size_type n),
+                             std::initializer_list<value_type> const &items)
+      : SequenceContainer(CreatContainer, items.size()) {
+    InitializeSequenceContainer_(items);
+  }
+
+  SequenceContainer &Copy(I (*CreatContainer)(I array, size_type n),
+                          const SequenceContainer &v) {
+    if (this != &v) {
+      array_ = CreatContainer(array_, v.size_);
+      size_ = v.size_;
+      CopySequenceContainer_(v);
+    }
+
+    return *this;
+  }
   /*
-    explicit SequenceContainer(std::initializer_list<value_type> const &items) :
-      size_(items.size()) {
-      auto iter = Begin();
-      if (iter != End())
-        for (auto item = items.begin(), end = items.end(); item < end; item++,
-    iter++) *iter = *item;
-    }
+            SequenceContainer &operator=(SequenceContainer &&v) noexcept {
+              delete[] array_;
+              if (this != &v) {
+                SetPrivateFields_();
+                v.SetPrivateFields_();
+              } else {
+                SetPrivateFields_();
+              }
 
-      SequenceContainer(const SequenceContainer &v) { *this = v; }
+              return *this;
+            }
 
-      SequenceContainer(SequenceContainer &&v) noexcept { *this = std::move(v);
-    }
-*/
-      ~SequenceContainer() {delete[] array_;}
-/*
-      SequenceContainer &operator=(const SequenceContainer &v) {
-        if (this != &v) {
-          delete[] array_;
-          SetPrivateFields_();
-          CopySequenceContainer_(v);
-        }
+            reference Front() noexcept { return array_[0]; }
+            const_reference Front() const noexcept { return array_[0]; }
 
-        return *this;
-      }
+            reference Back() noexcept { return array_[size_ - 1]; }
+            const_reference Back() const noexcept { return array_[size_ - 1]; }
+    */
+  iterator Begin() noexcept { return array_; }
+  const_iterator Begin() const noexcept { return array_; }
 
-      SequenceContainer &operator=(SequenceContainer &&v) noexcept {
-        delete[] array_;
-        if (this != &v) {
-          SetPrivateFields_();
-          v.SetPrivateFields_();
-        } else {
-          SetPrivateFields_();
-        }
+  iterator End() noexcept { return array_ + size_; }
+  const_iterator End() const noexcept { return array_ + size_; }
+  /*
 
-        return *this;
-      }
+  `
 
-      reference Front() noexcept { return array_[0]; }
-      const_reference Front() const noexcept { return array_[0]; }
 
-      reference Back() noexcept { return array_[size_ - 1]; }
-      const_reference Back() const noexcept { return array_[size_ - 1]; }
-
-      iterator Begin() noexcept { return array_; }
-      const_iterator Begin() const noexcept { return array_; }
-
-      iterator End() noexcept { return array_ + size_; }
-      const_iterator End() const noexcept { return array_ + size_; }
-
-      bool Empty() const noexcept { return size_ == 0; }
-  */
+          bool Empty() const noexcept { return size_ == 0; }
+      */
   size_type Size() const noexcept { return size_; }
   /*
       size_type MaxSize() const noexcept {
@@ -112,27 +113,36 @@ class SequenceContainer {
     */
  protected:
   size_type size_ = 0;
-  iterator array_ = nullptr;
+  I array_ = nullptr;
+
+  void virtual SetPrivateFields_() {}
+
+  void InitializeSequenceContainer_(
+      std::initializer_list<value_type> const &items) noexcept {
+    auto iter = Begin();
+    if (iter != End())
+      for (auto item = items.begin(), end = items.end(); item < end;
+           item++, iter++)
+        *iter = *item;
+  }
 
   void virtual InsertReserve_() {}
 
  private:
+  void CopySequenceContainer_(const SequenceContainer &v) noexcept {
+    auto iter = Begin();
+    if (iter != End()) {
+      for (auto item = v.Begin(), end = v.End(); item < end; item++, iter++)
+        *iter = *item;
+    }
+  }
   /*
-    void CopySequenceContainer_(const SequenceContainer &v) noexcept {
-      if (array_) {
-        auto iter = Begin();
-        for (auto item = v.Begin(), end = v.End(); item < end;
-             item++, iter++)
-          *iter = *item;
+      void CheckSizeBounds_(size_type pos) const {
+        if (pos >= size_)
+          throw std::out_of_range(
+              "Incorrect input, index is outside the vector size");
       }
-    }
-
-    void CheckSizeBounds_(size_type pos) const {
-      if (pos >= size_)
-        throw std::out_of_range(
-            "Incorrect input, index is outside the vector size");
-    }
-  */
+    */
 };
 }  // namespace S21
 
