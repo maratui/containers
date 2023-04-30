@@ -20,7 +20,7 @@ class SequenceContainer {
 
   explicit SequenceContainer(I (*CreatContainer)(I array, size_type n),
                              size_type n)
-      : size_(n) {
+      : size_(n), capacity_(n) {
     array_ = CreatContainer(array_, n);
   }
 
@@ -33,89 +33,91 @@ class SequenceContainer {
   SequenceContainer &Copy(I (*CreatContainer)(I array, size_type n),
                           const SequenceContainer &v) {
     if (this != &v) {
-      array_ = CreatContainer(array_, v.size_);
-      size_ = v.size_;
+      SetPrivateFields_(v.size_, v.capacity_,
+                        CreatContainer(array_, v.capacity_));
       CopySequenceContainer_(v);
     }
 
     return *this;
   }
-  /*
-            SequenceContainer &operator=(SequenceContainer &&v) noexcept {
-              delete[] array_;
-              if (this != &v) {
-                SetPrivateFields_();
-                v.SetPrivateFields_();
-              } else {
-                SetPrivateFields_();
-              }
 
-              return *this;
-            }
+  SequenceContainer &Move(I (*CreatContainer)(I array, size_type n),
+                          SequenceContainer &v) noexcept {
+    array_ = CreatContainer(array_, 0);
+    if (this != &v) {
+      SetPrivateFields_(v.size_, v.capacity_, v.Begin());
+      v.SetPrivateFields_(0U, 0U, nullptr);
+    } else {
+      SetPrivateFields_(0U, 0U, nullptr);
+    }
 
-            reference Front() noexcept { return array_[0]; }
-            const_reference Front() const noexcept { return array_[0]; }
+    return *this;
+  }
 
-            reference Back() noexcept { return array_[size_ - 1]; }
-            const_reference Back() const noexcept { return array_[size_ - 1]; }
-    */
+  reference Front() noexcept { return *Begin(); }
+  const_reference Front() const noexcept { return *Begin(); }
+
+  reference Back() noexcept { return *(End() - 1); }
+  const_reference Back() const noexcept { return *(End() - 1); }
+
   iterator Begin() noexcept { return array_; }
   const_iterator Begin() const noexcept { return array_; }
 
   iterator End() noexcept { return array_ + size_; }
   const_iterator End() const noexcept { return array_ + size_; }
-  /*
 
-  `
+  bool Empty() const noexcept { return size_ == 0; }
 
-
-          bool Empty() const noexcept { return size_ == 0; }
-      */
   size_type Size() const noexcept { return size_; }
+
+  size_type MaxSize() const noexcept {
+    std::allocator<value_type> alloc;
+
+    return alloc.max_size();
+  }
   /*
-      size_type MaxSize() const noexcept {
-        std::allocator<value_type> alloc;
+        void Clear() noexcept { size_ = 0; }
 
-        return alloc.max_size();
-      }
+        iterator Insert(iterator pos, const_reference value) {
+          auto begin = Begin();
+          auto end = End();
+          if ((size_ == 0) || (pos >= begin && pos <= end)) {
+            InsertReserve_();
+            for (auto iter = end; iter > pos; --iter) *iter = *(iter - 1);
+            *pos = value;
+            size_ += 1;
+          }
 
-      void Clear() noexcept { size_ = 0; }
-
-      iterator Insert(iterator pos, const_reference value) {
-        auto begin = Begin();
-        auto end = End();
-        if ((size_ == 0) || (pos >= begin && pos <= end)) {
-          InsertReserve_();
-          for (auto iter = end; iter > pos; --iter) *iter = *(iter - 1);
-          *pos = value;
-          size_ += 1;
+          return pos;
         }
 
-        return pos;
-      }
+        void Erase(iterator pos) noexcept {
+          auto end = End() - 1;
+          for (auto iter = pos; iter < end; iter++) *iter = *(iter + 1);
+          size_ -= 1;
+        }
 
-      void Erase(iterator pos) noexcept {
-        auto end = End() - 1;
-        for (auto iter = pos; iter < end; iter++) *iter = *(iter + 1);
-        size_ -= 1;
-      }
+        void PushBack(const_reference value) { Insert(End(), value); }
 
-      void PushBack(const_reference value) { Insert(End(), value); }
+        void PopBack() noexcept { Erase(End() - 1); }
 
-      void PopBack() noexcept { Erase(End() - 1); }
+        void Swap(SequenceContainer &other) {
+          SequenceContainer vector(other);
 
-      void Swap(SequenceContainer &other) {
-        SequenceContainer vector(other);
-
-        other = std::move(*this);
-        *this = std::move(vector);
-      }
-    */
+          other = std::move(*this);
+          *this = std::move(vector);
+        }
+      */
  protected:
   size_type size_ = 0;
+  size_type capacity_ = 0;
   I array_ = nullptr;
 
-  void virtual SetPrivateFields_() {}
+  void SetPrivateFields_(size_type size, size_type capacity, I begin) {
+    size_ = size;
+    capacity_ = capacity;
+    array_ = begin;
+  }
 
   void InitializeSequenceContainer_(
       std::initializer_list<value_type> const &items) noexcept {
