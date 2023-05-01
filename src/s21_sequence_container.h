@@ -57,26 +57,26 @@ class SequenceContainer {
   reference Front() noexcept { return *Begin(); }
   const_reference Front() const noexcept { return *Begin(); }
 
-  reference Back() noexcept { return *(End() - 1); }
-  const_reference Back() const noexcept { return *(End() - 1); }
+  reference Back() noexcept { return *(--End()); }
+  const_reference Back() const noexcept { return *(--End()); }
 
-  iterator Begin() noexcept { return array_; }
-  const_iterator Begin() const noexcept { return array_; }
+  iterator Begin() noexcept { return array_.Head(); }
+  const_iterator Begin() const noexcept { return array_.Head(); }
 
-  iterator End() noexcept { return array_ + size_; }
-  const_iterator End() const noexcept { return array_ + size_; }
+  iterator End() noexcept { return array_.Tail(); }
+  const_iterator End() const noexcept { return array_.Tail(); }
 
   bool Empty() const noexcept { return size_ == 0; }
 
   size_type Size() const noexcept { return size_; }
 
   void Erase(iterator pos) noexcept {
-    auto end = End() - 1;
-    for (auto iter = pos; iter < end; iter++) *iter = *(iter + 1);
+    auto end = --End();
+    for (auto iter = pos; iter < end; ++iter) *iter = *(iter + 1);
     size_ -= 1;
   }
 
-  void PopBack() noexcept { Erase(End() - 1); }
+  void PopBack() noexcept { Erase(--End()); }
 
   void Swap(SequenceContainer &other) {
     SequenceContainer vector(other);
@@ -102,7 +102,7 @@ class SequenceContainer {
     auto iter = Begin();
     if (iter != End())
       for (auto item = items.begin(), end = items.end(); item < end;
-           item++, iter++)
+           item++, ++iter)
         *iter = *item;
   }
 
@@ -118,7 +118,7 @@ class SequenceContainer {
   void CopyContainer_(const SequenceContainer &v) noexcept {
     auto iter = Begin();
     if (iter != End()) {
-      for (auto item = v.Begin(), end = v.End(); item < end; item++, iter++)
+      for (auto item = v.Begin(), end = v.End(); item < end; item++, ++iter)
         *iter = *item;
     }
   }

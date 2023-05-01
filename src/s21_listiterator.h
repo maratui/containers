@@ -27,9 +27,16 @@ class ListIterator {
     head_->next = nullptr;
   }
 
+  ListIterator(const ListIterator &li) noexcept {
+    this->head_ = li.head_;
+    this->tail_ = li.tail_;
+  }
+
   ~ListIterator() {
-    item_.Delete();
-    delete head_;
+    if (item_ == nullptr) {
+      item_.Delete();
+      delete head_;
+    }
   }
 
   void Create(size_type capacity) {
@@ -43,7 +50,7 @@ class ListIterator {
     }
   }
 
-  void Delete() {
+  void Delete() noexcept {
     t_item *item;
 
     while (head_ != tail_) {
@@ -53,11 +60,64 @@ class ListIterator {
     }
   }
 
-  //  reference operator*() const noexcept { return item_->value; }
+  ListIterator &Head() noexcept {
+    ListIterator item(*this);
+    item.item_ = head_;
+
+    return item;
+  }
+
+  ListIterator &Tail() noexcept {
+    ListIterator item(*this);
+    item.item_ = tail_;
+
+    return item;
+  }
+
+  friend value_type &operator*(const ListIterator &li) noexcept {
+    return (li.item_ == nullptr) ? *li.head_ : *li.item_;
+  }
+
+  friend ListIterator &operator++(ListIterator &li) noexcept {
+    if (li.item_ != nullptr && li.item_ != li.tail_) li.item_ = li.item_.next;
+
+    return li;
+  }
+
+  friend ListIterator &operator--(ListIterator &li) noexcept {
+    if (li.item_ != nullptr && li.item_ != li.head_) li.item_ = li.item_.back;
+
+    return li;
+  }
+
+  ListIterator &operator+(size_type num) noexcept {
+    if (this->item_ != nullptr)
+      for (auto i = 0; i < num; i++)
+        ++(*this);
+
+    return *this;
+  }
+
+  ListIterator &operator-(size_type num) noexcept {
+    if (this->item_ != nullptr)
+      for (auto i = 0; i < num; i++)
+        --(*this);
+
+    return *this;
+  }
+
+  bool &operator==(ListIterator &li) noexcept {
+    return ((this->item_ != nullptr) && (li.item_ != nullptr) && (this->item_ == li.item_));
+  }
+
+  bool &operator!=(ListIterator &li) noexcept {
+    return ((this->item_ != nullptr) && (li.item_ != nullptr) && !(this->item_ == li.item_));
+  }
 
  private:
   t_item *head_ = nullptr;
   t_item *tail_ = nullptr;
+  t_item *item_ = nullptr;
 };
 }  // namespace S21
 
