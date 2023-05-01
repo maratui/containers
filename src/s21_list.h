@@ -9,7 +9,7 @@
 
 namespace S21 {
 template <class T>
-class List : public SequenceContainer<T, ListIterator<T>> {
+class List : public SequenceContainer<T, ListIterator<T> *> {
   using value_type = T;
   using reference = T &;
   using const_reference = const T &;
@@ -17,25 +17,27 @@ class List : public SequenceContainer<T, ListIterator<T>> {
   using size_type = size_t;
 
  public:
-  List() : SequenceContainer<T, ListIterator<T>>() {}
-  /*
-    explicit Vector(size_type n) : SequenceContainer<T, T *>(n) {}
+  List() : SequenceContainer<T, ListIterator<T> *>(true) {}
 
-    explicit Vector(std::initializer_list<value_type> const &items)
+  explicit List(size_type n)
+      : SequenceContainer<T, ListIterator<T> *>(n, true) {}
+
+  /*
+    explicit List(std::initializer_list<value_type> const &items)
         : SequenceContainer<T, T *>(items) {}
 
-    Vector(const Vector &v) : Vector() { *this = v; }
+    List(const List &v) : List() { *this = v; }
 
-    Vector(Vector &&v) : Vector() { *this = std::move(v); }
+    List(List &&v) : List() { *this = std::move(v); }
 
-    ~Vector() {}
+    ~List() {}
 
-    Vector &operator=(const Vector &v) {
-      return (Vector &)SequenceContainer<T, T *>::Copy(v);
+    List &operator=(const List &v) {
+      return (List &)SequenceContainer<T, T *>::Copy(v);
     }
 
-    Vector &operator=(Vector &&v) {
-      return (Vector &)SequenceContainer<T, T *>::Move(v);
+    List &operator=(List &&v) {
+      return (List &)SequenceContainer<T, T *>::Move(v);
     }
 
     reference At(size_type pos) {
@@ -108,7 +110,7 @@ class List : public SequenceContainer<T, ListIterator<T>> {
     }
 
    private:
-    void CopyVector_(const Vector &v) noexcept {
+    void CopyVector_(const List &v) noexcept {
       int m;
 
       m = std::min(v.size_,
@@ -127,7 +129,7 @@ class List : public SequenceContainer<T, ListIterator<T>> {
     }
 
     void Reserve_(size_type size) {
-      Vector vector(size);
+      List vector(size);
 
       vector.CopyVector_(*this);
       *this = std::move(vector);

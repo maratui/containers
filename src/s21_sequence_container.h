@@ -88,20 +88,13 @@ class SequenceContainer {
  protected:
   size_type size_ = 0;
   size_type capacity_ = 0;
-  I array_ = nullptr;
+  I array_;
 
  private:
   bool list_ = false;
 
-  void CreatVector_() {
-    if (!array_ && capacity_ > 0) array_ = new value_type[capacity_]{};
-  }
-
   void CreatContainer_() {
-    if (list_) {
-    } else {
-      CreatVector_();
-    }
+    if (capacity_ > 0) array_.Creat(capacity_);
   }
 
   void InitializeContainer_(
@@ -113,15 +106,7 @@ class SequenceContainer {
         *iter = *item;
   }
 
-  void DeleteContainer_() noexcept {
-    if (list_) {
-    } else {
-      if (array_) {
-        delete[] array_;
-        array_ = nullptr;
-      }
-    }
-  }
+  void DeleteContainer_() noexcept { array_.Delete(); }
 
   void SetProtectedFields_(size_type size, size_type capacity,
                            I begin) noexcept {
