@@ -16,39 +16,39 @@ class SequenceContainer {
   using size_type = size_t;
 
  public:
-  SequenceContainer() {}
+  explicit SequenceContainer(bool list = false) : list_(list) {}
 
-  explicit SequenceContainer(I (*CreatContainer)(I array, size_type n),
-                             size_type n)
-      : size_(n), capacity_(n) {
-    array_ = CreatContainer(array_, n);
+  explicit SequenceContainer(size_type n, bool list = false)
+      : size_(n), capacity_(n), list_(list) {
+    CreatContainer_();
   }
 
-  explicit SequenceContainer(I (*CreatContainer)(I array, size_type n),
-                             std::initializer_list<value_type> const &items)
-      : SequenceContainer(CreatContainer, items.size()) {
-    InitializeSequenceContainer_(items);
+  explicit SequenceContainer(std::initializer_list<value_type> const &items,
+                             bool list = false)
+      : SequenceContainer(items.size(), list) {
+    InitializeContainer_(items);
   }
 
-  SequenceContainer &Copy(I (*CreatContainer)(I array, size_type n),
-                          const SequenceContainer &v) {
+  ~SequenceContainer() { DeleteContainer_(); }
+
+  SequenceContainer &Copy(const SequenceContainer &v) {
     if (this != &v) {
-      SetPrivateFields_(v.size_, v.capacity_,
-                        CreatContainer(array_, v.capacity_));
-      CopySequenceContainer_(v);
+      DeleteContainer_();
+      SetProtectedFields_(v.size_, v.capacity_, nullptr);
+      CreatContainer_();
+      CopyContainer_(v);
     }
 
     return *this;
   }
 
-  SequenceContainer &Move(I (*CreatContainer)(I array, size_type n),
-                          SequenceContainer &v) noexcept {
-    array_ = CreatContainer(array_, 0);
+  SequenceContainer &Move(SequenceContainer &v) noexcept {
+    DeleteContainer_();
     if (this != &v) {
-      SetPrivateFields_(v.size_, v.capacity_, v.Begin());
-      v.SetPrivateFields_(0U, 0U, nullptr);
+      SetProtectedFields_(v.size_, v.capacity_, v.Begin());
+      v.SetProtectedFields_(0U, 0U, nullptr);
     } else {
-      SetPrivateFields_(0U, 0U, nullptr);
+      SetProtectedFields_(0U, 0U, nullptr);
     }
 
     return *this;
@@ -70,34 +70,11 @@ class SequenceContainer {
 
   size_type Size() const noexcept { return size_; }
 
-  size_type MaxSize() const noexcept {
-    std::allocator<value_type> alloc;
-
-    return alloc.max_size();
-  }
-
-  void Clear() noexcept { size_ = 0; }
-
-  iterator Insert(iterator pos, const_reference value) {
-    auto begin = Begin();
-    auto end = End();
-    if ((size_ == 0) || (pos >= begin && pos <= end)) {
-      InsertReserve_(begin, end, pos);
-      for (auto iter = end; iter > pos; --iter) *iter = *(iter - 1);
-      *pos = value;
-      size_ += 1;
-    }
-
-    return pos;
-  }
-
   void Erase(iterator pos) noexcept {
     auto end = End() - 1;
     for (auto iter = pos; iter < end; iter++) *iter = *(iter + 1);
     size_ -= 1;
   }
-
-  void PushBack(const_reference value) { Insert(End(), value); }
 
   void PopBack() noexcept { Erase(End() - 1); }
 
@@ -113,13 +90,21 @@ class SequenceContainer {
   size_type capacity_ = 0;
   I array_ = nullptr;
 
-  void SetPrivateFields_(size_type size, size_type capacity, I begin) {
-    size_ = size;
-    capacity_ = capacity;
-    array_ = begin;
+ private:
+  bool list_ = false;
+
+  void CreatVector_() {
+    if (!array_ && capacity_ > 0) array_ = new value_type[capacity_]{};
   }
 
-  void InitializeSequenceContainer_(
+  void CreatContainer_() {
+    if (list_) {
+    } else {
+      CreatVector_();
+    }
+  }
+
+  void InitializeContainer_(
       std::initializer_list<value_type> const &items) noexcept {
     auto iter = Begin();
     if (iter != End())
@@ -128,34 +113,30 @@ class SequenceContainer {
         *iter = *item;
   }
 
-  void InsertReserve_(I begin, I end, I pos) {
-    if (size_ == capacity_) {
-      if (capacity_ > 0)
-        capacity_ *= 2;
-      else
-        capacity_ = 1;
-      //Reserve_(capacity_);
-      end = End();
-      pos += Begin() - begin;
+  void DeleteContainer_() noexcept {
+    if (list_) {
+    } else {
+      if (array_) {
+        delete[] array_;
+        array_ = nullptr;
+      }
     }
   }
 
+  void SetProtectedFields_(size_type size, size_type capacity,
+                           I begin) noexcept {
+    size_ = size;
+    capacity_ = capacity;
+    array_ = begin;
+  }
 
- private:
-  void CopySequenceContainer_(const SequenceContainer &v) noexcept {
+  void CopyContainer_(const SequenceContainer &v) noexcept {
     auto iter = Begin();
     if (iter != End()) {
       for (auto item = v.Begin(), end = v.End(); item < end; item++, iter++)
         *iter = *item;
     }
   }
-  /*
-      void CheckSizeBounds_(size_type pos) const {
-        if (pos >= size_)
-          throw std::out_of_range(
-              "Incorrect input, index is outside the vector size");
-      }
-    */
 };
 }  // namespace S21
 

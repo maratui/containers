@@ -12,16 +12,16 @@ class Vector : public SequenceContainer<T, T *> {
   using value_type = T;
   using reference = T &;
   using const_reference = const T &;
+  using iterator = T *;
   using size_type = size_t;
 
  public:
   Vector() : SequenceContainer<T, T *>() {}
 
-  explicit Vector(size_type n)
-      : SequenceContainer<T, T *>(CreatContainer_, n) {}
+  explicit Vector(size_type n) : SequenceContainer<T, T *>(n) {}
 
   explicit Vector(std::initializer_list<value_type> const &items)
-      : SequenceContainer<T, T *>(CreatContainer_, items) {}
+      : SequenceContainer<T, T *>(items) {}
 
   Vector(const Vector &v) : Vector() { *this = v; }
 
@@ -30,11 +30,11 @@ class Vector : public SequenceContainer<T, T *> {
   ~Vector() {}
 
   Vector &operator=(const Vector &v) {
-    return (Vector &)SequenceContainer<T, T *>::Copy(CreatContainer_, v);
+    return (Vector &)SequenceContainer<T, T *>::Copy(v);
   }
 
   Vector &operator=(Vector &&v) {
-    return (Vector &)SequenceContainer<T, T *>::Move(CreatContainer_, v);
+    return (Vector &)SequenceContainer<T, T *>::Move(v);
   }
 
   reference At(size_type pos) {
@@ -58,6 +58,12 @@ class Vector : public SequenceContainer<T, T *> {
   T *Data() noexcept { return SequenceContainer<T, T *>::array_; }
   const T *Data() const noexcept { return SequenceContainer<T, T *>::array_; }
 
+  size_type MaxSize() const noexcept {
+    std::allocator<value_type> alloc;
+
+    return alloc.max_size();
+  }
+
   void Reserve(size_type size) {
     if (size > SequenceContainer<T, T *>::capacity_) Reserve_(size);
   }
@@ -71,28 +77,33 @@ class Vector : public SequenceContainer<T, T *> {
       Reserve_(SequenceContainer<T, T *>::size_);
   }
 
- protected:
-  void InsertReserve_(T *begin, T *end, T *pos) {
-    if (SequenceContainer<T, T *>::size_ ==
-        SequenceContainer<T, T *>::capacity_) {
-      if (SequenceContainer<T, T *>::capacity_ > 0)
-        SequenceContainer<T, T *>::capacity_ *= 2;
-      else
-        SequenceContainer<T, T *>::capacity_ = 1;
-      Reserve_(SequenceContainer<T, T *>::capacity_);
-      end = SequenceContainer<T, T *>::End();
-      pos += SequenceContainer<T, T *>::Begin() - begin;
+  void Clear() noexcept { SequenceContainer<T, T *>::size_ = 0; }
+
+  iterator Insert(iterator pos, const_reference value) {
+    auto begin = SequenceContainer<T, T *>::Begin();
+    auto end = SequenceContainer<T, T *>::End();
+    if ((SequenceContainer<T, T *>::size_ == 0) ||
+        (pos >= begin && pos <= end)) {
+      if (SequenceContainer<T, T *>::size_ ==
+          SequenceContainer<T, T *>::capacity_) {
+        if (SequenceContainer<T, T *>::capacity_ > 0)
+          SequenceContainer<T, T *>::capacity_ *= 2;
+        else
+          SequenceContainer<T, T *>::capacity_ = 1;
+        Reserve_(SequenceContainer<T, T *>::capacity_);
+        end = SequenceContainer<T, T *>::End();
+        pos += SequenceContainer<T, T *>::Begin() - begin;
+      }
+      for (auto iter = end; iter > pos; --iter) *iter = *(iter - 1);
+      *pos = value;
+      SequenceContainer<T, T *>::size_ += 1;
     }
+
+    return pos;
   }
 
-  static T *CreatContainer_(T *array, size_type n) {
-    if (array) delete[] array;
-    if (n > 0)
-      array = new value_type[n]{};
-    else
-      array = nullptr;
-
-    return array;
+  void PushBack(const_reference value) {
+    Insert(SequenceContainer<T, T *>::End(), value);
   }
 
  private:
