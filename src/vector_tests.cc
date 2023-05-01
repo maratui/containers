@@ -419,207 +419,127 @@ void test_vector(std::initializer_list<T> const& items) {
     EXPECT_EQ(std_copy_constructor.at(i), s21_copy_constructor.At(i));
 
   //---------------------------------------------------------------------------
-  /*
-                      std_copy_constructor.clear();
-                      s21_copy_constructor.Clear();
-                      EXPECT_EQ(std_copy_constructor.size(),
-             s21_copy_constructor.Size());
-         EXPECT_EQ(std_copy_constructor.capacity(),
-                     s21_copy_constructor.Capacity()); EXPECT_EQ(0,
-                     s21_copy_constructor.Size()); EXPECT_EQ(5,
-                     s21_copy_constructor.Capacity()); for (size_t i = 0; i <
-                     std_copy_constructor.capacity(); i++)
-                EXPECT_EQ(std_copy_constructor[i], s21_copy_constructor[i]);
-                EXPECT_EQ(*std_copy_constructor.begin(),
-           *s21_copy_constructor.Begin()); EXPECT_EQ((std_copy_constructor.end()
-     - std_copy_constructor.begin()), (s21_copy_constructor.End() -
-           s21_copy_constructor.Begin())); EXPECT_EQ(0,
-       (s21_copy_constructor.End()
-                   - s21_copy_constructor.Begin()));
 
-                      //---------------------------------------------------------------------------
+  std_copy_constructor.clear();
+  s21_copy_constructor.Clear();
+  EXPECT_EQ(std_copy_constructor.size(), s21_copy_constructor.Size());
+  EXPECT_EQ(std_copy_constructor.capacity(), s21_copy_constructor.Capacity());
+  EXPECT_EQ(0, s21_copy_constructor.Size());
+  EXPECT_EQ(5, s21_copy_constructor.Capacity());
+  for (size_t i = 0; i < std_copy_constructor.capacity(); i++)
+    EXPECT_EQ(std_copy_constructor[i], s21_copy_constructor[i]);
+  EXPECT_EQ(*std_copy_constructor.begin(), *s21_copy_constructor.Begin());
+  EXPECT_EQ((std_copy_constructor.end() - std_copy_constructor.begin()),
+            (s21_copy_constructor.End() - s21_copy_constructor.Begin()));
+  EXPECT_EQ(0, (s21_copy_constructor.End() - s21_copy_constructor.Begin()));
 
-                      std_copy_constructor.shrink_to_fit();
-                      s21_copy_constructor.ShrinkToFit();
-                      for (auto i = 0; i < 21; i++) {
-                        std_copy_constructor.insert(std_copy_constructor.begin(),
-       i
-         + 1); s21_copy_constructor.Insert(s21_copy_constructor.Begin(), i + 1);
-                        EXPECT_EQ(std_copy_constructor.size(),
-              s21_copy_constructor.Size());
-         EXPECT_EQ(std_copy_constructor.capacity(),
-                      s21_copy_constructor.Capacity()); for (size_t j = 0; j <
-                      std_copy_constructor.size(); j++)
-             EXPECT_EQ(std_copy_constructor[j], s21_copy_constructor[j]);
-                      }
-                      std_copy_constructor.insert(std_copy_constructor.begin() +
-       5, 105); s21_copy_constructor.Insert(s21_copy_constructor.Begin() + 5,
-         105); EXPECT_EQ(std_copy_constructor.size(),
-       s21_copy_constructor.Size()); EXPECT_EQ(std_copy_constructor.capacity(),
-                     s21_copy_constructor.Capacity()); for (size_t j = 0; j <
-                     std_copy_constructor.size(); j++)
-             EXPECT_EQ(std_copy_constructor[j], s21_copy_constructor[j]);
+  //---------------------------------------------------------------------------
 
-                      std_copy_constructor.insert(std_copy_constructor.begin(),
-         101); s21_copy_constructor.Insert(s21_copy_constructor.Begin(), 101);
-                      EXPECT_EQ(std_copy_constructor.size(),
-             s21_copy_constructor.Size());
-         EXPECT_EQ(std_copy_constructor.capacity(),
-                     s21_copy_constructor.Capacity()); for (size_t j = 0; j <
-                     std_copy_constructor.size(); j++)
-             EXPECT_EQ(std_copy_constructor[j], s21_copy_constructor[j]);
+  std_copy_constructor.shrink_to_fit();
+  s21_copy_constructor.ShrinkToFit();
+  for (auto i = 0; i < 21; i++) {
+    std_copy_constructor.insert(std_copy_constructor.begin(), i + 1);
+    s21_copy_constructor.Insert(s21_copy_constructor.Begin(), i + 1);
+    EXPECT_EQ(std_copy_constructor.size(), s21_copy_constructor.Size());
+    EXPECT_EQ(std_copy_constructor.capacity(), s21_copy_constructor.Capacity());
+    for (size_t j = 0; j < std_copy_constructor.size(); j++)
+      EXPECT_EQ(std_copy_constructor[j], s21_copy_constructor[j]);
+  }
+  std_copy_constructor.insert(std_copy_constructor.begin() + 5, 105);
+  s21_copy_constructor.Insert(s21_copy_constructor.Begin() + 5, 105);
+  EXPECT_EQ(std_copy_constructor.size(), s21_copy_constructor.Size());
+  EXPECT_EQ(std_copy_constructor.capacity(), s21_copy_constructor.Capacity());
+  for (size_t j = 0; j < std_copy_constructor.size(); j++)
+    EXPECT_EQ(std_copy_constructor[j], s21_copy_constructor[j]);
 
-                      std_copy_constructor.insert(std_copy_constructor.end(),
-       111); s21_copy_constructor.Insert(s21_copy_constructor.End(), 111);
-                      EXPECT_EQ(std_copy_constructor.size(),
-             s21_copy_constructor.Size());
-         EXPECT_EQ(std_copy_constructor.capacity(),
-                     s21_copy_constructor.Capacity()); for (size_t j = 0; j <
-                     std_copy_constructor.size(); j++)
-             EXPECT_EQ(std_copy_constructor[j], s21_copy_constructor[j]);
+  std_copy_constructor.insert(std_copy_constructor.begin(), 101);
+  s21_copy_constructor.Insert(s21_copy_constructor.Begin(), 101);
+  EXPECT_EQ(std_copy_constructor.size(), s21_copy_constructor.Size());
+  EXPECT_EQ(std_copy_constructor.capacity(), s21_copy_constructor.Capacity());
+  for (size_t j = 0; j < std_copy_constructor.size(); j++)
+    EXPECT_EQ(std_copy_constructor[j], s21_copy_constructor[j]);
 
-                      std_copy_constructor.shrink_to_fit();
-                      s21_copy_constructor.ShrinkToFit();
-                      std_copy_constructor.insert(std_copy_constructor.end(),
-       222); s21_copy_constructor.Insert(s21_copy_constructor.End(), 222);
-                      EXPECT_EQ(std_copy_constructor.size(),
-             s21_copy_constructor.Size());
-         EXPECT_EQ(std_copy_constructor.capacity(),
-                     s21_copy_constructor.Capacity()); for (size_t j = 0; j <
-                     std_copy_constructor.size(); j++)
-             EXPECT_EQ(std_copy_constructor[j], s21_copy_constructor[j]);
+  std_copy_constructor.insert(std_copy_constructor.end(), 111);
+  s21_copy_constructor.Insert(s21_copy_constructor.End(), 111);
+  EXPECT_EQ(std_copy_constructor.size(), s21_copy_constructor.Size());
+  EXPECT_EQ(std_copy_constructor.capacity(), s21_copy_constructor.Capacity());
+  for (size_t j = 0; j < std_copy_constructor.size(); j++)
+    EXPECT_EQ(std_copy_constructor[j], s21_copy_constructor[j]);
 
-                      //---------------------------------------------------------------------------
+  std_copy_constructor.shrink_to_fit();
+  s21_copy_constructor.ShrinkToFit();
+  std_copy_constructor.insert(std_copy_constructor.end(), 222);
+  s21_copy_constructor.Insert(s21_copy_constructor.End(), 222);
+  EXPECT_EQ(std_copy_constructor.size(), s21_copy_constructor.Size());
+  EXPECT_EQ(std_copy_constructor.capacity(), s21_copy_constructor.Capacity());
+  for (size_t j = 0; j < std_copy_constructor.size(); j++)
+    EXPECT_EQ(std_copy_constructor[j], s21_copy_constructor[j]);
 
-                      //  std::cout << std_copy_constructor.capacity() << " ; "
-     <<
-                      //  std_copy_constructor.size() << std::endl; for (size_t
-     j = 0;
-           j
-             <
-                      //  std_copy_constructor.capacity(); j++) std::cout <<
-                      std_copy_constructor[j]
-                      //  << " ";
-                      std_copy_constructor.erase(std_copy_constructor.begin());
-                      s21_copy_constructor.Erase(s21_copy_constructor.Begin());
-                      EXPECT_EQ(std_copy_constructor.size(),
-             s21_copy_constructor.Size());
-         EXPECT_EQ(std_copy_constructor.capacity(),
-                     s21_copy_constructor.Capacity()); for (size_t j = 0; j <
-                     std_copy_constructor.size(); j++)
-             EXPECT_EQ(std_copy_constructor[j], s21_copy_constructor[j]);
-                      //  std::cout << std::endl;
-                      //  std::cout << std_copy_constructor.capacity() << " ; "
-     <<
-                      //  std_copy_constructor.size() << std::endl; for (size_t
-     j = 0;
-           j
-             <
-                      //  std_copy_constructor.capacity(); j++) std::cout <<
-                      std_copy_constructor[j]
-                      //  << " "; std::cout << std::endl;
-                      std_copy_constructor.erase(std_copy_constructor.begin() +
-       5); s21_copy_constructor.Erase(s21_copy_constructor.Begin() + 5);
-                      EXPECT_EQ(std_copy_constructor.size(),
-             s21_copy_constructor.Size());
-         EXPECT_EQ(std_copy_constructor.capacity(),
-                     s21_copy_constructor.Capacity()); for (size_t j = 0; j <
-                     std_copy_constructor.size(); j++)
-             EXPECT_EQ(std_copy_constructor[j], s21_copy_constructor[j]);
+  //---------------------------------------------------------------------------
+  std_copy_constructor.erase(std_copy_constructor.begin());
+  s21_copy_constructor.Erase(s21_copy_constructor.Begin());
+  EXPECT_EQ(std_copy_constructor.size(), s21_copy_constructor.Size());
+  EXPECT_EQ(std_copy_constructor.capacity(), s21_copy_constructor.Capacity());
+  for (size_t j = 0; j < std_copy_constructor.size(); j++)
+    EXPECT_EQ(std_copy_constructor[j], s21_copy_constructor[j]);
+  std_copy_constructor.erase(std_copy_constructor.begin() + 5);
+  s21_copy_constructor.Erase(s21_copy_constructor.Begin() + 5);
+  EXPECT_EQ(std_copy_constructor.size(), s21_copy_constructor.Size());
+  EXPECT_EQ(std_copy_constructor.capacity(), s21_copy_constructor.Capacity());
+  for (size_t j = 0; j < std_copy_constructor.size(); j++)
+    EXPECT_EQ(std_copy_constructor[j], s21_copy_constructor[j]);
 
-                      //  std::cout << std::endl;
-                      //  std::cout << std_copy_constructor.capacity() << " ; "
-     <<
-                      //  std_copy_constructor.size() << std::endl; for (size_t
-     j = 0;
-           j
-             <
-                      //  std_copy_constructor.size(); j++) std::cout <<
-                   std_copy_constructor[j]
-                      <<
-                      //  " "; std::cout << std::endl;
-                      std_copy_constructor.erase(std_copy_constructor.end() -
-     1); s21_copy_constructor.Erase(s21_copy_constructor.End() - 1);
-                      EXPECT_EQ(std_copy_constructor.size(),
-             s21_copy_constructor.Size());
-         EXPECT_EQ(std_copy_constructor.capacity(),
-                     s21_copy_constructor.Capacity()); for (size_t j = 0; j <
-                     std_copy_constructor.size(); j++)
-             EXPECT_EQ(std_copy_constructor[j], s21_copy_constructor[j]);
+  std_copy_constructor.erase(std_copy_constructor.end() - 1);
+  s21_copy_constructor.Erase(s21_copy_constructor.End() - 1);
+  EXPECT_EQ(std_copy_constructor.size(), s21_copy_constructor.Size());
+  EXPECT_EQ(std_copy_constructor.capacity(), s21_copy_constructor.Capacity());
+  for (size_t j = 0; j < std_copy_constructor.size(); j++)
+    EXPECT_EQ(std_copy_constructor[j], s21_copy_constructor[j]);
 
-                      //  std::cout << std::endl;
-                      //  std::cout << std_copy_constructor.capacity() << " ; "
-     <<
-                      //  std_copy_constructor.size() << std::endl; for (size_t
-     j = 0;
-           j
-             <
-                      //  std_copy_constructor.capacity(); j++) std::cout <<
-                      std_copy_constructor[j]
-                      //  << " "; std::cout << std::endl; std::cout <<
-                      //  std_copy_constructor.capacity() << " ; " <<
-                     std_copy_constructor.size()
-                      <<
-                      //  std::endl; for (size_t j = 0; j <
-           std_copy_constructor.size(); j++)
-                      //  std::cout << std_copy_constructor[j] << " "; std::cout
-       << std::endl;
+  //-------------------------
 
-                      //-------------------------
+  std_copy_constructor.clear();
+  s21_copy_constructor.Clear();
+  std_copy_constructor.shrink_to_fit();
+  s21_copy_constructor.ShrinkToFit();
+  for (auto i = 0; i < 21; i++) {
+    std_copy_constructor.push_back(i + 1);
+    s21_copy_constructor.PushBack(i + 1);
+    EXPECT_EQ(std_copy_constructor.size(), s21_copy_constructor.Size());
+    EXPECT_EQ(std_copy_constructor.capacity(), s21_copy_constructor.Capacity());
+    for (size_t j = 0; j < std_copy_constructor.size(); j++)
+      EXPECT_EQ(std_copy_constructor[j], s21_copy_constructor[j]);
+  }
+  std_copy_constructor.shrink_to_fit();
+  s21_copy_constructor.ShrinkToFit();
+  std_copy_constructor.push_back(222);
+  s21_copy_constructor.PushBack(222);
+  EXPECT_EQ(std_copy_constructor.size(), s21_copy_constructor.Size());
+  EXPECT_EQ(std_copy_constructor.capacity(), s21_copy_constructor.Capacity());
+  for (size_t j = 0; j < std_copy_constructor.size(); j++)
+    EXPECT_EQ(std_copy_constructor[j], s21_copy_constructor[j]);
 
-                      std_copy_constructor.clear();
-                      s21_copy_constructor.Clear();
-                      std_copy_constructor.shrink_to_fit();
-                      s21_copy_constructor.ShrinkToFit();
-                      for (auto i = 0; i < 21; i++) {
-                        std_copy_constructor.push_back(i + 1);
-                        s21_copy_constructor.PushBack(i + 1);
-                        EXPECT_EQ(std_copy_constructor.size(),
-              s21_copy_constructor.Size());
-         EXPECT_EQ(std_copy_constructor.capacity(),
-                      s21_copy_constructor.Capacity()); for (size_t j = 0; j <
-                      std_copy_constructor.size(); j++)
-             EXPECT_EQ(std_copy_constructor[j], s21_copy_constructor[j]);
-                      }
-                      std_copy_constructor.shrink_to_fit();
-                      s21_copy_constructor.ShrinkToFit();
-                      std_copy_constructor.push_back(222);
-                      s21_copy_constructor.PushBack(222);
-                      EXPECT_EQ(std_copy_constructor.size(),
-             s21_copy_constructor.Size());
-         EXPECT_EQ(std_copy_constructor.capacity(),
-                     s21_copy_constructor.Capacity()); for (size_t j = 0; j <
-                     std_copy_constructor.size(); j++)
-             EXPECT_EQ(std_copy_constructor[j], s21_copy_constructor[j]);
+  //---------------
 
-                      //---------------
+  std_copy_constructor.pop_back();
+  s21_copy_constructor.PopBack();
+  EXPECT_EQ(std_copy_constructor.size(), s21_copy_constructor.Size());
+  EXPECT_EQ(std_copy_constructor.capacity(), s21_copy_constructor.Capacity());
+  for (size_t j = 0; j < std_copy_constructor.size(); j++)
+    EXPECT_EQ(std_copy_constructor[j], s21_copy_constructor[j]);
 
-                      std_copy_constructor.pop_back();
-                      s21_copy_constructor.PopBack();
-                      EXPECT_EQ(std_copy_constructor.size(),
-             s21_copy_constructor.Size());
-         EXPECT_EQ(std_copy_constructor.capacity(),
-                     s21_copy_constructor.Capacity()); for (size_t j = 0; j <
-                     std_copy_constructor.size(); j++)
-             EXPECT_EQ(std_copy_constructor[j], s21_copy_constructor[j]);
+  //-----------------
+  std_copy_constructor.swap(std_move_constructor);
+  s21_copy_constructor.Swap(s21_move_constructor);
 
-                      //-----------------
-                      std_copy_constructor.swap(std_move_constructor);
-                      s21_copy_constructor.Swap(s21_move_constructor);
-
-                      EXPECT_EQ(std_copy_constructor.size(),
-             s21_copy_constructor.Size());
-         EXPECT_EQ(std_copy_constructor.capacity(),
-                     s21_copy_constructor.Capacity()); for (size_t j = 0; j <
-                     std_copy_constructor.size(); j++)
-             EXPECT_EQ(std_copy_constructor[j], s21_copy_constructor[j]);
-             EXPECT_EQ(std_move_constructor.size(),
-     s21_move_constructor.Size()); EXPECT_EQ(std_move_constructor.capacity(),
-              s21_move_constructor.Capacity()); for (size_t j = 0; j <
-              std_move_constructor.size(); j++)
-     EXPECT_EQ(std_move_constructor[j], s21_move_constructor[j]);
-
-                      */
+  EXPECT_EQ(std_copy_constructor.size(), s21_copy_constructor.Size());
+  EXPECT_EQ(std_copy_constructor.capacity(), s21_copy_constructor.Capacity());
+  for (size_t j = 0; j < std_copy_constructor.size(); j++)
+    EXPECT_EQ(std_copy_constructor[j], s21_copy_constructor[j]);
+  EXPECT_EQ(std_move_constructor.size(), s21_move_constructor.Size());
+  EXPECT_EQ(std_move_constructor.capacity(), s21_move_constructor.Capacity());
+  for (size_t j = 0; j < std_move_constructor.size(); j++)
+    EXPECT_EQ(std_move_constructor[j], s21_move_constructor[j]);
 }
 
 TEST(TestS21Containers, Vector) {

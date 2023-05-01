@@ -72,19 +72,19 @@ class Vector : public SequenceContainer<T, T *> {
   }
 
  protected:
-  /*
-      void InsertReserve_(T *begin, T *end, T *pos) {
-        if (SequenceContainer<T, T *>::size_ == capacity_) {
-          if (capacity_ > 0)
-            capacity_ *= 2;
-          else
-            capacity_ = 1;
-          Reserve_(capacity_);
-          end = SequenceContainer<T, T *>::End();
-          pos += SequenceContainer<T, T *>::Begin() - begin;
-        }
-      }
-    */
+  void InsertReserve_(T *begin, T *end, T *pos) {
+    if (SequenceContainer<T, T *>::size_ ==
+        SequenceContainer<T, T *>::capacity_) {
+      if (SequenceContainer<T, T *>::capacity_ > 0)
+        SequenceContainer<T, T *>::capacity_ *= 2;
+      else
+        SequenceContainer<T, T *>::capacity_ = 1;
+      Reserve_(SequenceContainer<T, T *>::capacity_);
+      end = SequenceContainer<T, T *>::End();
+      pos += SequenceContainer<T, T *>::Begin() - begin;
+    }
+  }
+
   static T *CreatContainer_(T *array, size_type n) {
     if (array) delete[] array;
     if (n > 0)

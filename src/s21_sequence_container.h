@@ -75,39 +75,39 @@ class SequenceContainer {
 
     return alloc.max_size();
   }
-  /*
-        void Clear() noexcept { size_ = 0; }
 
-        iterator Insert(iterator pos, const_reference value) {
-          auto begin = Begin();
-          auto end = End();
-          if ((size_ == 0) || (pos >= begin && pos <= end)) {
-            InsertReserve_();
-            for (auto iter = end; iter > pos; --iter) *iter = *(iter - 1);
-            *pos = value;
-            size_ += 1;
-          }
+  void Clear() noexcept { size_ = 0; }
 
-          return pos;
-        }
+  iterator Insert(iterator pos, const_reference value) {
+    auto begin = Begin();
+    auto end = End();
+    if ((size_ == 0) || (pos >= begin && pos <= end)) {
+      InsertReserve_(begin, end, pos);
+      for (auto iter = end; iter > pos; --iter) *iter = *(iter - 1);
+      *pos = value;
+      size_ += 1;
+    }
 
-        void Erase(iterator pos) noexcept {
-          auto end = End() - 1;
-          for (auto iter = pos; iter < end; iter++) *iter = *(iter + 1);
-          size_ -= 1;
-        }
+    return pos;
+  }
 
-        void PushBack(const_reference value) { Insert(End(), value); }
+  void Erase(iterator pos) noexcept {
+    auto end = End() - 1;
+    for (auto iter = pos; iter < end; iter++) *iter = *(iter + 1);
+    size_ -= 1;
+  }
 
-        void PopBack() noexcept { Erase(End() - 1); }
+  void PushBack(const_reference value) { Insert(End(), value); }
 
-        void Swap(SequenceContainer &other) {
-          SequenceContainer vector(other);
+  void PopBack() noexcept { Erase(End() - 1); }
 
-          other = std::move(*this);
-          *this = std::move(vector);
-        }
-      */
+  void Swap(SequenceContainer &other) {
+    SequenceContainer vector(other);
+
+    other = std::move(*this);
+    *this = std::move(vector);
+  }
+
  protected:
   size_type size_ = 0;
   size_type capacity_ = 0;
@@ -128,7 +128,18 @@ class SequenceContainer {
         *iter = *item;
   }
 
-  void virtual InsertReserve_() {}
+  void InsertReserve_(I begin, I end, I pos) {
+    if (size_ == capacity_) {
+      if (capacity_ > 0)
+        capacity_ *= 2;
+      else
+        capacity_ = 1;
+      //Reserve_(capacity_);
+      end = End();
+      pos += Begin() - begin;
+    }
+  }
+
 
  private:
   void CopySequenceContainer_(const SequenceContainer &v) noexcept {
