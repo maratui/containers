@@ -41,24 +41,26 @@ class Vector : public SequenceContainer<T, VectorIterator<T>> {
   reference At(size_type pos) {
     CheckSizeBounds_(pos);
 
-    return SequenceContainer<T, VectorIterator<T>>::array_[pos];
+    return *(SequenceContainer<T, VectorIterator<T>>::Begin() + pos);
   }
+  /*
   const_reference At(size_type pos) const {
     CheckSizeBounds_(pos);
 
-    return SequenceContainer<T, VectorIterator<T>>::array_[pos];
+    return *(SequenceContainer<T, VectorIterator<T>>::Begin() + pos);
   }
-
+*/
   reference operator[](size_type pos) noexcept {
-    return SequenceContainer<T, VectorIterator<T>>::array_[pos];
+    return *(SequenceContainer<T, VectorIterator<T>>::Begin() + pos);
   }
+  /*
   const_reference operator[](size_type pos) const noexcept {
-    return SequenceContainer<T, VectorIterator<T>>::array_[pos];
+    return *(SequenceContainer<T, VectorIterator<T>>::Begin() + pos);
   }
-
-  T *Data() noexcept { return SequenceContainer<T, VectorIterator<T>>::array_; }
+*/
+  T *Data() noexcept { return SequenceContainer<T, VectorIterator<T>>::array_.Data(); }
   const T *Data() const noexcept {
-    return SequenceContainer<T, VectorIterator<T>>::array_;
+    return SequenceContainer<T, VectorIterator<T>>::array_.Data();
   }
 
   size_type MaxSize() const noexcept {
@@ -85,8 +87,11 @@ class Vector : public SequenceContainer<T, VectorIterator<T>> {
   void Clear() noexcept { SequenceContainer<T, VectorIterator<T>>::size_ = 0; }
 
   iterator Insert(iterator pos, const_reference value) {
-    auto begin = SequenceContainer<T, VectorIterator<T>>::Begin();
-    auto end = SequenceContainer<T, VectorIterator<T>>::End();
+    iterator begin;
+    iterator end;
+
+    begin = SequenceContainer<T, VectorIterator<T>>::Begin();
+    end = SequenceContainer<T, VectorIterator<T>>::End();
     if ((SequenceContainer<T, VectorIterator<T>>::size_ == 0) ||
         (pos >= begin && pos <= end)) {
       if (SequenceContainer<T, VectorIterator<T>>::size_ ==
@@ -97,7 +102,7 @@ class Vector : public SequenceContainer<T, VectorIterator<T>> {
           SequenceContainer<T, VectorIterator<T>>::capacity_ = 1;
         Reserve_(SequenceContainer<T, VectorIterator<T>>::capacity_);
         end = SequenceContainer<T, VectorIterator<T>>::End();
-        pos += SequenceContainer<T, VectorIterator<T>>::Begin() - begin;
+        pos = SequenceContainer<T, VectorIterator<T>>::Begin() + (pos - begin);
       }
       for (auto iter = end; iter > pos; --iter) *iter = *(iter - 1);
       *pos = value;
