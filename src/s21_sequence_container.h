@@ -29,12 +29,12 @@ class SequenceContainer {
     InitializeContainer_(items);
   }
 
-  ~SequenceContainer() { DeleteContainer_(); }
+  ~SequenceContainer() {}
 
-  SequenceContainer &Copy(const SequenceContainer &v) {
+  SequenceContainer &Copy(SequenceContainer &v) {
     if (this != &v) {
       DeleteContainer_();
-      SetProtectedFields_(v.size_, v.capacity_, nullptr);
+      SetProtectedFields_(v.size_, v.capacity_, array_);
       CreatContainer_();
       CopyContainer_(v);
     }
@@ -45,10 +45,10 @@ class SequenceContainer {
   SequenceContainer &Move(SequenceContainer &v) noexcept {
     DeleteContainer_();
     if (this != &v) {
-      SetProtectedFields_(v.size_, v.capacity_, v.Begin());
-      v.SetProtectedFields_(0U, 0U, nullptr);
+      SetProtectedFields_(v.size_, v.capacity_, v.array_);
+      v.SetProtectedFields_(0U, 0U, I());
     } else {
-      SetProtectedFields_(0U, 0U, nullptr);
+      SetProtectedFields_(0U, 0U, I());
     }
 
     return *this;
@@ -60,11 +60,19 @@ class SequenceContainer {
   reference Back() noexcept { return *(--End()); }
   const_reference Back() const noexcept { return *(--End()); }
 
-  iterator Begin() noexcept { return array_.Head(); }
-  const_iterator Begin() const noexcept { return array_.Head(); }
+  iterator Begin() noexcept {
+    auto ret = array_.Head();
 
-  iterator End() noexcept { return array_.Tail(); }
-  const_iterator End() const noexcept { return array_.Tail(); }
+    return ret;
+  }
+//  const_iterator Begin() const noexcept { return array_.Head(); }
+
+  iterator End() noexcept {
+    auto ret = array_.Tail();
+
+    return ret;
+  }
+//  const_iterator End() const noexcept { return array_.Tail(); }
 
   bool Empty() const noexcept { return size_ == 0; }
 
@@ -94,7 +102,7 @@ class SequenceContainer {
   bool list_ = false;
 
   void CreatContainer_() {
-    if (capacity_ > 0) array_.Creat(capacity_);
+    if (capacity_ > 0) array_.Create(capacity_);
   }
 
   void InitializeContainer_(
@@ -115,10 +123,10 @@ class SequenceContainer {
     array_ = begin;
   }
 
-  void CopyContainer_(const SequenceContainer &v) noexcept {
+  void CopyContainer_(SequenceContainer &v) noexcept {
     auto iter = Begin();
     if (iter != End()) {
-      for (auto item = v.Begin(), end = v.End(); item < end; item++, ++iter)
+      for (auto item = v.Begin(), end = v.End(); item < end; ++item, ++iter)
         *iter = *item;
     }
   }

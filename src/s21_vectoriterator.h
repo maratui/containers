@@ -8,12 +8,10 @@ namespace S21 {
 template <class T>
 class VectorIterator {
   using value_type = T;
-  using reference = T &;
-  using const_reference = const T &;
   using size_type = size_t;
 
  public:
-  VectorIterator() : head_(new value_type[1]{}) {tail_ = head_;}
+  VectorIterator() : head_(new value_type[1]{}) {tail_ = head_; }
 
   VectorIterator(const VectorIterator &vi) noexcept {
     this->head_ = vi.head_;
@@ -26,6 +24,8 @@ class VectorIterator {
     this->head_ = vi.head_;
     this->tail_ = vi.tail_;
     this->item_ = vi.item_;
+
+    return *this;
   }
 
   void Create(size_type capacity) {
@@ -40,14 +40,14 @@ class VectorIterator {
     tail_ = head_;
   }
 
-  VectorIterator &Head() noexcept {
+  VectorIterator Head() noexcept {
     VectorIterator item(*this);
     item.item_ = head_;
 
     return item;
   }
 
-  VectorIterator &Tail() noexcept {
+  VectorIterator Tail() noexcept {
     VectorIterator item(*this);
     item.item_ = tail_;
 
@@ -59,16 +59,28 @@ class VectorIterator {
   }
 
   friend value_type &operator*(const VectorIterator &vi) noexcept {
-    return (vi.item_ == nullptr) ? *vi.head_ : *vi.item_;
+    return (vi.item_ == nullptr) ? *(vi.head_) : *(vi.item_);
   }
 
-  friend VectorIterator &operator++(const VectorIterator &vi) noexcept {
+  friend VectorIterator &operator++(VectorIterator &vi) noexcept {
     if (vi.item_ != nullptr && vi.item_ != vi.tail_) vi.item_ = vi.item_ + 1;
 
     return vi;
   }
 
-  friend VectorIterator &operator--(const VectorIterator &vi) noexcept {
+  friend VectorIterator &operator++(VectorIterator &&vi) noexcept {
+    if (vi.item_ != nullptr && vi.item_ != vi.tail_) vi.item_ = vi.item_ + 1;
+
+    return vi;
+  }
+
+  friend VectorIterator &operator--(VectorIterator &vi) noexcept {
+    if (vi.item_ != nullptr && vi.item_ != vi.head_) vi.item_ = vi.item_ - 1;
+
+    return vi;
+  }
+
+  friend VectorIterator &operator--(VectorIterator &&vi) noexcept {
     if (vi.item_ != nullptr && vi.item_ != vi.head_) vi.item_ = vi.item_ - 1;
 
     return vi;
@@ -84,7 +96,7 @@ class VectorIterator {
     return ret;
   }
 
-  VectorIterator operator+(size_type num) noexcept {
+  VectorIterator &operator+(size_type num) noexcept {
     if (this->item_ != nullptr)
       for (size_type i = 0; i < num; i++)
         ++(*this);
@@ -100,27 +112,51 @@ class VectorIterator {
     return *this;
   }
 
-  bool &operator==(VectorIterator &vi) noexcept {
+  bool operator==(VectorIterator &vi) noexcept {
     return ((this->item_ != nullptr) && (vi.item_ != nullptr) && (this->item_ == vi.item_));
   }
 
-  bool &operator!=(VectorIterator &vi) noexcept {
+  bool operator!=(VectorIterator &vi) noexcept {
     return ((this->item_ != nullptr) && (vi.item_ != nullptr) && !(this->item_ == vi.item_));
   }
 
-  bool &operator>=(VectorIterator &vi) noexcept {
+  bool operator>=(VectorIterator &vi) noexcept {
     return ((this->item_ != nullptr) && (vi.item_ != nullptr) && (this->item_ >= vi.item_));
   }
 
-  bool &operator<=(VectorIterator &vi) noexcept {
+  bool operator<=(VectorIterator &vi) noexcept {
     return ((this->item_ != nullptr) && (vi.item_ != nullptr) && !(this->item_ <= vi.item_));
   }
 
-  bool &operator>(VectorIterator &vi) noexcept {
+  bool operator>(VectorIterator &vi) noexcept {
     return ((this->item_ != nullptr) && (vi.item_ != nullptr) && (this->item_ > vi.item_));
   }
 
-  bool &operator<(VectorIterator &vi) noexcept {
+  bool operator<(VectorIterator &vi) noexcept {
+    return ((this->item_ != nullptr) && (vi.item_ != nullptr) && !(this->item_ < vi.item_));
+  }
+
+  bool operator==(VectorIterator &&vi) noexcept {
+    return ((this->item_ != nullptr) && (vi.item_ != nullptr) && (this->item_ == vi.item_));
+  }
+
+  bool operator!=(VectorIterator &&vi) noexcept {
+    return ((this->item_ != nullptr) && (vi.item_ != nullptr) && !(this->item_ == vi.item_));
+  }
+
+  bool operator>=(VectorIterator &&vi) noexcept {
+    return ((this->item_ != nullptr) && (vi.item_ != nullptr) && (this->item_ >= vi.item_));
+  }
+
+  bool operator<=(VectorIterator &&vi) noexcept {
+    return ((this->item_ != nullptr) && (vi.item_ != nullptr) && !(this->item_ <= vi.item_));
+  }
+
+  bool operator>(VectorIterator &&vi) noexcept {
+    return ((this->item_ != nullptr) && (vi.item_ != nullptr) && (this->item_ > vi.item_));
+  }
+
+  bool operator<(VectorIterator &&vi) noexcept {
     return ((this->item_ != nullptr) && (vi.item_ != nullptr) && !(this->item_ < vi.item_));
   }
 

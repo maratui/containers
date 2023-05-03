@@ -30,7 +30,7 @@ class Vector : public SequenceContainer<T, VectorIterator<T>> {
 
   ~Vector() {}
 
-  Vector &operator=(const Vector &v) {
+  Vector &operator=(Vector &v) {
     return (Vector &)SequenceContainer<T, VectorIterator<T>>::Copy(v);
   }
 
@@ -41,7 +41,9 @@ class Vector : public SequenceContainer<T, VectorIterator<T>> {
   reference At(size_type pos) {
     CheckSizeBounds_(pos);
 
-    return *(SequenceContainer<T, VectorIterator<T>>::Begin() + pos);
+    auto iter = SequenceContainer<T, VectorIterator<T>>::Begin();
+
+    return *iter;
   }
   /*
   const_reference At(size_type pos) const {
@@ -117,17 +119,15 @@ class Vector : public SequenceContainer<T, VectorIterator<T>> {
   }
 
  private:
-  void CopyVector_(const Vector &v) noexcept {
+  void CopyVector_(Vector &v) noexcept {
     int m;
 
     m = std::min(v.size_,
                  std::min(SequenceContainer<T, VectorIterator<T>>::capacity_,
                           v.capacity_));
-    if (SequenceContainer<T, VectorIterator<T>>::array_) {
       for (auto j = 0; j < m; j++)
-        SequenceContainer<T, VectorIterator<T>>::array_[j] = v.array_[j];
+        this->At(j) = v.At(j);
       SequenceContainer<T, VectorIterator<T>>::size_ = m;
-    }
   }
 
   void CheckSizeBounds_(size_type pos) const {
