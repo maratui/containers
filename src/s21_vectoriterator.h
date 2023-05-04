@@ -8,40 +8,43 @@ namespace S21 {
 template <class T>
 class VectorIterator {
   using value_type = T;
+  using reference = T &;
   using size_type = size_t;
 
  public:
-  VectorIterator() : head_(new value_type[1]{}) {tail_ = head_; }
+  VectorIterator() {}
 
   VectorIterator(const VectorIterator &vi) noexcept {
-    this->head_ = vi.head_;
-    this->tail_ = vi.tail_;
+    *this = vi;
   }
 
-  ~VectorIterator() { if (item_ == nullptr) delete[] head_; }
+  ~VectorIterator() { if (item_ == nullptr && head_) delete[] head_; }
 
   VectorIterator &operator=(const VectorIterator &vi) noexcept {
-    this->head_ = vi.head_;
-    this->tail_ = vi.tail_;
-    this->item_ = vi.item_;
+      this->head_ = vi.head_;
+      this->tail_ = vi.tail_;
+      this->item_ = vi.item_;
 
     return *this;
   }
 
   void Create(size_type capacity) {
-    delete[] head_;
+    if (head_) delete[] head_;
     head_ = new value_type[capacity + 1]{};
     tail_ = head_ + capacity;
+    item_ = nullptr;
   }
 
   void Delete() {
-    delete[] head_;
-    head_ = new value_type[1]{};
-    tail_ = head_;
+    if (head_) delete[] head_;
+    head_ = nullptr;
+    tail_ = nullptr;
+    item_ = nullptr;
   }
 
   VectorIterator Head() noexcept {
     VectorIterator item(*this);
+
     item.item_ = head_;
 
     return item;
@@ -49,6 +52,7 @@ class VectorIterator {
 
   VectorIterator Tail() noexcept {
     VectorIterator item(*this);
+
     item.item_ = tail_;
 
     return item;
@@ -125,7 +129,7 @@ class VectorIterator {
   }
 
   bool operator<=(VectorIterator &vi) noexcept {
-    return ((this->item_ != nullptr) && (vi.item_ != nullptr) && !(this->item_ <= vi.item_));
+    return ((this->item_ != nullptr) && (vi.item_ != nullptr) && (this->item_ <= vi.item_));
   }
 
   bool operator>(VectorIterator &vi) noexcept {
@@ -133,7 +137,7 @@ class VectorIterator {
   }
 
   bool operator<(VectorIterator &vi) noexcept {
-    return ((this->item_ != nullptr) && (vi.item_ != nullptr) && !(this->item_ < vi.item_));
+    return ((this->item_ != nullptr) && (vi.item_ != nullptr) && (this->item_ < vi.item_));
   }
 
   bool operator==(VectorIterator &&vi) noexcept {
@@ -149,7 +153,7 @@ class VectorIterator {
   }
 
   bool operator<=(VectorIterator &&vi) noexcept {
-    return ((this->item_ != nullptr) && (vi.item_ != nullptr) && !(this->item_ <= vi.item_));
+    return ((this->item_ != nullptr) && (vi.item_ != nullptr) && (this->item_ <= vi.item_));
   }
 
   bool operator>(VectorIterator &&vi) noexcept {

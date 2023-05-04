@@ -61,14 +61,18 @@ class SequenceContainer {
   const_reference Back() const noexcept { return *(--End()); }
 
   iterator Begin() noexcept {
-    auto ret = array_.Head();
+    iterator ret;
+
+    ret = array_.Head();
 
     return ret;
   }
 //  const_iterator Begin() const noexcept { return array_.Head(); }
 
   iterator End() noexcept {
-    auto ret = array_.Tail();
+    iterator ret;
+
+    ret = array_.Tail();
 
     return ret;
   }
@@ -124,10 +128,13 @@ class SequenceContainer {
   }
 
   void CopyContainer_(SequenceContainer &v) noexcept {
-    auto iter = Begin();
+    iterator iter;
+
+    iter = Begin();
     if (iter != End()) {
-      for (auto item = v.Begin(), end = v.End(); item < end; ++item, ++iter)
+      for (auto item = v.Begin(), end = v.End(); item < end; ++item, ++iter) {
         *iter = *item;
+      }
     }
   }
 };

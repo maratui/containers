@@ -24,7 +24,7 @@ class Vector : public SequenceContainer<T, VectorIterator<T>> {
   explicit Vector(std::initializer_list<value_type> const &items)
       : SequenceContainer<T, VectorIterator<T>>(items) {}
 
-  Vector(const Vector &v) : Vector() { *this = v; }
+  Vector(const Vector &v) { *this = v; }
 
   Vector(Vector &&v) : Vector() { *this = std::move(v); }
 
@@ -39,9 +39,12 @@ class Vector : public SequenceContainer<T, VectorIterator<T>> {
   }
 
   reference At(size_type pos) {
+    iterator iter;
+  
     CheckSizeBounds_(pos);
 
-    auto iter = SequenceContainer<T, VectorIterator<T>>::Begin();
+    iter = SequenceContainer<T, VectorIterator<T>>::Begin();
+    iter = iter + pos;
 
     return *iter;
   }
