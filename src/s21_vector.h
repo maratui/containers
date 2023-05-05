@@ -24,18 +24,18 @@ class Vector : public SequenceContainer<T, VectorIterator<T>> {
   explicit Vector(std::initializer_list<value_type> const &items)
       : SequenceContainer<T, VectorIterator<T>>(items) {}
 
-  Vector(const Vector &v) { *this = v; }
+  Vector(Vector &v) : SequenceContainer<T, VectorIterator<T>>(v) {}
 
-  Vector(Vector &&v) : Vector() { *this = std::move(v); }
+  Vector(Vector &&v) : SequenceContainer<T, VectorIterator<T>>(std::move(v)) {}
 
   ~Vector() {}
 
   Vector &operator=(Vector &v) {
-    return (Vector &)SequenceContainer<T, VectorIterator<T>>::Copy(v);
+    return (Vector &)SequenceContainer<T, VectorIterator<T>>::operator=(v);
   }
 
   Vector &operator=(Vector &&v) {
-    return (Vector &)SequenceContainer<T, VectorIterator<T>>::Move(v);
+    return (Vector &)SequenceContainer<T, VectorIterator<T>>::operator=(std::move(v));
   }
 
   reference At(size_type pos) {
@@ -55,6 +55,7 @@ class Vector : public SequenceContainer<T, VectorIterator<T>> {
     return *(SequenceContainer<T, VectorIterator<T>>::Begin() + pos);
   }
 */
+
   reference operator[](size_type pos) noexcept {
     return *(SequenceContainer<T, VectorIterator<T>>::Begin() + pos);
   }

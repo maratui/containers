@@ -16,25 +16,28 @@ class SequenceContainer {
   using size_type = size_t;
 
  public:
-  explicit SequenceContainer(bool list = false) : list_(list) {}
+  explicit SequenceContainer() {}
 
-  explicit SequenceContainer(size_type n, bool list = false)
-      : size_(n), capacity_(n), list_(list) {
+  explicit SequenceContainer(size_type n)
+      : size_(n), capacity_(n) {
     CreatContainer_();
   }
 
-  explicit SequenceContainer(std::initializer_list<value_type> const &items,
-                             bool list = false)
-      : SequenceContainer(items.size(), list) {
+  explicit SequenceContainer(std::initializer_list<value_type> const &items)
+      : SequenceContainer(items.size()) {
     InitializeContainer_(items);
   }
 
+  SequenceContainer(SequenceContainer &v) { *this = v; }
+
+  SequenceContainer(SequenceContainer &&v) { *this = std::move(v); }
+
   ~SequenceContainer() {}
 
-  SequenceContainer &Copy(SequenceContainer &v) {
+  SequenceContainer &operator=(SequenceContainer &v) {
     if (this != &v) {
       DeleteContainer_();
-      SetProtectedFields_(v.size_, v.capacity_, array_);
+      SetProtectedFields_(v.size_, v.capacity_, nullptr);
       CreatContainer_();
       CopyContainer_(v);
     }
@@ -42,13 +45,15 @@ class SequenceContainer {
     return *this;
   }
 
-  SequenceContainer &Move(SequenceContainer &v) noexcept {
+  SequenceContainer &operator=(SequenceContainer &&v) noexcept {
+    iterator iter;
+
     DeleteContainer_();
     if (this != &v) {
-      SetProtectedFields_(v.size_, v.capacity_, v.array_);
-      v.SetProtectedFields_(0U, 0U, I());
+      SetProtectedFields_(v.size_, v.capacity_, &v.array_);
+      v.SetProtectedFields_(0U, 0U, &iter);
     } else {
-      SetProtectedFields_(0U, 0U, I());
+      SetProtectedFields_(0U, 0U, &iter);
     }
 
     return *this;
@@ -103,8 +108,6 @@ class SequenceContainer {
   I array_;
 
  private:
-  bool list_ = false;
-
   void CreatContainer_() {
     if (capacity_ > 0) array_.Create(capacity_);
   }
@@ -121,10 +124,10 @@ class SequenceContainer {
   void DeleteContainer_() noexcept { array_.Delete(); }
 
   void SetProtectedFields_(size_type size, size_type capacity,
-                           I begin) noexcept {
+                           I *head) noexcept {
     size_ = size;
     capacity_ = capacity;
-    array_ = begin;
+    if (head) array_ = *head;
   }
 
   void CopyContainer_(SequenceContainer &v) noexcept {
