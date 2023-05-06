@@ -18,8 +18,7 @@ class SequenceContainer {
  public:
   explicit SequenceContainer() {}
 
-  explicit SequenceContainer(size_type n)
-      : size_(n), capacity_(n) {
+  explicit SequenceContainer(size_type n) : size_(n), capacity_(n) {
     CreatContainer_();
   }
 
@@ -50,7 +49,7 @@ class SequenceContainer {
 
     DeleteContainer_();
     if (this != &v) {
-      SetProtectedFields_(v.size_, v.capacity_, &v.array_);
+      SetProtectedFields_(v.size_, v.capacity_, &v.container_);
       v.SetProtectedFields_(0U, 0U, &iter);
     } else {
       SetProtectedFields_(0U, 0U, &iter);
@@ -68,20 +67,20 @@ class SequenceContainer {
   iterator Begin() noexcept {
     iterator ret;
 
-    ret = array_.Head();
+    ret = container_.Head();
 
     return ret;
   }
-//  const_iterator Begin() const noexcept { return array_.Head(); }
+  //  const_iterator Begin() const noexcept { return container_.Head(); }
 
   iterator End() noexcept {
     iterator ret;
 
-    ret = array_.Tail();
+    ret = container_.Tail();
 
     return ret;
   }
-//  const_iterator End() const noexcept { return array_.Tail(); }
+  //  const_iterator End() const noexcept { return container_.Tail(); }
 
   bool Empty() const noexcept { return size_ == 0; }
 
@@ -105,11 +104,11 @@ class SequenceContainer {
  protected:
   size_type size_ = 0;
   size_type capacity_ = 0;
-  I array_;
+  I container_;
 
  private:
   void CreatContainer_() {
-    if (capacity_ > 0) array_.Create(capacity_);
+    if (capacity_ > 0) container_.Create(capacity_);
   }
 
   void InitializeContainer_(
@@ -121,13 +120,13 @@ class SequenceContainer {
         *iter = *item;
   }
 
-  void DeleteContainer_() noexcept { array_.Delete(); }
+  void DeleteContainer_() noexcept { container_.Delete(); }
 
   void SetProtectedFields_(size_type size, size_type capacity,
                            I *head) noexcept {
     size_ = size;
     capacity_ = capacity;
-    if (head) array_ = *head;
+    if (head) container_ = *head;
   }
 
   void CopyContainer_(SequenceContainer &v) noexcept {

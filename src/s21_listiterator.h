@@ -92,26 +92,26 @@ class ListIterator {
 
   ListIterator &operator+(size_type num) noexcept {
     if (this->item_ != nullptr)
-      for (auto i = 0; i < num; i++)
-        ++(*this);
+      for (auto i = 0; i < num; i++) ++(*this);
 
     return *this;
   }
 
   ListIterator &operator-(size_type num) noexcept {
     if (this->item_ != nullptr)
-      for (auto i = 0; i < num; i++)
-        --(*this);
+      for (auto i = 0; i < num; i++) --(*this);
 
     return *this;
   }
 
   bool &operator==(ListIterator &li) noexcept {
-    return ((this->item_ != nullptr) && (li.item_ != nullptr) && (this->item_ == li.item_));
+    return ((this->item_ != nullptr) && (li.item_ != nullptr) &&
+            (this->item_ == li.item_));
   }
 
   bool &operator!=(ListIterator &li) noexcept {
-    return ((this->item_ != nullptr) && (li.item_ != nullptr) && !(this->item_ == li.item_));
+    return ((this->item_ != nullptr) && (li.item_ != nullptr) &&
+            !(this->item_ == li.item_));
   }
 
  private:
