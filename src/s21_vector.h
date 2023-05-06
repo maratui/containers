@@ -57,7 +57,7 @@ class Vector : public SequenceContainer<T, VectorIterator<T>> {
 */
 
   reference operator[](size_type pos) noexcept {
-    return *(SequenceContainer<T, VectorIterator<T>>::Begin() + pos);
+    return *(Data() + pos);
   }
   /*
   const_reference operator[](size_type pos) const noexcept {
@@ -90,7 +90,7 @@ class Vector : public SequenceContainer<T, VectorIterator<T>> {
       Reserve_(SequenceContainer<T, VectorIterator<T>>::size_);
   }
 
-  void Clear() noexcept { SequenceContainer<T, VectorIterator<T>>::size_ = 0; }
+  void Clear() noexcept { SequenceContainer<T, VectorIterator<T>>::size_ = 0; this->array_.SetTail(0); }
 
   iterator Insert(iterator pos, const_reference value) {
     iterator begin;
@@ -132,6 +132,7 @@ class Vector : public SequenceContainer<T, VectorIterator<T>> {
       for (auto j = 0; j < m; j++)
         this->At(j) = v.At(j);
       SequenceContainer<T, VectorIterator<T>>::size_ = m;
+      this->array_.SetTail(m);
   }
 
   void CheckSizeBounds_(size_type pos) const {

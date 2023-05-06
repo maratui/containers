@@ -31,7 +31,7 @@ class VectorIterator {
   void Create(size_type capacity) {
     if (head_) delete[] head_;
     head_ = new value_type[capacity + 1]{};
-    tail_ = head_ + capacity;
+    SetTail(capacity);
     item_ = nullptr;
   }
 
@@ -42,12 +42,20 @@ class VectorIterator {
     item_ = nullptr;
   }
 
+  reference operator[](size_type pos) noexcept {
+    return *(item_ + pos);
+  }
+
   VectorIterator Head() noexcept {
     VectorIterator item(*this);
 
     item.item_ = head_;
 
     return item;
+  }
+
+  void SetTail(size_type size) noexcept {
+    tail_ = head_ + size;
   }
 
   VectorIterator Tail() noexcept {

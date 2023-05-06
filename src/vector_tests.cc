@@ -274,9 +274,10 @@ void test_vector(std::initializer_list<T> const& items) {
   std_copy_constructor[3] = temp;
   temp = s21_copy_constructor[3];
   s21_copy_constructor[3] = temp;
+  for (size_t i = 0; i < std_copy_constructor.size(); i++)
+    EXPECT_EQ(std_copy_constructor[i], s21_copy_constructor[i]);
   EXPECT_NO_THROW(std_copy_constructor[4]);
   EXPECT_NO_THROW(s21_copy_constructor[4]);
-  EXPECT_EQ(std_copy_constructor[4], s21_copy_constructor[4]);
   EXPECT_NO_THROW(std_copy_constructor[5]);
   EXPECT_NO_THROW(s21_copy_constructor[5]);
 
@@ -338,12 +339,16 @@ void test_vector(std::initializer_list<T> const& items) {
 
   temp = std_copy_constructor.begin()[0];
   std_copy_constructor.begin()[0] = temp;
-//  temp = s21_copy_constructor.Begin()[0];
-//  s21_copy_constructor.Begin()[0] = temp;
+  temp = s21_copy_constructor.Begin()[0];
+  s21_copy_constructor.Begin()[0] = temp;
   temp = (std_copy_constructor.end() - 1)[0];
   (std_copy_constructor.end() - 1)[0] = temp;
-//  temp = (s21_copy_constructor.End() - 1)[0];
-//  (s21_copy_constructor.End() - 1)[0] = temp;
+  temp = (s21_copy_constructor.End() - 1)[0];
+  (s21_copy_constructor.End() - 1)[0] = temp;
+  for (size_t i = 0; i < std_copy_constructor.size(); i++)
+    EXPECT_EQ(std_copy_constructor.begin()[i], s21_copy_constructor.Begin()[i]);
+  for (size_t i = 1; i <= std_copy_constructor.size(); i++)
+    EXPECT_EQ((std_copy_constructor.end() - i)[i - 1], (s21_copy_constructor.End() - i)[i - 1]);
   EXPECT_EQ(*std_copy_constructor.begin(), *s21_copy_constructor.Begin());
   EXPECT_EQ((std_copy_constructor.end() - std_copy_constructor.begin()),
             (s21_copy_constructor.End() - s21_copy_constructor.Begin()));
@@ -359,32 +364,32 @@ void test_vector(std::initializer_list<T> const& items) {
       (s21_const_copy_constructor.End() - s21_const_copy_constructor.Begin()));
 */
   //---------------------------------------------------------------------------
-/*
+
   EXPECT_FALSE(std_copy_constructor.empty());
   EXPECT_FALSE(s21_copy_constructor.Empty());
 //  EXPECT_FALSE(std_const_copy_constructor.empty());
 //  EXPECT_FALSE(s21_const_copy_constructor.Empty());
   EXPECT_TRUE(std_move_constructor.empty());
   EXPECT_TRUE(s21_move_constructor.Empty());
-*/
+
   //---------------------------------------------------------------------------
 
- // EXPECT_EQ(std_copy_constructor.size(), s21_copy_constructor.Size());
+  EXPECT_EQ(std_copy_constructor.size(), s21_copy_constructor.Size());
 /*
   EXPECT_EQ(std_const_copy_constructor.size(),
             s21_const_copy_constructor.Size());
 */
-//  EXPECT_EQ(std_move_constructor.size(), s21_move_constructor.Size());
+  EXPECT_EQ(std_move_constructor.size(), s21_move_constructor.Size());
 
   //---------------------------------------------------------------------------
 
-//  EXPECT_EQ(std_copy_constructor.max_size(), s21_copy_constructor.MaxSize());
+  EXPECT_EQ(std_copy_constructor.max_size(), s21_copy_constructor.MaxSize());
 /*
   EXPECT_EQ(std_const_copy_constructor.max_size(),
             s21_const_copy_constructor.MaxSize());
 */
   //---------------------------------------------------------------------------
-/*
+
   std_copy_constructor.reserve(5);
   s21_copy_constructor.Reserve(5);
   EXPECT_EQ(std_copy_constructor.size(), s21_copy_constructor.Size());
@@ -432,13 +437,13 @@ void test_vector(std::initializer_list<T> const& items) {
   //---------------------------------------------------------------------------
 
   EXPECT_EQ(std_copy_constructor.capacity(), s21_copy_constructor.Capacity());
-*/
+
 /*
   EXPECT_EQ(std_const_copy_constructor.capacity(),
             s21_const_copy_constructor.Capacity());
 */
   //---------------------------------------------------------------------------
-/*
+
   EXPECT_EQ(5, std_copy_constructor.size());
   EXPECT_EQ(7, std_copy_constructor.capacity());
   std_copy_constructor.shrink_to_fit();
@@ -468,7 +473,7 @@ void test_vector(std::initializer_list<T> const& items) {
   EXPECT_EQ(0, (s21_copy_constructor.End() - s21_copy_constructor.Begin()));
 
   //---------------------------------------------------------------------------
-
+/*
   std_copy_constructor.shrink_to_fit();
   s21_copy_constructor.ShrinkToFit();
   for (auto i = 0; i < 21; i++) {
@@ -510,6 +515,7 @@ void test_vector(std::initializer_list<T> const& items) {
     EXPECT_EQ(std_copy_constructor[j], s21_copy_constructor[j]);
 
   //---------------------------------------------------------------------------
+
   std_copy_constructor.erase(std_copy_constructor.begin());
   s21_copy_constructor.Erase(s21_copy_constructor.Begin());
   EXPECT_EQ(std_copy_constructor.size(), s21_copy_constructor.Size());
