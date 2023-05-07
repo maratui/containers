@@ -29,11 +29,15 @@ class Vector
   
   explicit Vector(std::initializer_list<value_type> const &items)
       : SequenceContainer<T, VectorIterator<T>, VectorConstIterator<T>, VectorAllocate<T>>(items), capacity_(items.size()) {}
+  
+  Vector(const Vector &v)
+      : SequenceContainer<T, VectorIterator<T>, VectorConstIterator<T>, VectorAllocate<T>>(v, v.capacity_), capacity_(v.capacity_) {}
+  
+  Vector(Vector &&v)
+      : SequenceContainer<T, VectorIterator<T>, VectorConstIterator<T>, VectorAllocate<T>>(std::move(v)), capacity_(v.capacity_) {v.capacity_ = 0;}
 
   ~Vector() {}
 /*
-  Vector(Vector &v)
-      : SequenceContainer<T, VectorIterator<T>, VectorConstIterator<T>, VectorAllocate<T>>(v) {}
 
   Vector(Vector &&v)
       : SequenceContainer<T, VectorIterator<T>, VectorConstIterator<T>, VectorAllocate<T>>(

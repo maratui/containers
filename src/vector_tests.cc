@@ -79,7 +79,7 @@ void test_vector(std::initializer_list<T> const& items) {
               s21_const_initializer_list_constructor.At(i));
 
   //---------------------------------------------------------------------------
-/*
+
   std::vector<T> std_copy_constructor(std_initializer_list_constructor);
   S21::Vector<T> s21_copy_constructor(s21_initializer_list_constructor);
   EXPECT_EQ(std_copy_constructor.size(), s21_copy_constructor.Size());
@@ -93,9 +93,8 @@ void test_vector(std::initializer_list<T> const& items) {
   for (size_t i = 0; i < s21_initializer_list_constructor.Size(); i++)
     EXPECT_EQ(s21_initializer_list_constructor.At(i),
               s21_copy_constructor.At(i));
-*/
-  /*
-    std::vector<T> const std_const_copy_constructor(
+
+  std::vector<T> const std_const_copy_constructor(
         std_const_initializer_list_constructor);
     S21::Vector<T> const s21_const_copy_constructor(
         s21_const_initializer_list_constructor);
@@ -107,16 +106,15 @@ void test_vector(std::initializer_list<T> const& items) {
               s21_const_copy_constructor.Size());
     EXPECT_EQ(s21_const_initializer_list_constructor.Capacity(),
               s21_const_copy_constructor.Capacity());
-
     for (size_t i = 0; i < std_const_copy_constructor.size(); i++)
       EXPECT_EQ(std_const_copy_constructor.at(i),
                 s21_const_copy_constructor.At(i));
     for (size_t i = 0; i < s21_initializer_list_constructor.Size(); i++)
       EXPECT_EQ(s21_const_initializer_list_constructor.At(i),
                 s21_const_copy_constructor.At(i));
-  */
+
   //---------------------------------------------------------------------------
-/*
+
   std::vector<T> std_move_constructor(
       std::move(std_initializer_list_constructor));
   S21::Vector<T> s21_move_constructor(
@@ -139,8 +137,7 @@ void test_vector(std::initializer_list<T> const& items) {
                 s21_initializer_list_constructor.Begin());
   EXPECT_EQ(0, s21_initializer_list_constructor.End() -
                    s21_initializer_list_constructor.Begin());
-*/
-  /*
+
     std::vector<T> const std_const_move_constructor(
         std::move(std_const_initializer_list_constructor));
     S21::Vector<T> const s21_const_move_constructor(
@@ -153,20 +150,21 @@ void test_vector(std::initializer_list<T> const& items) {
               s21_const_move_constructor.Size());
     EXPECT_EQ(s21_const_copy_constructor.Capacity(),
               s21_const_move_constructor.Capacity());
-
     for (size_t i = 0; i < std_const_move_constructor.size(); i++)
       EXPECT_EQ(std_const_move_constructor.at(i),
                 s21_const_move_constructor.At(i));
     for (size_t i = 0; i < s21_const_copy_constructor.Size(); i++)
       EXPECT_EQ(s21_const_copy_constructor.At(i),
                 s21_const_move_constructor.At(i));
-    */
-  /*
+
     EXPECT_EQ(5, std_const_initializer_list_constructor.size());
     EXPECT_EQ(5, std_const_initializer_list_constructor.capacity());
     EXPECT_EQ(5, s21_const_initializer_list_constructor.Size());
     EXPECT_EQ(5, s21_const_initializer_list_constructor.Capacity());
-  */
+    for (size_t i = 0; i < s21_const_initializer_list_constructor.Size(); i++)
+      EXPECT_EQ(s21_const_initializer_list_constructor.At(i),
+                std_const_initializer_list_constructor.at(i));
+
   //---------------------------------------------------------------------------
 /*
   std::vector<T> std_operator_overload;

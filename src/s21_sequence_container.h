@@ -25,22 +25,32 @@ class SequenceContainer {
     InitializeContainer_(items);
   }
 
+  SequenceContainer(const SequenceContainer &sc, const size_type capacity) : size_(sc.size_), head_(A::Allocate(capacity)), tail_(A::SetTail(head_, size_)) {
+    CopyContainer_(sc);
+  }
+
+  SequenceContainer(SequenceContainer &&sc) : size_(sc.size_), head_(sc.head_), tail_(sc.tail_) {
+    sc.size_ = 0;
+    sc.head_ = nullptr;
+    sc.tail_ = nullptr;
+  }
+
   ~SequenceContainer() {A::Delete(head_);}
-/*
-  SequenceContainer(SequenceContainer &v) { *this = v; }
 
-  SequenceContainer(SequenceContainer &&v) { *this = std::move(v); }
-
-  SequenceContainer &operator=(SequenceContainer &v) {
-    if (this != &v) {
-      DeleteContainer_();
-      SetProtectedFields_(v.size_, v.capacity_, nullptr);
-      CreatContainer_();
-      CopyContainer_(v);
+  SequenceContainer &operator=(const SequenceContainer &sc) {
+    if (this != &sc) {
+      A::Delete(head_);
+      size_ = sc.size_;
+      head_ = A::Allocate(size_);
+      tail_ = A::SetTail(head_, size_);
+      CopyContainer_(sc);
     }
 
     return *this;
   }
+/*
+
+  SequenceContainer(SequenceContainer &&v) { *this = std::move(v); }
 
   SequenceContainer &operator=(SequenceContainer &&v) noexcept {
     iterator iter;
@@ -122,9 +132,8 @@ class SequenceContainer {
     auto iter = Begin();
     if (iter != End())
       for (auto item = items.begin(), end = items.end(); item < end;
-           item++, ++iter) {
+           item++, ++iter)
         *iter = *item;
-           }
   }
 /*
   void DeleteContainer_() noexcept { container_.Delete(); }
@@ -135,18 +144,13 @@ class SequenceContainer {
     capacity_ = capacity;
     if (head) container_ = *head;
   }
-
-  void CopyContainer_(SequenceContainer &v) noexcept {
-    iterator iter;
-
-    iter = Begin();
-    if (iter != End()) {
-      for (auto item = v.Begin(), end = v.End(); item < end; ++item, ++iter) {
+*/
+  void CopyContainer_(const SequenceContainer &sc) noexcept {
+    auto iter = Begin();
+    if (iter != End())
+      for (auto item = sc.Begin(), end = sc.End(); item < end; ++item, ++iter)
         *iter = *item;
-      }
-    }
   }
-  */
 };
 }  // namespace S21
 
