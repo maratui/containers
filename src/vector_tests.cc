@@ -51,11 +51,10 @@ void test_vector(std::initializer_list<T> const& items) {
             s21_const_parameterized_constructor.Size());
   EXPECT_EQ(std_const_parameterized_constructor.capacity(),
             s21_const_parameterized_constructor.Capacity());
-  /*
-    for (size_t i = 0; i < std_const_parameterized_constructor.size(); i++)
-      EXPECT_EQ(std_const_parameterized_constructor.at(i),
-                s21_const_parameterized_constructor.At(i));
-  */
+  for (size_t i = 0; i < std_const_parameterized_constructor.size(); i++)
+    EXPECT_EQ(std_const_parameterized_constructor.at(i),
+              s21_const_parameterized_constructor.At(i));
+
   //---------------------------------------------------------------------------
 
   std::vector<T> std_initializer_list_constructor(items);

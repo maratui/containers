@@ -117,7 +117,10 @@ class SequenceContainer {
 
  private:
   void CreatContainer_() {
-    if (capacity_ > 0) container_.Create(capacity_);
+    if (capacity_ > 0) {
+      container_.Create(capacity_);
+      const_container_.Create(capacity_);
+    }
   }
 
   void InitializeContainer_(

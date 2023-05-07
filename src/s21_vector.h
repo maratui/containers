@@ -59,7 +59,6 @@ class Vector
 
     return *iter;
   }
-
   const_reference At(size_type pos) const {
     const_iterator iter(this->Begin());
 
