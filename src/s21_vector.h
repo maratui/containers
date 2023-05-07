@@ -7,11 +7,12 @@
 #include "./s21_sequence_container.h"
 #include "./s21_vector_const_iterator.h"
 #include "./s21_vector_iterator.h"
+#include "./s21_vector_allocate.h"
 
 namespace S21 {
 template <class T>
 class Vector
-    : public SequenceContainer<T, VectorIterator<T>, VectorConstIterator<T>> {
+    : public SequenceContainer<T, VectorIterator<T>, VectorConstIterator<T>, VectorAllocate<T>> {
   using value_type = T;
   using reference = T &;
   using const_reference = const T &;
@@ -21,34 +22,33 @@ class Vector
 
  public:
   Vector()
-      : SequenceContainer<T, VectorIterator<T>, VectorConstIterator<T>>() {}
+      : SequenceContainer<T, VectorIterator<T>, VectorConstIterator<T>, VectorAllocate<T>>() {}
 
   explicit Vector(size_type n)
-      : SequenceContainer<T, VectorIterator<T>, VectorConstIterator<T>>(n) {}
-
+      : SequenceContainer<T, VectorIterator<T>, VectorConstIterator<T>, VectorAllocate<T>>(n), capacity_(n) {}
+  
   explicit Vector(std::initializer_list<value_type> const &items)
-      : SequenceContainer<T, VectorIterator<T>, VectorConstIterator<T>>(items) {
-  }
-
-  Vector(Vector &v)
-      : SequenceContainer<T, VectorIterator<T>, VectorConstIterator<T>>(v) {}
-
-  Vector(Vector &&v)
-      : SequenceContainer<T, VectorIterator<T>, VectorConstIterator<T>>(
-            std::move(v)) {}
+      : SequenceContainer<T, VectorIterator<T>, VectorConstIterator<T>, VectorAllocate<T>>(items), capacity_(items.size()) {}
 
   ~Vector() {}
+/*
+  Vector(Vector &v)
+      : SequenceContainer<T, VectorIterator<T>, VectorConstIterator<T>, VectorAllocate<T>>(v) {}
+
+  Vector(Vector &&v)
+      : SequenceContainer<T, VectorIterator<T>, VectorConstIterator<T>, VectorAllocate<T>>(
+            std::move(v)) {}
 
   Vector &operator=(Vector &v) {
     return (Vector &)SequenceContainer<T, VectorIterator<T>,
-                                       VectorConstIterator<T>>::operator=(v);
+                                       VectorConstIterator<T>, VectorAllocate<T>>::operator=(v);
   }
 
   Vector &operator=(Vector &&v) {
     return (Vector &)SequenceContainer<
-        T, VectorIterator<T>, VectorConstIterator<T>>::operator=(std::move(v));
+        T, VectorIterator<T>, VectorConstIterator<T>, VectorAllocate<T>>::operator=(std::move(v));
   }
-
+*/
   reference At(size_type pos) {
     iterator iter;
 
@@ -60,21 +60,24 @@ class Vector
     return *iter;
   }
   const_reference At(size_type pos) const {
-    const_iterator iter(this->Begin());
+    const_iterator iter;
 
     CheckSizeBounds_(pos);
 
+    iter = this->Begin();
     iter = iter + pos;
 
     return *iter;
   }
-
+/*
   reference operator[](size_type pos) noexcept { return *(Data() + pos); }
+*/
   /*
   const_reference operator[](size_type pos) const noexcept {
     return *(Data() + pos);
   }
 */
+/*
   T *Data() noexcept { return this->container_.Data(); }
   const T *Data() const noexcept { return this->container_.Data(); }
 
@@ -87,9 +90,9 @@ class Vector
   void Reserve(size_type size) {
     if (size > this->capacity_) Reserve_(size);
   }
-
-  size_type Capacity() const noexcept { return this->capacity_; }
-
+*/
+  size_type Capacity() const noexcept { return capacity_; }
+/*
   void ShrinkToFit() {
     if (this->capacity_ > this->size_) Reserve_(this->size_);
   }
@@ -125,14 +128,14 @@ class Vector
   }
 
   void PushBack(const_reference value) { Insert(this->End(), value); }
-
+*/
  private:
   void CheckSizeBounds_(size_type pos) const {
     if (pos >= this->size_)
       throw std::out_of_range(
           "Incorrect input, index is outside the vector size");
   }
-
+/*
   void Reserve_(size_type size) {
     Vector vector(size);
 
@@ -148,6 +151,9 @@ class Vector
     this->size_ = m;
     this->container_.SetTail(m);
   }
+*/
+ private:
+  size_type capacity_ = 0;
 };
 }  // namespace S21
 

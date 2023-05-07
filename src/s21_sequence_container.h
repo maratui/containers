@@ -6,7 +6,7 @@
 #include <stdexcept>
 
 namespace S21 {
-template <class T, class I, class CI>
+template <class T, class I, class CI, class A>
 class SequenceContainer {
   using value_type = T;
   using reference = T &;
@@ -18,20 +18,18 @@ class SequenceContainer {
  public:
   explicit SequenceContainer() {}
 
-  explicit SequenceContainer(size_type n) : size_(n), capacity_(n) {
-    CreatContainer_();
-  }
+  explicit SequenceContainer(size_type n) : size_(n), head_(A::Allocate(n)), tail_(A::SetTail(head_, n)) {}
 
   explicit SequenceContainer(std::initializer_list<value_type> const &items)
       : SequenceContainer(items.size()) {
     InitializeContainer_(items);
   }
 
+  ~SequenceContainer() {A::Delete(head_);}
+/*
   SequenceContainer(SequenceContainer &v) { *this = v; }
 
   SequenceContainer(SequenceContainer &&v) { *this = std::move(v); }
-
-  ~SequenceContainer() {}
 
   SequenceContainer &operator=(SequenceContainer &v) {
     if (this != &v) {
@@ -63,37 +61,33 @@ class SequenceContainer {
 
   reference Back() noexcept { return *(--End()); }
   const_reference Back() const noexcept { return *(--End()); }
-
+*/
   iterator Begin() noexcept {
-    iterator ret;
-
-    ret = container_.GetHead();
+    iterator ret(head_);
 
     return ret;
   }
   const_iterator Begin() const noexcept {
-    const_iterator ret(const_container_.GetHead());
+    const_iterator ret(head_);
 
     return ret;
   }
 
   iterator End() noexcept {
-    iterator ret;
-
-    ret = container_.GetTail();
+    iterator ret(tail_);
 
     return ret;
   }
   const_iterator End() const noexcept {
-    const_iterator ret(const_container_.GetTail());
+    const_iterator ret(tail_);
 
     return ret;
   }
-
+/*
   bool Empty() const noexcept { return size_ == 0; }
-
+*/
   size_type Size() const noexcept { return size_; }
-
+/*
   void Erase(iterator pos) noexcept {
     auto end = --End();
     for (auto iter = pos; iter < end; ++iter) *iter = *(iter + 1);
@@ -108,30 +102,31 @@ class SequenceContainer {
     other = std::move(*this);
     *this = std::move(vector);
   }
-
+*/
  protected:
   size_type size_ = 0;
-  size_type capacity_ = 0;
-  I container_;
-  CI const_container_;
+  value_type *head_ = nullptr;
+  value_type *tail_ = nullptr;
 
  private:
+/*
   void CreatContainer_() {
     if (capacity_ > 0) {
       container_.Create(capacity_);
       const_container_.Create(capacity_);
     }
   }
-
+*/
   void InitializeContainer_(
       std::initializer_list<value_type> const &items) noexcept {
     auto iter = Begin();
     if (iter != End())
       for (auto item = items.begin(), end = items.end(); item < end;
-           item++, ++iter)
+           item++, ++iter) {
         *iter = *item;
+           }
   }
-
+/*
   void DeleteContainer_() noexcept { container_.Delete(); }
 
   void SetProtectedFields_(size_type size, size_type capacity,
@@ -151,6 +146,7 @@ class SequenceContainer {
       }
     }
   }
+  */
 };
 }  // namespace S21
 

@@ -13,12 +13,10 @@ class VectorConstIterator {
  public:
   VectorConstIterator() {}
 
-  VectorConstIterator(const VectorConstIterator &vi) noexcept { *this = vi; }
+  VectorConstIterator(value_type *container) : item_(container) {}
 
-  ~VectorConstIterator() {
-    if (item_ == nullptr && head_) delete[] head_;
-  }
-
+  ~VectorConstIterator() {}
+/*
   VectorConstIterator &operator=(const VectorConstIterator &vi) noexcept {
     this->head_ = vi.head_;
     this->tail_ = vi.tail_;
@@ -26,7 +24,7 @@ class VectorConstIterator {
 
     return *this;
   }
-
+*/
   //---------------------------------------------------------------------------
 
   void Create(size_type capacity) {

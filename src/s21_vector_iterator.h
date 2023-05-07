@@ -11,12 +11,10 @@ class VectorIterator {
  public:
   VectorIterator() {}
 
-  VectorIterator(const VectorIterator &vi) noexcept { *this = vi; }
+  VectorIterator(value_type *container) : item_(container) {}
 
-  ~VectorIterator() {
-    if (item_ == nullptr && head_) delete[] head_;
-  }
-
+  ~VectorIterator() {}
+/*
   VectorIterator &operator=(const VectorIterator &vi) noexcept {
     this->head_ = vi.head_;
     this->tail_ = vi.tail_;
@@ -24,7 +22,7 @@ class VectorIterator {
 
     return *this;
   }
-
+*/
   //---------------------------------------------------------------------------
 
   void Create(size_type capacity) {
@@ -73,17 +71,17 @@ class VectorIterator {
 
   //---------------------------------------------------------------------------
 
-  friend reference operator*(VectorIterator &vi) noexcept {
-    return (vi.item_ == nullptr) ? *(vi.head_) : *(vi.item_);
+  friend reference operator*(const VectorIterator &vi) noexcept {
+    return *(vi.item_);
   }
-  friend reference operator*(VectorIterator &&vi) noexcept {
-    return (vi.item_ == nullptr) ? *(vi.head_) : *(vi.item_);
+  friend reference operator*(const VectorIterator &&vi) noexcept {
+    return *(vi.item_);
   }
 
   //---------------------------------------------------------------------------
 
   friend VectorIterator &operator++(VectorIterator &vi) noexcept {
-    if (vi.item_ != nullptr && vi.item_ != vi.tail_) vi.item_ = vi.item_ + 1;
+    vi.item_ = vi.item_ + 1;
 
     return vi;
   }
@@ -119,11 +117,10 @@ class VectorIterator {
 
   //---------------------------------------------------------------------------
 
-  VectorIterator operator+(size_type num) noexcept {
-    VectorIterator item(*this);
+  VectorIterator operator+(size_type num) const noexcept {
+    VectorIterator item;
 
-    if (item.item_ != nullptr)
-      for (size_type i = 0; i < num; i++) ++item;
+    item.item_ = this->item_ + num;
 
     return item;
   }
