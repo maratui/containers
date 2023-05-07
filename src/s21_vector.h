@@ -5,38 +5,48 @@
 #include <stdexcept>
 
 #include "./s21_sequence_container.h"
-#include "./s21_vectoriterator.h"
+#include "./s21_vector_const_iterator.h"
+#include "./s21_vector_iterator.h"
 
 namespace S21 {
 template <class T>
-class Vector : public SequenceContainer<T, VectorIterator<T>> {
+class Vector
+    : public SequenceContainer<T, VectorIterator<T>, VectorConstIterator<T>> {
   using value_type = T;
   using reference = T &;
   using const_reference = const T &;
   using iterator = VectorIterator<T>;
+  using const_iterator = VectorConstIterator<T>;
   using size_type = size_t;
 
  public:
-  Vector() : SequenceContainer<T, VectorIterator<T>>() {}
+  Vector()
+      : SequenceContainer<T, VectorIterator<T>, VectorConstIterator<T>>() {}
 
-  explicit Vector(size_type n) : SequenceContainer<T, VectorIterator<T>>(n) {}
+  explicit Vector(size_type n)
+      : SequenceContainer<T, VectorIterator<T>, VectorConstIterator<T>>(n) {}
 
   explicit Vector(std::initializer_list<value_type> const &items)
-      : SequenceContainer<T, VectorIterator<T>>(items) {}
+      : SequenceContainer<T, VectorIterator<T>, VectorConstIterator<T>>(items) {
+  }
 
-  Vector(Vector &v) : SequenceContainer<T, VectorIterator<T>>(v) {}
+  Vector(Vector &v)
+      : SequenceContainer<T, VectorIterator<T>, VectorConstIterator<T>>(v) {}
 
-  Vector(Vector &&v) : SequenceContainer<T, VectorIterator<T>>(std::move(v)) {}
+  Vector(Vector &&v)
+      : SequenceContainer<T, VectorIterator<T>, VectorConstIterator<T>>(
+            std::move(v)) {}
 
   ~Vector() {}
 
   Vector &operator=(Vector &v) {
-    return (Vector &)SequenceContainer<T, VectorIterator<T>>::operator=(v);
+    return (Vector &)SequenceContainer<T, VectorIterator<T>,
+                                       VectorConstIterator<T>>::operator=(v);
   }
 
   Vector &operator=(Vector &&v) {
-    return (Vector &)SequenceContainer<T, VectorIterator<T>>::operator=(
-        std::move(v));
+    return (Vector &)SequenceContainer<
+        T, VectorIterator<T>, VectorConstIterator<T>>::operator=(std::move(v));
   }
 
   reference At(size_type pos) {
@@ -49,13 +59,16 @@ class Vector : public SequenceContainer<T, VectorIterator<T>> {
 
     return *iter;
   }
-  /*
+
   const_reference At(size_type pos) const {
+    const_iterator iter(this->Begin());
+
     CheckSizeBounds_(pos);
 
-    return *(this->Begin() + pos);
+    iter = iter + pos;
+
+    return *iter;
   }
-*/
 
   reference operator[](size_type pos) noexcept { return *(Data() + pos); }
   /*

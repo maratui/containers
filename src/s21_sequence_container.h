@@ -6,13 +6,13 @@
 #include <stdexcept>
 
 namespace S21 {
-template <class T, class I>
+template <class T, class I, class CI>
 class SequenceContainer {
   using value_type = T;
   using reference = T &;
   using const_reference = const T &;
   using iterator = I;
-  using const_iterator = const I;
+  using const_iterator = CI;
   using size_type = size_t;
 
  public:
@@ -67,20 +67,28 @@ class SequenceContainer {
   iterator Begin() noexcept {
     iterator ret;
 
-    ret = container_.Head();
+    ret = container_.GetHead();
 
     return ret;
   }
-  //  const_iterator Begin() const noexcept { return container_.Head(); }
+  const_iterator Begin() const noexcept {
+    const_iterator ret(const_container_.GetHead());
+
+    return ret;
+  }
 
   iterator End() noexcept {
     iterator ret;
 
-    ret = container_.Tail();
+    ret = container_.GetTail();
 
     return ret;
   }
-  //  const_iterator End() const noexcept { return container_.Tail(); }
+  const_iterator End() const noexcept {
+    const_iterator ret(const_container_.GetTail());
+
+    return ret;
+  }
 
   bool Empty() const noexcept { return size_ == 0; }
 
@@ -105,6 +113,7 @@ class SequenceContainer {
   size_type size_ = 0;
   size_type capacity_ = 0;
   I container_;
+  CI const_container_;
 
  private:
   void CreatContainer_() {

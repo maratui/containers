@@ -19,19 +19,20 @@ void test_vector(std::initializer_list<T> const& items) {
   EXPECT_EQ(std_default_constructor.end() - std_default_constructor.begin(),
             s21_default_constructor.End() - s21_default_constructor.Begin());
   EXPECT_EQ(0, s21_default_constructor.End() - s21_default_constructor.Begin());
-  /*
-    std::vector<T> const std_const_default_constructor;
-    S21::Vector<T> const s21_const_default_constructor;
-    EXPECT_EQ(std_const_default_constructor.size(),
-              s21_const_default_constructor.Size());
-    EXPECT_EQ(std_const_default_constructor.capacity(),
-              s21_const_default_constructor.Capacity());
-    EXPECT_EQ(std_const_default_constructor.end() -
-    std_const_default_constructor.begin(), s21_const_default_constructor.End() -
-    s21_const_default_constructor.Begin()); EXPECT_EQ(0,
-    s21_const_default_constructor.End() -
-    s21_const_default_constructor.Begin());
-  */
+
+  std::vector<T> const std_const_default_constructor;
+  S21::Vector<T> const s21_const_default_constructor;
+  EXPECT_EQ(std_const_default_constructor.size(),
+            s21_const_default_constructor.Size());
+  EXPECT_EQ(std_const_default_constructor.capacity(),
+            s21_const_default_constructor.Capacity());
+  EXPECT_EQ(std_const_default_constructor.end() -
+                std_const_default_constructor.begin(),
+            s21_const_default_constructor.End() -
+                s21_const_default_constructor.Begin());
+  EXPECT_EQ(0, s21_const_default_constructor.End() -
+                   s21_const_default_constructor.Begin());
+
   //---------------------------------------------------------------------------
 
   std::vector<T> std_parameterized_constructor(100);
@@ -43,13 +44,14 @@ void test_vector(std::initializer_list<T> const& items) {
   for (size_t i = 0; i < std_parameterized_constructor.size(); i++)
     EXPECT_EQ(std_parameterized_constructor.at(i),
               s21_parameterized_constructor.At(i));
+
+  std::vector<T> const std_const_parameterized_constructor(100);
+  S21::Vector<T> const s21_const_parameterized_constructor(100);
+  EXPECT_EQ(std_const_parameterized_constructor.size(),
+            s21_const_parameterized_constructor.Size());
+  EXPECT_EQ(std_const_parameterized_constructor.capacity(),
+            s21_const_parameterized_constructor.Capacity());
   /*
-    std::vector<T> const std_const_parameterized_constructor(100);
-    S21::Vector<T> const s21_const_parameterized_constructor(100);
-    EXPECT_EQ(std_const_parameterized_constructor.size(),
-              s21_const_parameterized_constructor.Size());
-    EXPECT_EQ(std_const_parameterized_constructor.capacity(),
-              s21_const_parameterized_constructor.Capacity());
     for (size_t i = 0; i < std_const_parameterized_constructor.size(); i++)
       EXPECT_EQ(std_const_parameterized_constructor.at(i),
                 s21_const_parameterized_constructor.At(i));
