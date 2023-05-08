@@ -25,10 +25,10 @@ class VectorAllocate {
   }
 
   static void Delete(value_type *array) noexcept {
-      if (array) {
-        delete[] array;
-          array = nullptr;
-      }
+    if (array) {
+      delete[] array;
+      array = nullptr;
+    }
   }
 };
 }  // namespace S21
