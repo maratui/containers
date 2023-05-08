@@ -6,7 +6,7 @@
 
 template <typename T>
 void test_vector(std::initializer_list<T> const& items) {
-  //T temp;
+  T temp;
   //---------------------------------------------------------------------------
 
   std::vector<T> std_default_constructor;
@@ -166,7 +166,7 @@ void test_vector(std::initializer_list<T> const& items) {
                 std_const_initializer_list_constructor.at(i));
 
   //---------------------------------------------------------------------------
-/*
+
   std::vector<T> std_operator_overload;
   S21::Vector<T> s21_operator_overload;
   std_operator_overload = std_move_constructor;
@@ -179,9 +179,8 @@ void test_vector(std::initializer_list<T> const& items) {
     EXPECT_EQ(std_operator_overload.at(i), s21_operator_overload.At(i));
   for (size_t i = 0; i < s21_copy_constructor.Size(); i++)
     EXPECT_EQ(s21_move_constructor.At(i), s21_operator_overload.At(i));
-*/
-  /*
-    EXPECT_NO_THROW(std_operator_overload = std_const_move_constructor);
+
+  EXPECT_NO_THROW(std_operator_overload = std_const_move_constructor);
     EXPECT_NO_THROW(s21_operator_overload = s21_const_move_constructor);
     EXPECT_EQ(std_operator_overload.size(), s21_operator_overload.Size());
     EXPECT_EQ(std_operator_overload.capacity(),
@@ -191,11 +190,9 @@ void test_vector(std::initializer_list<T> const& items) {
               s21_operator_overload.Capacity());
     for (size_t i = 0; i < std_operator_overload.size(); i++)
       EXPECT_EQ(std_operator_overload.at(i), s21_operator_overload.At(i));
-
     for (size_t i = 0; i < s21_copy_constructor.Size(); i++)
       EXPECT_EQ(s21_const_move_constructor.At(i), s21_operator_overload.At(i));
-  */
-/*
+
   std_operator_overload = std::move(std_move_constructor);
   s21_operator_overload = std::move(s21_move_constructor);
   EXPECT_EQ(std_operator_overload.size(), s21_operator_overload.Size());
@@ -213,8 +210,8 @@ void test_vector(std::initializer_list<T> const& items) {
   EXPECT_EQ(std_move_constructor.end() - std_move_constructor.begin(),
             s21_move_constructor.End() - s21_move_constructor.Begin());
   EXPECT_EQ(0, s21_move_constructor.End() - s21_move_constructor.Begin());
-*/
-  /*
+
+
     std_operator_overload = std::move(std_const_move_constructor);
     s21_operator_overload = std::move(s21_const_move_constructor);
     EXPECT_EQ(std_operator_overload.size(), s21_operator_overload.Size());
@@ -230,8 +227,8 @@ void test_vector(std::initializer_list<T> const& items) {
     std_const_move_constructor.capacity()); EXPECT_EQ(5,
     s21_const_move_constructor.Size()); EXPECT_EQ(5,
     s21_const_move_constructor.Capacity());
-  */
-/*
+
+
   s21_operator_overload = s21_operator_overload;
   EXPECT_EQ(std_copy_constructor.size(), s21_operator_overload.Size());
   EXPECT_EQ(std_copy_constructor.capacity(), s21_operator_overload.Capacity());
@@ -263,17 +260,16 @@ void test_vector(std::initializer_list<T> const& items) {
   } catch (const std::out_of_range& e) {
     EXPECT_STREQ("Incorrect input, index is outside the vector size", e.what());
   }
-*/
-  /*
+
     temp = std_const_copy_constructor.at(3);
-    //temp = s21_const_copy_constructor.At(3);
+    temp = s21_const_copy_constructor.At(3);
     EXPECT_NO_THROW(std_const_copy_constructor.at(0));
-    //EXPECT_NO_THROW(s21_const_copy_constructor.At(0));
+    EXPECT_NO_THROW(s21_const_copy_constructor.At(0));
     EXPECT_THROW(std_const_copy_constructor.at(5), std::out_of_range);
-    //EXPECT_THROW(s21_const_copy_constructor.At(5), std::out_of_range);
-    //EXPECT_EQ(std_const_copy_constructor.at(0),
+    EXPECT_THROW(s21_const_copy_constructor.At(5), std::out_of_range);
+    EXPECT_EQ(std_const_copy_constructor.at(0),
     s21_const_copy_constructor.At(0));
-  */
+
   //---------------------------------------------------------------------------
 /*
   temp = std_copy_constructor[3];

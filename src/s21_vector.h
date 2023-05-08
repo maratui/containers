@@ -33,26 +33,29 @@ class Vector
   Vector(const Vector &v)
       : SequenceContainer<T, VectorIterator<T>, VectorConstIterator<T>, VectorAllocate<T>>(v, v.capacity_), capacity_(v.capacity_) {}
   
-  Vector(Vector &&v)
-      : SequenceContainer<T, VectorIterator<T>, VectorConstIterator<T>, VectorAllocate<T>>(std::move(v)), capacity_(v.capacity_) {v.capacity_ = 0;}
+  Vector(Vector &&v) noexcept {*this = std::move(v);}
 
   ~Vector() {}
-/*
 
-  Vector(Vector &&v)
-      : SequenceContainer<T, VectorIterator<T>, VectorConstIterator<T>, VectorAllocate<T>>(
-            std::move(v)) {}
+  Vector &operator=(const Vector &v) {
+    if (this != &v)
+      *this = Vector(v);
 
-  Vector &operator=(Vector &v) {
-    return (Vector &)SequenceContainer<T, VectorIterator<T>,
-                                       VectorConstIterator<T>, VectorAllocate<T>>::operator=(v);
+    return *this;
   }
 
-  Vector &operator=(Vector &&v) {
-    return (Vector &)SequenceContainer<
-        T, VectorIterator<T>, VectorConstIterator<T>, VectorAllocate<T>>::operator=(std::move(v));
+  Vector operator=(Vector &&v) noexcept {
+    VectorAllocate<T>::Delete(this->head_);
+    if (this != &v) {
+      SetProtectedFields_(v.size_, v.head_, v.tail_, v.capacity_);
+      v.SetProtectedFields_(0U, nullptr, nullptr, 0U);
+    } else {
+      SetProtectedFields_(0U, nullptr, nullptr, 0U);
+    }
+
+    return *this;
   }
-*/
+
   reference At(size_type pos) {
     iterator iter;
 
@@ -134,6 +137,25 @@ class Vector
   void PushBack(const_reference value) { Insert(this->End(), value); }
 */
  private:
+  size_type capacity_ = 0U;
+
+  void CopyVector_(const Vector &v) noexcept {
+    int m;
+
+    m = std::min(v.size_, std::min(capacity_, v.capacity_));
+    for (auto j = 0; j < m; j++) this->head_[j] = v.head_[j];
+
+    this->size_ = m;
+    this->tail_ = VectorAllocate<T>::SetTail(this->head_, this->size_);
+  }
+
+  void SetProtectedFields_(size_type size, value_type *head, value_type *tail, size_type capacity) noexcept {
+    this->size_ = size;
+      this->head_ = head;
+      this->tail_ = tail;
+      capacity_ = capacity;
+  }
+
   void CheckSizeBounds_(size_type pos) const {
     if (pos >= this->size_)
       throw std::out_of_range(
@@ -146,18 +168,7 @@ class Vector
     vector.CopyVector_(*this);
     *this = std::move(vector);
   }
-
-  void CopyVector_(Vector &v) noexcept {
-    int m;
-
-    m = std::min(v.size_, std::min(this->capacity_, v.capacity_));
-    for (auto j = 0; j < m; j++) At(j) = v.At(j);
-    this->size_ = m;
-    this->container_.SetTail(m);
-  }
 */
- private:
-  size_type capacity_ = 0;
 };
 }  // namespace S21
 

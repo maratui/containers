@@ -29,43 +29,31 @@ class SequenceContainer {
     CopyContainer_(sc);
   }
 
-  SequenceContainer(SequenceContainer &&sc) : size_(sc.size_), head_(sc.head_), tail_(sc.tail_) {
-    sc.size_ = 0;
-    sc.head_ = nullptr;
-    sc.tail_ = nullptr;
+  SequenceContainer(SequenceContainer &&sc) noexcept {
+    *this = std::move(sc);
   }
 
   ~SequenceContainer() {A::Delete(head_);}
 
   SequenceContainer &operator=(const SequenceContainer &sc) {
+    if (this != &sc) *this = SequenceContainer(sc);
+
+    return *this;
+  }
+
+  SequenceContainer &operator=(SequenceContainer &&sc) noexcept {
+    A::Delete(head_);
     if (this != &sc) {
-      A::Delete(head_);
-      size_ = sc.size_;
-      head_ = A::Allocate(size_);
-      tail_ = A::SetTail(head_, size_);
-      CopyContainer_(sc);
-    }
-
-    return *this;
-  }
-/*
-
-  SequenceContainer(SequenceContainer &&v) { *this = std::move(v); }
-
-  SequenceContainer &operator=(SequenceContainer &&v) noexcept {
-    iterator iter;
-
-    DeleteContainer_();
-    if (this != &v) {
-      SetProtectedFields_(v.size_, v.capacity_, &v.container_);
-      v.SetProtectedFields_(0U, 0U, &iter);
+      SetProtectedFields_(sc.size_, sc.head_, sc.tail_);
+      sc.SetProtectedFields_(0U, nullptr, nullptr);
     } else {
-      SetProtectedFields_(0U, 0U, &iter);
+      SetProtectedFields_(0U, nullptr, nullptr);
     }
 
     return *this;
   }
 
+/*
   reference Front() noexcept { return *Begin(); }
   const_reference Front() const noexcept { return *Begin(); }
 
@@ -114,7 +102,7 @@ class SequenceContainer {
   }
 */
  protected:
-  size_type size_ = 0;
+  size_type size_ = 0U;
   value_type *head_ = nullptr;
   value_type *tail_ = nullptr;
 
@@ -135,16 +123,13 @@ class SequenceContainer {
            item++, ++iter)
         *iter = *item;
   }
-/*
-  void DeleteContainer_() noexcept { container_.Delete(); }
 
-  void SetProtectedFields_(size_type size, size_type capacity,
-                           I *head) noexcept {
+  void SetProtectedFields_(size_type size, value_type *head, value_type *tail) noexcept {
     size_ = size;
-    capacity_ = capacity;
-    if (head) container_ = *head;
+    head_ = head;
+    tail_ = tail;
   }
-*/
+
   void CopyContainer_(const SequenceContainer &sc) noexcept {
     auto iter = Begin();
     if (iter != End())
