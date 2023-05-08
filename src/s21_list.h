@@ -1,140 +1,150 @@
 #ifndef SRC_S21_LIST_H
 #define SRC_S21_LIST_H
 
-#include <memory>
 #include <stdexcept>
 
-#include "./s21_listiterator.h"
 #include "./s21_sequence_container.h"
+#include "./s21_list_allocate.h"
+#include "./s21_list_iterator.h"
 
 namespace S21 {
 template <class T>
-class List : public SequenceContainer<T, ListIterator<T> *> {
+class Vector
+    : public SequenceContainer<T, ListIterator<T>, ListIterator<const T>,
+                               ListAllocate<T>> {
   using value_type = T;
   using reference = T &;
   using const_reference = const T &;
   using iterator = ListIterator<T>;
+  using const_iterator = ListIterator<const T>;
   using size_type = size_t;
+  using LA = ListAllocate<T>;
+  using SC = SequenceContainer<T, ListIterator<T>, ListIterator<const T>,
+                               ListAllocate<T>>;
 
  public:
-  List() : SequenceContainer<T, ListIterator<T> *>(true) {}
+  List() : SC() {}
 
-  explicit List(size_type n)
-      : SequenceContainer<T, ListIterator<T> *>(n, true) {}
+  explicit List(size_type n) : SC(n) {}
 
-  /*
-    explicit List(std::initializer_list<value_type> const &items)
-        : SequenceContainer<T, T *>(items) {}
+  explicit List(std::initializer_list<value_type> const &items)
+      : SC(items) {}
 
-    List(const List &v) : List() { *this = v; }
+  List(const List &l) : SC(l) {}
 
-    List(List &&v) : List() { *this = std::move(v); }
+  List(List &&v) noexcept { *this = std::move(l); }
 
-    ~List() {}
+  ~List() {}
 
-    List &operator=(const List &v) {
-      return (List &)SequenceContainer<T, T *>::Copy(v);
+  List &operator=(const List &v) {
+    if (this != &l) *this = List(l);
+
+    return *this;
+  }
+
+  List &operator=(List &&l) noexcept {
+    LA::Delete(this->head_);
+    if (this != &l) {
+      SetProtectedFields_(l.size_, l.head_, l.tail_);
+      l.SetProtectedFields_(0U, nullptr, nullptr);
+    } else {
+      SetProtectedFields_(0U, nullptr, nullptr);
     }
 
-    List &operator=(List &&v) {
-      return (List &)SequenceContainer<T, T *>::Move(v);
+    return *this;
+  }
+
+  reference At(size_type pos) {
+    iterator iter;
+
+    CheckSizeBounds_(pos);
+
+    iter = this->Begin();
+    iter = iter + pos;
+
+    return *iter;
+  }
+  const_reference At(size_type pos) const {
+    const_iterator iter;
+
+    CheckSizeBounds_(pos);
+
+    iter = this->Begin();
+    iter = iter + pos;
+
+    return *iter;
+  }
+
+  reference operator[](size_type pos) noexcept {
+    iterator iter;
+
+    iter = this->Begin();
+    iter = iter + pos;
+
+    return *iter;
+  }
+
+  const_reference operator[](size_type pos) const noexcept {
+    const_iterator iter;
+
+    iter = this->Begin();
+    iter = iter + pos;
+
+    return *iter;
+
+  }
+
+  T *Data() noexcept { return this->head_; }
+  const T *Data() const noexcept { return this->head_; }
+
+  size_type MaxSize() const noexcept {
+    std::allocator<value_type> alloc;
+
+    return alloc.max_size();
+  }
+/*
+  void Clear() noexcept {
+    this->size_ = 0;
+    this->tail_ = VA::SetTail(this->head_, this->size_);
+  }
+*/
+  iterator Insert(iterator pos, const_reference value) {
+    iterator begin;
+    iterator end;
+
+    begin = this->Begin();
+    end = this->End();
+    if ((this->size_ == 0) || (pos >= begin && pos <= end)) {
+
+        LA::AddNewItem(this->tail_);
+        end = this->End();
+
+      for (auto iter = end - 1; iter > pos; --iter) *iter = *(iter - 1);
+      *pos = value;
+      this->size_ += 1;
     }
 
-    reference At(size_type pos) {
-      CheckSizeBounds_(pos);
+    return pos;
+  }
 
-      return SequenceContainer<T, T *>::array_[pos];
-    }
-    const_reference At(size_type pos) const {
-      CheckSizeBounds_(pos);
+  void PushBack(const_reference value) { Insert(this->End(), value); }
 
-      return SequenceContainer<T, T *>::array_[pos];
-    }
+  void Swap(List &other) {
+    SC::Swap(other, other.size_);
+  }
 
-    reference operator[](size_type pos) noexcept {
-      return SequenceContainer<T, T *>::array_[pos];
-    }
-    const_reference operator[](size_type pos) const noexcept {
-      return SequenceContainer<T, T *>::array_[pos];
-    }
+ private:
+  void SetProtectedFields_(size_type size, value_type *head, value_type *tail) noexcept {
+    this->size_ = size;
+    this->head_ = head;
+    this->tail_ = tail;
+  }
 
-    T *Data() noexcept { return SequenceContainer<T, T *>::array_; }
-    const T *Data() const noexcept { return SequenceContainer<T, T *>::array_; }
-
-    size_type MaxSize() const noexcept {
-      std::allocator<value_type> alloc;
-
-      return alloc.max_size();
-    }
-
-    void Reserve(size_type size) {
-      if (size > SequenceContainer<T, T *>::capacity_) Reserve_(size);
-    }
-
-    size_type Capacity() const noexcept {
-      return SequenceContainer<T, T *>::capacity_;
-    }
-
-    void ShrinkToFit() {
-      if (SequenceContainer<T, T *>::capacity_ > SequenceContainer<T, T
-   *>::size_) Reserve_(SequenceContainer<T, T *>::size_);
-    }
-
-    void Clear() noexcept { SequenceContainer<T, T *>::size_ = 0; }
-
-    iterator Insert(iterator pos, const_reference value) {
-      auto begin = SequenceContainer<T, T *>::Begin();
-      auto end = SequenceContainer<T, T *>::End();
-      if ((SequenceContainer<T, T *>::size_ == 0) ||
-          (pos >= begin && pos <= end)) {
-        if (SequenceContainer<T, T *>::size_ ==
-            SequenceContainer<T, T *>::capacity_) {
-          if (SequenceContainer<T, T *>::capacity_ > 0)
-            SequenceContainer<T, T *>::capacity_ *= 2;
-          else
-            SequenceContainer<T, T *>::capacity_ = 1;
-          Reserve_(SequenceContainer<T, T *>::capacity_);
-          end = SequenceContainer<T, T *>::End();
-          pos += SequenceContainer<T, T *>::Begin() - begin;
-        }
-        for (auto iter = end; iter > pos; --iter) *iter = *(iter - 1);
-        *pos = value;
-        SequenceContainer<T, T *>::size_ += 1;
-      }
-
-      return pos;
-    }
-
-    void PushBack(const_reference value) {
-      Insert(SequenceContainer<T, T *>::End(), value);
-    }
-
-   private:
-    void CopyVector_(const List &v) noexcept {
-      int m;
-
-      m = std::min(v.size_,
-                   std::min(SequenceContainer<T, T *>::capacity_, v.capacity_));
-      if (SequenceContainer<T, T *>::array_) {
-        for (auto j = 0; j < m; j++)
-          SequenceContainer<T, T *>::array_[j] = v.array_[j];
-        SequenceContainer<T, T *>::size_ = m;
-      }
-    }
-
-    void CheckSizeBounds_(size_type pos) const {
-      if (pos >= SequenceContainer<T, T *>::size_)
-        throw std::out_of_range(
-            "Incorrect input, index is outside the vector size");
-    }
-
-    void Reserve_(size_type size) {
-      List vector(size);
-
-      vector.CopyVector_(*this);
-      *this = std::move(vector);
-    }
-  */
+  void CheckSizeBounds_(size_type pos) const {
+    if (pos >= this->size_)
+      throw std::out_of_range(
+          "Incorrect input, index is outside the vector size");
+  }
 };
 }  // namespace S21
 
