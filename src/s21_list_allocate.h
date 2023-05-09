@@ -1,25 +1,23 @@
 #ifndef SRC_S21_LISTALLOCATE_H
 #define SRC_S21_LISTALLOCATE_H
 
-//#include "./s21_list_iterator.h"
-
 template <class T>
 struct Node {
   T value;
   Node *prev;
   Node *next;
-}
+};
 
 namespace S21 {
 template <class T>
 class ListAllocate {
-  //using iterator = ListIterator<T>;
   using value_type = struct Node<T>;
   using size_type = size_t;
 
  public:
-  static value_type *Allocate(size_type capacity, value_type *tail) {
+  static std::tuple<value_type *, value_type *> Allocate(size_type capacity) {
     value_type *head;
+    value_type *tail;
     value_type *item;
 
     head = new value_type;
@@ -36,7 +34,7 @@ class ListAllocate {
     return head;
   }
 
-  static void AddNewlItem(value_type *tail) {
+  static void Append(value_type *tail) {
     value_type *item;
 
     item = new value_type;

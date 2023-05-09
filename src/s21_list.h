@@ -3,15 +3,14 @@
 
 #include <stdexcept>
 
-#include "./s21_sequence_container.h"
 #include "./s21_list_allocate.h"
 #include "./s21_list_iterator.h"
+#include "./s21_sequence_container.h"
 
 namespace S21 {
 template <class T>
-class Vector
-    : public SequenceContainer<T, ListIterator<T>, ListIterator<const T>,
-                               ListAllocate<T>> {
+class List : public SequenceContainer<T, ListIterator<T>, ListIterator<const T>,
+                                      ListAllocate<T>> {
   using value_type = T;
   using reference = T &;
   using const_reference = const T &;
@@ -27,16 +26,15 @@ class Vector
 
   explicit List(size_type n) : SC(n) {}
 
-  explicit List(std::initializer_list<value_type> const &items)
-      : SC(items) {}
+  explicit List(std::initializer_list<value_type> const &items) : SC(items) {}
 
-  List(const List &l) : SC(l) {}
+  List(const List &l) : SC(l, l.size_) {}
 
-  List(List &&v) noexcept { *this = std::move(l); }
+  List(List &&l) noexcept { *this = std::move(l); }
 
   ~List() {}
 
-  List &operator=(const List &v) {
+  List &operator=(const List &l) {
     if (this != &l) *this = List(l);
 
     return *this;
@@ -91,7 +89,6 @@ class Vector
     iter = iter + pos;
 
     return *iter;
-
   }
 
   T *Data() noexcept { return this->head_; }
@@ -102,12 +99,12 @@ class Vector
 
     return alloc.max_size();
   }
-/*
-  void Clear() noexcept {
-    this->size_ = 0;
-    this->tail_ = VA::SetTail(this->head_, this->size_);
-  }
-*/
+  /*
+    void Clear() noexcept {
+      this->size_ = 0;
+      this->tail_ = VA::SetTail(this->head_, this->size_);
+    }
+  */
   iterator Insert(iterator pos, const_reference value) {
     iterator begin;
     iterator end;
@@ -115,9 +112,8 @@ class Vector
     begin = this->Begin();
     end = this->End();
     if ((this->size_ == 0) || (pos >= begin && pos <= end)) {
-
-        LA::AddNewItem(this->tail_);
-        end = this->End();
+      LA::Append(this->tail_);
+      end = this->End();
 
       for (auto iter = end - 1; iter > pos; --iter) *iter = *(iter - 1);
       *pos = value;
@@ -129,12 +125,11 @@ class Vector
 
   void PushBack(const_reference value) { Insert(this->End(), value); }
 
-  void Swap(List &other) {
-    SC::Swap(other, other.size_);
-  }
+  void Swap(List &other) { SC::Swap(other, other.size_); }
 
  private:
-  void SetProtectedFields_(size_type size, value_type *head, value_type *tail) noexcept {
+  void SetProtectedFields_(size_type size, value_type *head,
+                           value_type *tail) noexcept {
     this->size_ = size;
     this->head_ = head;
     this->tail_ = tail;

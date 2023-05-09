@@ -4,32 +4,38 @@
 namespace S21 {
 template <class T>
 class VectorAllocate {
-  using value_type = T;
-  using size_type = size_t;
-
  public:
-  static value_type *Allocate(size_type capacity) {
-    value_type *head;
+  VectorAllocate() {}
 
-    head = new value_type[capacity + 1]{};
+  ~VectorAllocate() {}
 
-    return head;
+  static std::tuple<T *, T *> Allocate(size_t capacity) {
+    T *head;
+    T *tail;
+
+    head = new T[capacity + 1]{};
+    tail = SetTail(head, capacity);
+
+    return {head, tail};
   }
 
-  static value_type *SetTail(value_type *head, size_type size) {
-    value_type *tail;
+  static T *SetTail(T *head, T size) {
+    T *tail;
 
     tail = head + size;
 
     return tail;
   }
 
-  static void Delete(value_type *array) noexcept {
+  static void Delete(T *array) noexcept {
     if (array) {
       delete[] array;
       array = nullptr;
     }
   }
+
+  T *head_ = nullptr;
+  T *tail_ = nullptr;
 };
 }  // namespace S21
 

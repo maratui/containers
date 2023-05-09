@@ -23,14 +23,17 @@ class Vector
                                VectorAllocate<T>>;
 
  public:
-  Vector() : SC() {}
+  Vector() {}
 
   explicit Vector(size_type n) : SC(n), capacity_(n) {}
 
   explicit Vector(std::initializer_list<value_type> const &items)
       : SC(items), capacity_(items.size()) {}
 
-  Vector(const Vector &v) : SC(v, v.capacity_), capacity_(v.capacity_) {}
+  Vector(const Vector &v) : SC(v, v.capacity_), capacity_(v.capacity_) {
+    this->tail_ = VA::SetTail(this->head_, this->size_);
+    this->container.tail_ = VA::SetTail(this->container.head_, this->size_);
+  }
 
   Vector(Vector &&v) noexcept { *this = std::move(v); }
 
@@ -44,6 +47,7 @@ class Vector
 
   Vector &operator=(Vector &&v) noexcept {
     VA::Delete(this->head_);
+    // VA::Delete(this->container.head_);
     if (this != &v) {
       SetProtectedFields_(v.size_, v.head_, v.tail_, v.capacity_);
       v.SetProtectedFields_(0U, nullptr, nullptr, 0U);
@@ -55,19 +59,18 @@ class Vector
   }
 
   reference At(size_type pos) {
-    iterator iter;
-
     CheckSizeBounds_(pos);
 
-    iter = this->Begin();
-    iter = iter + pos;
-
-    return *iter;
+    return (*this)[pos];
   }
   const_reference At(size_type pos) const {
-    const_iterator iter;
-
     CheckSizeBounds_(pos);
+
+    return (*this)[pos];
+  }
+
+  reference operator[](size_type pos) noexcept {
+    iterator iter;
 
     iter = this->Begin();
     iter = iter + pos;
@@ -75,10 +78,13 @@ class Vector
     return *iter;
   }
 
-  reference operator[](size_type pos) noexcept { return *(this->head_ + pos); }
-
   const_reference operator[](size_type pos) const noexcept {
-    return *(this->head_ + pos);
+    const_iterator iter;
+
+    iter = this->Begin();
+    iter = iter + pos;
+
+    return *iter;
   }
 
   T *Data() noexcept { return this->head_; }
@@ -156,6 +162,9 @@ class Vector
     this->head_ = head;
     this->tail_ = tail;
     capacity_ = capacity;
+
+    // this->container.head_ = head;
+    // this->container.tail_ = tail;
   }
 
   void CheckSizeBounds_(size_type pos) const {

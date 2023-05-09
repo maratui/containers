@@ -14,8 +14,10 @@ class SequenceContainer {
  public:
   explicit SequenceContainer() {}
 
-  explicit SequenceContainer(size_type n)
-      : size_(n), head_(A::Allocate(n)), tail_(A::SetTail(head_, n)) {}
+  explicit SequenceContainer(size_type n) : size_(n) {
+    std::tie(head_, tail_) = A::Allocate(n);
+    std::tie(container.head_, container.tail_) = A::Allocate(n);
+  }
 
   explicit SequenceContainer(std::initializer_list<value_type> const &items)
       : SequenceContainer(items.size()) {
@@ -23,15 +25,18 @@ class SequenceContainer {
   }
 
   SequenceContainer(const SequenceContainer &sc, const size_type capacity)
-      : size_(sc.size_),
-        head_(A::Allocate(capacity)),
-        tail_(A::SetTail(head_, size_)) {
+      : size_(sc.size_) {
+    std::tie(head_, tail_) = A::Allocate(capacity);
+    std::tie(container.head_, container.tail_) = A::Allocate(capacity);
     CopyContainer_(sc);
   }
 
   SequenceContainer(SequenceContainer &&sc) noexcept { *this = std::move(sc); }
 
-  ~SequenceContainer() { A::Delete(head_); }
+  ~SequenceContainer() {
+    A::Delete(head_);
+    A::Delete(container.head_);
+  }
 
   SequenceContainer &operator=(const SequenceContainer &sc) {
     if (this != &sc) *this = SequenceContainer(sc);
@@ -41,6 +46,7 @@ class SequenceContainer {
 
   SequenceContainer &operator=(SequenceContainer &&sc) noexcept {
     A::Delete(head_);
+    // A::Delete(container.head_);
     if (this != &sc) {
       SetProtectedFields_(sc.size_, sc.head_, sc.tail_);
       sc.SetProtectedFields_(0U, nullptr, nullptr);
@@ -88,6 +94,7 @@ class SequenceContainer {
     for (auto iter = pos; iter < end; ++iter) *iter = *(iter + 1);
     size_ -= 1;
     tail_ = A::SetTail(head_, size_);
+    container.tail_ = A::SetTail(container.head_, size_);
   }
 
   void PopBack() noexcept { Erase(--End()); }
@@ -103,6 +110,7 @@ class SequenceContainer {
   size_type size_ = 0U;
   value_type *head_ = nullptr;
   value_type *tail_ = nullptr;
+  A container;
 
  private:
   void InitializeContainer_(
@@ -119,6 +127,9 @@ class SequenceContainer {
     size_ = size;
     head_ = head;
     tail_ = tail;
+
+    // container.head_ = head;
+    // container.tail_ = tail;
   }
 
   void CopyContainer_(const SequenceContainer &sc) noexcept {

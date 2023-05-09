@@ -21,12 +21,8 @@ class VectorIterator {
 
   //---------------------------------------------------------------------------
 
-  friend reference operator*(VectorIterator &vi) noexcept {
-    return *(vi.item_);
-  }
-  friend reference operator*(VectorIterator &&vi) noexcept {
-    return *(vi.item_);
-  }
+  friend reference operator*(VectorIterator &vi) noexcept { return *vi.item_; }
+  friend reference operator*(VectorIterator &&vi) noexcept { return *vi; }
 
   //---------------------------------------------------------------------------
 
@@ -36,9 +32,7 @@ class VectorIterator {
     return vi;
   }
   friend VectorIterator &operator++(VectorIterator &&vi) noexcept {
-    vi.item_ = vi.item_ + 1;
-
-    return vi;
+    return ++vi;
   }
 
   friend VectorIterator &operator--(VectorIterator &vi) noexcept {
@@ -47,9 +41,7 @@ class VectorIterator {
     return vi;
   }
   friend VectorIterator &operator--(VectorIterator &&vi) noexcept {
-    vi.item_ = vi.item_ - 1;
-
-    return vi;
+    return --vi;
   }
 
   //---------------------------------------------------------------------------
@@ -57,16 +49,12 @@ class VectorIterator {
   size_type operator+(VectorIterator &vi) noexcept {
     return this->item_ + vi.item_;
   }
-  size_type operator+(VectorIterator &&vi) noexcept {
-    return this->item_ + vi.item_;
-  }
+  size_type operator+(VectorIterator &&vi) noexcept { return *this + vi; }
 
   size_type operator-(VectorIterator &vi) noexcept {
     return this->item_ - vi.item_;
   }
-  size_type operator-(VectorIterator &&vi) noexcept {
-    return this->item_ - vi.item_;
-  }
+  size_type operator-(VectorIterator &&vi) noexcept { return *this - vi; }
 
   //---------------------------------------------------------------------------
 
@@ -87,40 +75,28 @@ class VectorIterator {
   bool operator==(VectorIterator &vi) noexcept {
     return this->item_ == vi.item_;
   }
-  bool operator==(VectorIterator &&vi) noexcept {
-    return this->item_ == vi.item_;
-  }
+  bool operator==(VectorIterator &&vi) noexcept { return *this == vi; }
 
   bool operator!=(VectorIterator &vi) noexcept {
     return !(this->item_ == vi.item_);
   }
-  bool operator!=(VectorIterator &&vi) noexcept {
-    return !(this->item_ == vi.item_);
-  }
+  bool operator!=(VectorIterator &&vi) noexcept { return *this != vi; }
 
   bool operator>=(VectorIterator &vi) noexcept {
     return this->item_ >= vi.item_;
   }
-  bool operator>=(VectorIterator &&vi) noexcept {
-    return this->item_ >= vi.item_;
-  }
+  bool operator>=(VectorIterator &&vi) noexcept { return *this >= vi; }
 
   bool operator<=(VectorIterator &vi) noexcept {
     return this->item_ <= vi.item_;
   }
-  bool operator<=(VectorIterator &&vi) noexcept {
-    return this->item_ <= vi.item_;
-  }
+  bool operator<=(VectorIterator &&vi) noexcept { return *this <= vi; }
 
   bool operator>(VectorIterator &vi) noexcept { return this->item_ > vi.item_; }
-  bool operator>(VectorIterator &&vi) noexcept {
-    return this->item_ > vi.item_;
-  }
+  bool operator>(VectorIterator &&vi) noexcept { return *this > vi; }
 
   bool operator<(VectorIterator &vi) noexcept { return this->item_ < vi.item_; }
-  bool operator<(VectorIterator &&vi) noexcept {
-    return this->item_ < vi.item_;
-  }
+  bool operator<(VectorIterator &&vi) noexcept { return *this < vi; }
 
   //---------------------------------------------------------------------------
 
