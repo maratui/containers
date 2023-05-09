@@ -5,20 +5,22 @@
 
 #include "./s21_sequence_container.h"
 #include "./s21_vector_allocate.h"
+#include "./s21_vector_const_iterator.h"
 #include "./s21_vector_iterator.h"
 
 namespace S21 {
 template <class T>
-class Vector : public SequenceContainer<T, VectorIterator<T>, VectorIterator<T>,
-                                        VectorAllocate<T>> {
+class Vector
+    : public SequenceContainer<T, VectorIterator<T>, VectorConstIterator<T>,
+                               VectorAllocate<T>> {
   using value_type = T;
   using reference = T &;
   using const_reference = const T &;
   using iterator = VectorIterator<T>;
-  using const_iterator = VectorIterator<T>;
+  using const_iterator = VectorConstIterator<T>;
   using size_type = size_t;
   using VA = VectorAllocate<T>;
-  using SC = SequenceContainer<T, VectorIterator<T>, VectorIterator<T>,
+  using SC = SequenceContainer<T, VectorIterator<T>, VectorConstIterator<T>,
                                VectorAllocate<T>>;
 
  public:

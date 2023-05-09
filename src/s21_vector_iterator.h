@@ -6,7 +6,6 @@
 namespace S21 {
 template <class T>
 class VectorIterator {
-  using value_type = T;
   using reference = T &;
   using size_type = size_t;
 
