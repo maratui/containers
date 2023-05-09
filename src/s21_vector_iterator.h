@@ -1,6 +1,8 @@
 #ifndef SRC_S21_VECTORITERATOR_H
 #define SRC_S21_VECTORITERATOR_H
 
+#include "./s21_vector_allocate.h"
+
 namespace S21 {
 template <class T>
 class VectorIterator {
@@ -11,7 +13,7 @@ class VectorIterator {
  public:
   VectorIterator() {}
 
-  VectorIterator(value_type *ptr) : item_(ptr) {}
+  VectorIterator(VectorAllocate<T> *ptr) : item_(ptr) {}
 
   ~VectorIterator() {}
 
@@ -101,7 +103,7 @@ class VectorIterator {
   //---------------------------------------------------------------------------
 
  private:
-  value_type *item_ = nullptr;
+  VectorAllocate<T> *item_ = nullptr;
 };
 }  // namespace S21
 

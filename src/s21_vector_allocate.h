@@ -9,9 +9,9 @@ class VectorAllocate {
 
   ~VectorAllocate() {}
 
-  static std::tuple<T *, T *> Allocate(size_t capacity) {
-    T *head;
-    T *tail;
+  static std::tuple<VectorAllocate *, VectorAllocate *> Allocate(size_t capacity) {
+    VectorAllocate *head;
+    VectorAllocate *tail;
 
     head = new T[capacity + 1]{};
     tail = SetTail(head, capacity);
@@ -19,23 +19,22 @@ class VectorAllocate {
     return {head, tail};
   }
 
-  static T *SetTail(T *head, T size) {
-    T *tail;
+  static VectorAllocate *SetTail(VectorAllocate *head, VectorAllocate size) {
+    VectorAllocate *tail;
 
     tail = head + size;
 
     return tail;
   }
 
-  static void Delete(T *array) noexcept {
+  static void Delete(VectorAllocate *array) noexcept {
     if (array) {
       delete[] array;
       array = nullptr;
     }
   }
 
-  T *head_ = nullptr;
-  T *tail_ = nullptr;
+  T item = {};
 };
 }  // namespace S21
 

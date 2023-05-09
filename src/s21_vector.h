@@ -12,6 +12,7 @@ template <class T>
 class Vector
     : public SequenceContainer<T, VectorIterator<T>, VectorIterator<const T>,
                                VectorAllocate<T>> {
+  using item_type = VectorAllocate<T>;
   using value_type = T;
   using reference = T &;
   using const_reference = const T &;
@@ -32,7 +33,7 @@ class Vector
 
   Vector(const Vector &v) : SC(v, v.capacity_), capacity_(v.capacity_) {
     this->tail_ = VA::SetTail(this->head_, this->size_);
-    this->container.tail_ = VA::SetTail(this->container.head_, this->size_);
+    //this->container.tail_ = VA::SetTail(this->container.head_, this->size_);
   }
 
   Vector(Vector &&v) noexcept { *this = std::move(v); }
@@ -91,7 +92,7 @@ class Vector
   const T *Data() const noexcept { return this->head_; }
 
   size_type MaxSize() const noexcept {
-    std::allocator<value_type> alloc;
+    std::allocator<item_type> alloc;
 
     return alloc.max_size();
   }
@@ -156,7 +157,7 @@ class Vector
     this->tail_ = VA::SetTail(this->head_, this->size_);
   }
 
-  void SetProtectedFields_(size_type size, value_type *head, value_type *tail,
+  void SetProtectedFields_(size_type size, item_type *head, item_type *tail,
                            size_type capacity) noexcept {
     this->size_ = size;
     this->head_ = head;
