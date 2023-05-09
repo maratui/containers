@@ -9,22 +9,20 @@
 
 namespace S21 {
 template <class T>
-class Vector
-    : public SequenceContainer<T, VectorIterator<T>, VectorIterator<const T>,
-                               VectorAllocate<T>> {
-  using item_type = VectorAllocate<T>;
+class Vector : public SequenceContainer<T, VectorIterator<T>, VectorIterator<T>,
+                                        VectorAllocate<T>> {
   using value_type = T;
   using reference = T &;
   using const_reference = const T &;
   using iterator = VectorIterator<T>;
-  using const_iterator = VectorIterator<const T>;
+  using const_iterator = VectorIterator<T>;
   using size_type = size_t;
   using VA = VectorAllocate<T>;
-  using SC = SequenceContainer<T, VectorIterator<T>, VectorIterator<const T>,
+  using SC = SequenceContainer<T, VectorIterator<T>, VectorIterator<T>,
                                VectorAllocate<T>>;
 
  public:
-  Vector() {}
+  Vector() : SC() {}
 
   explicit Vector(size_type n) : SC(n), capacity_(n) {}
 
@@ -33,7 +31,7 @@ class Vector
 
   Vector(const Vector &v) : SC(v, v.capacity_), capacity_(v.capacity_) {
     this->tail_ = VA::SetTail(this->head_, this->size_);
-    //this->container.tail_ = VA::SetTail(this->container.head_, this->size_);
+    // this->container.tail_ = VA::SetTail(this->container.head_, this->size_);
   }
 
   Vector(Vector &&v) noexcept { *this = std::move(v); }
@@ -88,11 +86,11 @@ class Vector
     return *iter;
   }
 
-  T *Data() noexcept { return this->head_; }
-  const T *Data() const noexcept { return this->head_; }
+  T *Data() noexcept { return (T *)this->head_; }
+  const T *Data() const noexcept { return (T *)this->head_; }
 
   size_type MaxSize() const noexcept {
-    std::allocator<item_type> alloc;
+    std::allocator<VectorAllocate<T>> alloc;
 
     return alloc.max_size();
   }
@@ -157,7 +155,8 @@ class Vector
     this->tail_ = VA::SetTail(this->head_, this->size_);
   }
 
-  void SetProtectedFields_(size_type size, item_type *head, item_type *tail,
+  void SetProtectedFields_(size_type size, VectorAllocate<T> *head,
+                           VectorAllocate<T> *tail,
                            size_type capacity) noexcept {
     this->size_ = size;
     this->head_ = head;

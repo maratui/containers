@@ -17,7 +17,7 @@ class SequenceContainer {
 
   explicit SequenceContainer(size_type n) : size_(n) {
     std::tie(head_, tail_) = A::Allocate(n);
-    //std::tie(container.head_, container.tail_) = A::Allocate(n);
+    // std::tie(container.head_, container.tail_) = A::Allocate(n);
   }
 
   explicit SequenceContainer(std::initializer_list<value_type> const &items)
@@ -28,7 +28,7 @@ class SequenceContainer {
   SequenceContainer(const SequenceContainer &sc, const size_type capacity)
       : size_(sc.size_) {
     std::tie(head_, tail_) = A::Allocate(capacity);
-    //std::tie(container.head_, container.tail_) = A::Allocate(capacity);
+    // std::tie(container.head_, container.tail_) = A::Allocate(capacity);
     CopyContainer_(sc);
   }
 
@@ -36,7 +36,7 @@ class SequenceContainer {
 
   ~SequenceContainer() {
     A::Delete(head_);
-    //A::Delete(container.head_);
+    // A::Delete(container.head_);
   }
 
   SequenceContainer &operator=(const SequenceContainer &sc) {
@@ -95,7 +95,7 @@ class SequenceContainer {
     for (auto iter = pos; iter < end; ++iter) *iter = *(iter + 1);
     size_ -= 1;
     tail_ = A::SetTail(head_, size_);
-    //container.tail_ = A::SetTail(container.head_, size_);
+    // container.tail_ = A::SetTail(container.head_, size_);
   }
 
   void PopBack() noexcept { Erase(--End()); }

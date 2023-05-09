@@ -19,11 +19,13 @@ class VectorIterator {
 
   //---------------------------------------------------------------------------
 
-  reference operator[](size_type pos) noexcept { return *(item_ + pos); }
+  reference operator[](size_type pos) noexcept { return (*(item_ + pos)).item; }
 
   //---------------------------------------------------------------------------
 
-  friend reference operator*(VectorIterator &vi) noexcept { return *vi.item_; }
+  friend reference operator*(VectorIterator &vi) noexcept {
+    return (*vi.item_).item;
+  }
   friend reference operator*(VectorIterator &&vi) noexcept { return *vi; }
 
   //---------------------------------------------------------------------------

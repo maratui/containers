@@ -8,7 +8,7 @@ template <typename T>
 void test_vector(std::initializer_list<T> const& items) {
   T temp;
   //---------------------------------------------------------------------------
-std::cout << std::endl << sizeof(S21::VectorAllocate<T>) << std::endl << std::endl;
+
   std::vector<T> std_default_constructor;
   S21::Vector<T> s21_default_constructor;
   EXPECT_EQ(std_default_constructor.size(), s21_default_constructor.Size());

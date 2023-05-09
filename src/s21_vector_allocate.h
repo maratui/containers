@@ -9,17 +9,18 @@ class VectorAllocate {
 
   ~VectorAllocate() {}
 
-  static std::tuple<VectorAllocate *, VectorAllocate *> Allocate(size_t capacity) {
+  static std::tuple<VectorAllocate *, VectorAllocate *> Allocate(
+      size_t capacity) {
     VectorAllocate *head;
     VectorAllocate *tail;
 
-    head = new T[capacity + 1]{};
+    head = new VectorAllocate[capacity + 1]{};
     tail = SetTail(head, capacity);
 
     return {head, tail};
   }
 
-  static VectorAllocate *SetTail(VectorAllocate *head, VectorAllocate size) {
+  static VectorAllocate *SetTail(VectorAllocate *head, size_t size) {
     VectorAllocate *tail;
 
     tail = head + size;
