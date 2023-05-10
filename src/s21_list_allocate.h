@@ -31,7 +31,7 @@ class ListAllocate {
     ListAllocate *tail;
 
     tail = head;
-    for (size_t i = 0; i < size; i++) tail = head->next;
+    for (size_t i = 0; i < size; i++) tail = tail->next;
     Delete(tail->next);
     tail->next = nullptr;
 

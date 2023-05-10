@@ -147,8 +147,6 @@ class SequenceContainer {
     return pos;
   }
 
-  void PushBack(const_reference value) { Insert(End(), value); }
-
   void Erase(iterator pos) noexcept {
     auto end = --End();
     for (auto iter = pos; iter < end; ++iter) *iter = *(iter + 1);
@@ -156,13 +154,70 @@ class SequenceContainer {
     tail_ = A::SetTail(head_, size_);
   }
 
+  void PushBack(const_reference value) { Insert(End(), value); }
+
   void PopBack() noexcept { Erase(--End()); }
+
+  void PushFront(const_reference value) { Insert(Begin(), value); }
+
+  void PopFront() noexcept { Erase(Begin()); }
 
   void Swap(SequenceContainer &other) {
     SequenceContainer sc(other);
 
     other = std::move(*this);
     *this = std::move(sc);
+  }
+
+  void reverse() noexcept {
+    auto iter = Begin();
+    auto end = End();
+
+    if (iter != end) {
+      auto size = size_;
+      --end;
+      for (size_type i = 0; i < size; i++, --end, ++iter) {
+        auto temp = *iter;
+        *iter = *end;
+        *end = temp;
+        size--;
+      }
+    }
+  }
+
+  void Unique() noexcept {
+    auto iter = Begin();
+    auto end = End();
+
+    if (iter != end) {
+      ++iter;
+      for (size_type i = 1; i < size_; i++, ++iter) {
+        if (*iter == *(iter - 1)) {
+          Erase(iter);
+          iter = Begin();
+          for (size_type k = 0; k < i; k++, ++iter) {
+          }
+        }
+      }
+    }
+  }
+
+  void Sort() noexcept {
+    auto iter = Begin();
+    auto end = End();
+
+    if (iter != end) {
+      for (size_type i = 0; i < size_ - 1; i++) {
+        for (size_type j = 0; j < size_ - i - 1; j++, ++iter) {
+          if (*iter > *(iter + 1)) {
+            auto temp = *iter;
+            *iter = *(iter + 1);
+            *(iter + 1) = temp;
+          }
+        }
+        iter = Begin();
+      }
+    }
   }
 
  protected:
