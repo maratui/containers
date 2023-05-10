@@ -15,9 +15,8 @@ class SequenceContainer {
  public:
   explicit SequenceContainer() {}
 
-  explicit SequenceContainer(size_type n) : size_(n) {
-    std::tie(head_, tail_) = A::Allocate(n);
-    // std::tie(container.head_, container.tail_) = A::Allocate(n);
+  explicit SequenceContainer(size_type n) : size_(n), capacity_(n) {
+    std::tie(head_, tail_) = A::Allocate(size_, capacity_);
   }
 
   explicit SequenceContainer(std::initializer_list<value_type> const &items)
@@ -25,19 +24,15 @@ class SequenceContainer {
     InitializeContainer_(items);
   }
 
-  SequenceContainer(const SequenceContainer &sc, const size_type capacity)
-      : size_(sc.size_) {
-    std::tie(head_, tail_) = A::Allocate(capacity);
-    // std::tie(container.head_, container.tail_) = A::Allocate(capacity);
+  SequenceContainer(const SequenceContainer &sc)
+      : size_(sc.size_), capacity_(sc.capacity_) {
+    std::tie(head_, tail_) = A::Allocate(size_, capacity_);
     CopyContainer_(sc);
   }
 
   SequenceContainer(SequenceContainer &&sc) noexcept { *this = std::move(sc); }
 
-  ~SequenceContainer() {
-    A::Delete(head_);
-    // A::Delete(container.head_);
-  }
+  ~SequenceContainer() { A::Delete(head_); }
 
   SequenceContainer &operator=(const SequenceContainer &sc) {
     if (this != &sc) *this = SequenceContainer(sc);
@@ -47,15 +42,43 @@ class SequenceContainer {
 
   SequenceContainer &operator=(SequenceContainer &&sc) noexcept {
     A::Delete(head_);
-    // A::Delete(container.head_);
     if (this != &sc) {
-      SetProtectedFields_(sc.size_, sc.head_, sc.tail_);
-      sc.SetProtectedFields_(0U, nullptr, nullptr);
+      SetProtectedFields_(sc.size_, sc.capacity_, sc.head_, sc.tail_);
+      sc.SetProtectedFields_(0U, 0U, nullptr, nullptr);
     } else {
-      SetProtectedFields_(0U, nullptr, nullptr);
+      SetProtectedFields_(0U, 0U, nullptr, nullptr);
     }
 
     return *this;
+  }
+
+  reference At(size_type pos) {
+    CheckSizeBounds_(pos);
+
+    return (*this)[pos];
+  }
+  const_reference At(size_type pos) const {
+    CheckSizeBounds_(pos);
+
+    return (*this)[pos];
+  }
+
+  reference operator[](size_type pos) noexcept {
+    iterator iter;
+
+    iter = Begin();
+    iter = iter + pos;
+
+    return *iter;
+  }
+
+  const_reference operator[](size_type pos) const noexcept {
+    const_iterator iter;
+
+    iter = Begin();
+    iter = iter + pos;
+
+    return *iter;
   }
 
   reference Front() noexcept { return *Begin(); }
@@ -86,22 +109,54 @@ class SequenceContainer {
     return ret;
   }
 
+  size_type MaxSize() const noexcept {
+    std::allocator<item_type> alloc;
+
+    return alloc.max_size();
+  }
+
   bool Empty() const noexcept { return size_ == 0; }
 
   size_type Size() const noexcept { return size_; }
+
+  size_type Capacity() const noexcept { return capacity_; }
+
+  void Clear() noexcept {
+    size_ = 0;
+    tail_ = A::SetTail(head_, size_);
+  }
+
+  iterator Insert(iterator pos, const_reference value) {
+    iterator begin;
+    iterator end;
+
+    begin = Begin();
+    end = End();
+    if ((size_ == 0) || (pos >= begin && pos <= end)) {
+      std::tie(size_, capacity_, head_, tail_) =
+          A::Append(head_, size_, capacity_);
+      end = End();
+      pos = Begin() + (pos - begin);
+      for (auto iter = end - 1; iter > pos; --iter) *iter = *(iter - 1);
+      *pos = value;
+    }
+
+    return pos;
+  }
+
+  void PushBack(const_reference value) { Insert(End(), value); }
 
   void Erase(iterator pos) noexcept {
     auto end = --End();
     for (auto iter = pos; iter < end; ++iter) *iter = *(iter + 1);
     size_ -= 1;
     tail_ = A::SetTail(head_, size_);
-    // container.tail_ = A::SetTail(container.head_, size_);
   }
 
   void PopBack() noexcept { Erase(--End()); }
 
-  void Swap(SequenceContainer &other, size_type other_capacity) {
-    SequenceContainer sc(other, other_capacity);
+  void Swap(SequenceContainer &other) {
+    SequenceContainer sc(other);
 
     other = std::move(*this);
     *this = std::move(sc);
@@ -109,6 +164,7 @@ class SequenceContainer {
 
  protected:
   size_type size_ = 0U;
+  size_type capacity_ = 0U;
   item_type *head_ = nullptr;
   item_type *tail_ = nullptr;
 
@@ -122,14 +178,12 @@ class SequenceContainer {
         *iter = *item;
   }
 
-  void SetProtectedFields_(size_type size, item_type *head,
+  void SetProtectedFields_(size_type size, size_type capacity, item_type *head,
                            item_type *tail) noexcept {
     size_ = size;
+    capacity_ = capacity;
     head_ = head;
     tail_ = tail;
-
-    // container.head_ = head;
-    // container.tail_ = tail;
   }
 
   void CopyContainer_(const SequenceContainer &sc) noexcept {
@@ -137,6 +191,12 @@ class SequenceContainer {
     if (iter != End())
       for (auto item = sc.Begin(), end = sc.End(); item < end; ++item, ++iter)
         *iter = *item;
+  }
+
+  void CheckSizeBounds_(size_type pos) const {
+    if (pos >= this->size_)
+      throw std::out_of_range(
+          "Incorrect input, index is outside the vector size");
   }
 };
 }  // namespace S21
