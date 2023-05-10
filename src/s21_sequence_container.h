@@ -1,6 +1,9 @@
 #ifndef SRC_S21_SEQUENCE_CONTAINER_H
 #define SRC_S21_SEQUENCE_CONTAINER_H
 
+#include <stdexcept>
+#include <tuple>
+
 namespace S21 {
 template <class T, class I, class CI, class A>
 class SequenceContainer {
@@ -134,7 +137,7 @@ class SequenceContainer {
     end = End();
     if ((size_ == 0) || (pos >= begin && pos <= end)) {
       std::tie(size_, capacity_, head_, tail_) =
-          A::Append(head_, size_, capacity_);
+          A::Append(size_, capacity_, head_, tail_);
       end = End();
       pos = Begin() + (pos - begin);
       for (auto iter = end - 1; iter > pos; --iter) *iter = *(iter - 1);

@@ -18,7 +18,7 @@ class VectorIterator {
 
   //---------------------------------------------------------------------------
 
-  reference operator[](size_type pos) noexcept { return (*(item_ + pos)).item; }
+  reference operator[](size_type pos) noexcept { return *(*this + pos); }
 
   //---------------------------------------------------------------------------
 
@@ -49,13 +49,13 @@ class VectorIterator {
 
   //---------------------------------------------------------------------------
 
-  size_type operator+(VectorIterator &vi) noexcept {
-    return this->item_ + vi.item_;
-  }
-  size_type operator+(VectorIterator &&vi) noexcept { return *this + vi; }
-
   size_type operator-(VectorIterator &vi) noexcept {
-    return this->item_ - vi.item_;
+    size_type size;
+
+    size = 0U;
+    if (this->item_ && vi.item_) size = this->item_ - vi.item_;
+
+    return size;
   }
   size_type operator-(VectorIterator &&vi) noexcept { return *this - vi; }
 
@@ -80,25 +80,23 @@ class VectorIterator {
   }
   bool operator==(VectorIterator &&vi) noexcept { return *this == vi; }
 
-  bool operator!=(VectorIterator &vi) noexcept {
-    return !(this->item_ == vi.item_);
-  }
+  bool operator!=(VectorIterator &vi) noexcept { return !(*this == vi); }
   bool operator!=(VectorIterator &&vi) noexcept { return *this != vi; }
 
   bool operator>=(VectorIterator &vi) noexcept {
-    return this->item_ >= vi.item_;
+    return *this > vi || *this == vi;
   }
   bool operator>=(VectorIterator &&vi) noexcept { return *this >= vi; }
 
   bool operator<=(VectorIterator &vi) noexcept {
-    return this->item_ <= vi.item_;
+    return *this < vi || *this == vi;
   }
   bool operator<=(VectorIterator &&vi) noexcept { return *this <= vi; }
 
-  bool operator>(VectorIterator &vi) noexcept { return this->item_ > vi.item_; }
+  bool operator>(VectorIterator &vi) noexcept { return (*this - vi) > 0; }
   bool operator>(VectorIterator &&vi) noexcept { return *this > vi; }
 
-  bool operator<(VectorIterator &vi) noexcept { return this->item_ < vi.item_; }
+  bool operator<(VectorIterator &vi) noexcept { return (vi - *this) > 0; }
   bool operator<(VectorIterator &&vi) noexcept { return *this < vi; }
 
   //---------------------------------------------------------------------------

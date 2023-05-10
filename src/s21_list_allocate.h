@@ -1,58 +1,81 @@
 #ifndef SRC_S21_LISTALLOCATE_H
 #define SRC_S21_LISTALLOCATE_H
 
-template <class T>
-struct Node {
-  T value;
-  Node *prev;
-  Node *next;
-};
+#include <cstddef>
+#include <tuple>
 
 namespace S21 {
 template <class T>
 class ListAllocate {
-  using value_type = struct Node<T>;
-  using size_type = size_t;
-
  public:
-  static std::tuple<value_type *, value_type *> Allocate(size_type capacity) {
-    value_type *head;
-    value_type *tail;
-    value_type *item;
+  ListAllocate() {}
 
-    head = new value_type;
+  ~ListAllocate() {}
+
+  static std::tuple<ListAllocate *, ListAllocate *> Allocate(size_t size,
+                                                             size_t capacity) {
+    ListAllocate *head;
+    ListAllocate *tail;
+
+    size = size;
+    head = new ListAllocate();
     tail = head;
-    for (auto i = 0; i < capacity; i++) {
-      item = new value_type;
-      item->prev = tail;
-      tail->next = item;
-      item->value = {};
-      item->next = nullptr;
-      tail = item;
+    for (size_t i = 0; i < capacity; i++) {
+      tail = Append_(tail);
     }
 
-    return head;
+    return {head, tail};
   }
 
-  static void Append(value_type *tail) {
-    value_type *item;
+  static ListAllocate *SetTail(ListAllocate *head, size_t size) {
+    ListAllocate *tail;
 
-    item = new value_type;
+    tail = head;
+    for (size_t i = 0; i < size; i++) tail = head->next;
+    Delete(tail->next);
+    tail->next = nullptr;
+
+    return tail;
+  }
+
+  static void Delete(ListAllocate *head) noexcept {
+    ListAllocate *item;
+
+    while (head != nullptr) {
+      item = head;
+      head = item->next;
+      delete item;
+    }
+  }
+
+  static std::tuple<size_t, size_t, ListAllocate *, ListAllocate *> Append(
+      size_t size, size_t capacity, ListAllocate *head, ListAllocate *tail) {
+    if (size == 0 && head == nullptr)
+      std::tie(head, tail) = Allocate(1, 1);
+    else
+      tail = Append_(tail);
+    size++;
+    capacity++;
+
+    return {size, capacity, head, tail};
+  }
+
+  T value = {};
+  ListAllocate *prev = {};
+  ListAllocate *next = {};
+
+ private:
+  static ListAllocate *Append_(ListAllocate *tail) {
+    ListAllocate *item;
+
+    item = new ListAllocate();
     item->prev = tail;
     tail->next = item;
     item->value = {};
     item->next = nullptr;
     tail = item;
-  }
 
-  static void Delete(value_type *list) noexcept {
-    value_type *item;
-
-    while (list) {
-      item = list;
-      list = item.next;
-      delete item;
-    }
+    return tail;
   }
 };
 }  // namespace S21

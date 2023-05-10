@@ -1,7 +1,8 @@
 #ifndef SRC_S21_VECTORALLOCATE_H
 #define SRC_S21_VECTORALLOCATE_H
 
-#include <stdarg.h>
+#include <cstddef>
+#include <tuple>
 
 namespace S21 {
 template <class T>
@@ -38,15 +39,9 @@ class VectorAllocate {
   }
 
   static std::tuple<size_t, size_t, VectorAllocate *, VectorAllocate *> Append(
-      VectorAllocate *head, ...) {
+      size_t size, size_t capacity, VectorAllocate *head,
+      VectorAllocate *tail) {
     VectorAllocate *array;
-    VectorAllocate *tail;
-
-    va_list args;
-    va_start(args, head);
-    size_t size = va_arg(args, size_t);
-    size_t capacity = va_arg(args, size_t);
-    va_end(args);
 
     if (size == capacity) {
       if (capacity > 0)

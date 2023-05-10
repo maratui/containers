@@ -10,7 +10,7 @@ clean:
 
 test: clean s21_containers.h
 	mkdir -p build
-	$(CC) $(CFLAGS) vector_tests.cc -o build/tests $(CLIBS)
+	$(CC) $(CFLAGS) vector_tests.cc list_tests.cc -o build/tests $(CLIBS)
 	./build/tests
 
 s21_containers.o: clean

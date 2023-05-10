@@ -6,14 +6,13 @@
 namespace S21 {
 template <class T>
 class ListIterator {
-  using value_type = struct Node<T>;
   using reference = T &;
   using size_type = size_t;
 
  public:
   ListIterator() {}
 
-  ListIterator(value_type *ptr) : item_(ptr) {}
+  ListIterator(ListAllocate<T> *ptr) : item_(ptr) {}
 
   ~ListIterator() {}
 
@@ -23,20 +22,22 @@ class ListIterator {
 
   //---------------------------------------------------------------------------
 
-  friend reference operator*(ListIterator &li) noexcept { return *li.item_; }
+  friend reference operator*(ListIterator &li) noexcept {
+    return (*li.item_).value;
+  }
   friend reference operator*(ListIterator &&li) noexcept { return *li; }
 
   //---------------------------------------------------------------------------
 
   friend ListIterator &operator++(ListIterator &li) noexcept {
-    li.item_ = li.item_.next;
+    li.item_ = li.item_->next;
 
     return li;
   }
   friend ListIterator &operator++(ListIterator &&li) noexcept { return ++li; }
 
   friend ListIterator &operator--(ListIterator &li) noexcept {
-    li.item_ = li.item_.prev;
+    li.item_ = li.item_->prev;
 
     return li;
   }
@@ -82,9 +83,7 @@ class ListIterator {
   bool operator==(ListIterator &li) noexcept { return this->item_ == li.item_; }
   bool operator==(ListIterator &&li) noexcept { return *this == li; }
 
-  bool operator!=(ListIterator &li) noexcept {
-    return !(this->item_ == li.item_);
-  }
+  bool operator!=(ListIterator &li) noexcept { return !(*this == li); }
   bool operator!=(ListIterator &&li) noexcept { return *this != li; }
 
   bool operator>=(ListIterator &li) noexcept {
@@ -106,7 +105,7 @@ class ListIterator {
   //---------------------------------------------------------------------------
 
  private:
-  value_type *item_ = nullptr;
+  ListAllocate<T> *item_ = nullptr;
 };
 }  // namespace S21
 

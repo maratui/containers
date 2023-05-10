@@ -1,8 +1,6 @@
 #ifndef SRC_S21_VECTOR_H
 #define SRC_S21_VECTOR_H
 
-#include <stdexcept>
-
 #include "./s21_sequence_container.h"
 #include "./s21_vector_allocate.h"
 #include "./s21_vector_const_iterator.h"
@@ -14,12 +12,7 @@ class Vector
     : public SequenceContainer<T, VectorIterator<T>, VectorConstIterator<T>,
                                VectorAllocate<T>> {
   using value_type = T;
-  using reference = T &;
-  using const_reference = const T &;
-  using iterator = VectorIterator<T>;
-  using const_iterator = VectorConstIterator<T>;
   using size_type = size_t;
-  using VA = VectorAllocate<T>;
   using SC = SequenceContainer<T, VectorIterator<T>, VectorConstIterator<T>,
                                VectorAllocate<T>>;
 
@@ -68,7 +61,7 @@ class Vector
     for (auto j = 0; j < m; j++) this->head_[j] = v.head_[j];
 
     this->size_ = m;
-    this->tail_ = VA::SetTail(this->head_, this->size_);
+    this->tail_ = VectorAllocate<T>::SetTail(this->head_, this->size_);
   }
 };
 }  // namespace S21
