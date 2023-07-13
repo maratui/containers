@@ -10,7 +10,7 @@
 
 namespace s21 {
 template <class T>
-class Vector : public SequenceContainer<T, T, VectorIterator<T>,
+class vector : public SequenceContainer<T, T, VectorIterator<T>,
                                         VectorConstIterator<T>> {
  public:
   using value_type = T;
@@ -22,9 +22,9 @@ class Vector : public SequenceContainer<T, T, VectorIterator<T>,
   using item_type = T;
   using allocator = VectorAllocator<T>;
 
-  Vector() {}
+  vector() {}
 
-  explicit Vector(size_type n) {
+  explicit vector(size_type n) {
     CheckMaxSize_(n);
 
     this->size_ = n;
@@ -33,12 +33,12 @@ class Vector : public SequenceContainer<T, T, VectorIterator<T>,
         allocator::Allocate(this->size_, capacity_);
   }
 
-  explicit Vector(std::initializer_list<value_type> const &items)
-      : Vector(items.size()) {
+  explicit vector(std::initializer_list<value_type> const &items)
+      : vector(items.size()) {
     this->InitializeContainer_(items);
   }
 
-  Vector(const Vector &v) : capacity_(v.capacity_) {
+  vector(const vector &v) : capacity_(v.capacity_) {
     CheckMaxSize_(capacity_);
 
     this->size_ = v.size_;
@@ -47,11 +47,11 @@ class Vector : public SequenceContainer<T, T, VectorIterator<T>,
     this->CopyContainer_(v);
   }
 
-  Vector(Vector &&v) noexcept { *this = std::move(v); }
+  vector(vector &&v) noexcept { *this = std::move(v); }
 
-  ~Vector() { this->head_ = allocator::Delete(this->head_); }
+  ~vector() { this->head_ = allocator::Delete(this->head_); }
 
-  Vector &operator=(Vector &&v) noexcept {
+  vector &operator=(vector &&v) noexcept {
     this->head_ = allocator::Delete(this->head_);
     if (this != &v) {
       capacity_ = v.capacity_;
@@ -129,7 +129,7 @@ class Vector : public SequenceContainer<T, T, VectorIterator<T>,
     return ret;
   }
 
-  void erace(iterator pos) noexcept override {
+  void erase(iterator pos) noexcept override {
     if (!this->empty()) {
       iterator liter = this->begin();
       iterator riter = this->begin();
@@ -144,8 +144,8 @@ class Vector : public SequenceContainer<T, T, VectorIterator<T>,
     }
   }
 
-  void swap(Vector &other) {
-    Vector v(other);
+  void swap(vector &other) {
+    vector v(other);
 
     other = std::move(*this);
     *this = std::move(v);
@@ -198,7 +198,7 @@ class Vector : public SequenceContainer<T, T, VectorIterator<T>,
   void CheckMaxSize_(size_type size) {
     if (size > this->max_size())
       throw std::length_error(
-          "Incorrect input, cannot create s21::Vector larger than max_size()");
+          "Incorrect input, cannot create s21::vector larger than max_size()");
   }
 
   void CheckSizeBounds_(size_type pos) const {
@@ -208,13 +208,13 @@ class Vector : public SequenceContainer<T, T, VectorIterator<T>,
   }
 
   void Reserve_(size_type size) {
-    Vector vector(size);
+    vector v(size);
 
-    vector.CopyVector_(*this);
-    *this = std::move(vector);
+    v.CopyVector_(*this);
+    *this = std::move(v);
   }
 
-  void CopyVector_(const Vector &v) noexcept {
+  void CopyVector_(const vector &v) noexcept {
     auto iter = this->begin();
     auto v_iter = v.begin();
     size_type m = std::min(v.size_, std::min(capacity_, v.capacity_));

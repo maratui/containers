@@ -1,6 +1,8 @@
 #ifndef S21_CONTAINER_ADAPTOR_H
 #define S21_CONTAINER_ADAPTOR_H
 
+#include <memory>
+
 #include "../s21_allocators/s21_list_allocator.h"
 
 namespace s21 {

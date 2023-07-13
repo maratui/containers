@@ -5,6 +5,7 @@
 #include "./s21_iterator.h"
 
 namespace s21 {
+
 template <class T>
 class ListIterator : public s21::Iterator<T, struct Item<T>> {
  public:

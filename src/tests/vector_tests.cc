@@ -6,66 +6,66 @@ void test_vector(std::initializer_list<T> const &items) {
   //---------------------------------------------------------------------------
 
   std::vector<T> std_default_constructor;
-  s21::Vector<T> s21_default_constructor;
+  s21::vector<T> s21_default_constructor;
   EXPECT_TRUE(ExpectEqualVectorBeginEnd(&std_default_constructor,
                                         &s21_default_constructor));
 
   std::vector<T> const std_const_default_constructor;
-  s21::Vector<T> const s21_const_default_constructor;
+  s21::vector<T> const s21_const_default_constructor;
   EXPECT_TRUE(ExpectEqualVectorBeginEnd(&std_const_default_constructor,
                                         &s21_const_default_constructor));
 
   //---------------------------------------------------------------------------
 
   std::vector<T> std_parameterized_constructor(100);
-  s21::Vector<T> s21_parameterized_constructor(100);
+  s21::vector<T> s21_parameterized_constructor(100);
   EXPECT_TRUE(ExpectEqualVectors(&std_parameterized_constructor,
                                  &s21_parameterized_constructor));
   {
     EXPECT_THROW(std::vector<T> std_parameterized_constructor(
                      std_parameterized_constructor.max_size() + 1),
                  std::length_error);
-    EXPECT_THROW(s21::Vector<T> s21_parameterized_constructor(
+    EXPECT_THROW(s21::vector<T> s21_parameterized_constructor(
                      s21_parameterized_constructor.max_size() + 1),
                  std::length_error);
     try {
-      s21::Vector<T> s21_parameterized_constructor(
+      s21::vector<T> s21_parameterized_constructor(
           s21_parameterized_constructor.max_size() + 1);
     } catch (const std::length_error &e) {
       EXPECT_STREQ(
-          "Incorrect input, cannot create s21::Vector larger than max_size()",
+          "Incorrect input, cannot create s21::vector larger than max_size()",
           e.what());
     }
   }
 
   std::vector<T> const std_const_parameterized_constructor(100);
-  s21::Vector<T> const s21_const_parameterized_constructor(100);
+  s21::vector<T> const s21_const_parameterized_constructor(100);
   EXPECT_TRUE(ExpectEqualVectors(&std_const_parameterized_constructor,
                                  &s21_const_parameterized_constructor));
 
   //---------------------------------------------------------------------------
 
   std::vector<T> std_initializer_list_constructor(items);
-  s21::Vector<T> s21_initializer_list_constructor(items);
+  s21::vector<T> s21_initializer_list_constructor(items);
   EXPECT_TRUE(ExpectEqualVectors(&std_initializer_list_constructor,
                                  &s21_initializer_list_constructor));
 
   std::vector<T> const std_const_initializer_list_constructor(items);
-  s21::Vector<T> const s21_const_initializer_list_constructor(items);
+  s21::vector<T> const s21_const_initializer_list_constructor(items);
   EXPECT_TRUE(ExpectEqualVectors(&std_const_initializer_list_constructor,
                                  &s21_const_initializer_list_constructor));
 
   //---------------------------------------------------------------------------
 
   std::vector<T> std_copy_constructor(std_initializer_list_constructor);
-  s21::Vector<T> s21_copy_constructor(s21_initializer_list_constructor);
+  s21::vector<T> s21_copy_constructor(s21_initializer_list_constructor);
   EXPECT_TRUE(ExpectEqualVectors(&std_initializer_list_constructor,
                                  &s21_initializer_list_constructor));
   EXPECT_TRUE(ExpectEqualVectors(&std_copy_constructor, &s21_copy_constructor));
 
   std::vector<T> const std_const_copy_constructor(
       std_const_initializer_list_constructor);
-  s21::Vector<T> const s21_const_copy_constructor(
+  s21::vector<T> const s21_const_copy_constructor(
       s21_const_initializer_list_constructor);
   EXPECT_TRUE(ExpectEqualVectors(&std_const_initializer_list_constructor,
                                  &s21_const_initializer_list_constructor));
@@ -76,7 +76,7 @@ void test_vector(std::initializer_list<T> const &items) {
 
   std::vector<T> std_move_constructor(
       std::move(std_initializer_list_constructor));
-  s21::Vector<T> s21_move_constructor(
+  s21::vector<T> s21_move_constructor(
       std::move(s21_initializer_list_constructor));
   EXPECT_TRUE(ExpectEqualVectors(&std_initializer_list_constructor,
                                  &s21_initializer_list_constructor));
@@ -84,7 +84,7 @@ void test_vector(std::initializer_list<T> const &items) {
 
   std::vector<T> const std_const_move_constructor(
       std::move(std_const_initializer_list_constructor));
-  s21::Vector<T> const s21_const_move_constructor(
+  s21::vector<T> const s21_const_move_constructor(
       std::move(s21_const_initializer_list_constructor));
   EXPECT_TRUE(ExpectEqualVectors(&std_const_initializer_list_constructor,
                                  &s21_const_initializer_list_constructor));
@@ -94,7 +94,7 @@ void test_vector(std::initializer_list<T> const &items) {
   //---------------------------------------------------------------------------
 
   std::vector<T> std_operator_overload = std::move(std_move_constructor);
-  s21::Vector<T> s21_operator_overload = std::move(s21_move_constructor);
+  s21::vector<T> s21_operator_overload = std::move(s21_move_constructor);
   EXPECT_TRUE(
       ExpectEqualVectors(&std_operator_overload, &s21_operator_overload));
   EXPECT_TRUE(ExpectEqualVectors(&std_move_constructor, &s21_move_constructor));
@@ -320,7 +320,7 @@ void test_vector(std::initializer_list<T> const &items) {
   //---------------------------------------------------------------------------
 
   std_copy_constructor.erase(std_copy_constructor.begin());
-  s21_copy_constructor.erace(s21_copy_constructor.begin());
+  s21_copy_constructor.erase(s21_copy_constructor.begin());
   EXPECT_TRUE(ExpectEqualVectors(&std_copy_constructor, &s21_copy_constructor));
 
   std_pos = std_copy_constructor.begin();
@@ -328,7 +328,7 @@ void test_vector(std::initializer_list<T> const &items) {
   std_copy_constructor.erase(std_pos);
   s21_pos = s21_copy_constructor.begin();
   ++s21_pos;
-  s21_copy_constructor.erace(s21_pos);
+  s21_copy_constructor.erase(s21_pos);
   EXPECT_TRUE(ExpectEqualVectors(&std_copy_constructor, &s21_copy_constructor));
 
   std_pos = std_copy_constructor.end();
@@ -336,7 +336,7 @@ void test_vector(std::initializer_list<T> const &items) {
   std_copy_constructor.erase(std_pos);
   s21_pos = s21_copy_constructor.end();
   --s21_pos;
-  s21_copy_constructor.erace(s21_pos);
+  s21_copy_constructor.erase(s21_pos);
   EXPECT_TRUE(ExpectEqualVectors(&std_copy_constructor, &s21_copy_constructor));
 
   //---------------------------------------------------------------------------

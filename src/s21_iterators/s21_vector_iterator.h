@@ -4,6 +4,7 @@
 #include "./s21_iterator.h"
 
 namespace s21 {
+
 template <class T>
 class VectorIterator : public s21::Iterator<T, T> {
  public:

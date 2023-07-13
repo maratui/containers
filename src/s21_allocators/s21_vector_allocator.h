@@ -1,7 +1,6 @@
 #ifndef S21_VECTOR_ALLOCATOR_H
 #define S21_VECTOR_ALLOCATOR_H
 
-#include <cstddef>
 #include <tuple>
 
 namespace s21 {

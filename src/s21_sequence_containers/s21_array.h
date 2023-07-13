@@ -8,7 +8,7 @@
 
 namespace s21 {
 template <class T, std::size_t N>
-class Array {
+class array {
  public:
   using value_type = T;
   using reference = T &;
@@ -17,19 +17,19 @@ class Array {
   using const_iterator = VectorConstIterator<T>;
   using size_type = std::size_t;
 
-  Array() {}
+  array() {}
 
-  explicit Array(std::initializer_list<value_type> const &items) {
+  explicit array(std::initializer_list<value_type> const &items) {
     InitializeArray_<std::initializer_list<value_type> const &>(items);
   }
 
-  Array(const Array &a) { InitializeArray_<const Array &>(a); }
+  array(const array &a) { InitializeArray_<const array &>(a); }
 
-  Array(Array &&a) noexcept { *this = std::move(a); }
+  array(array &&a) noexcept { *this = std::move(a); }
 
-  ~Array() {}
+  ~array() {}
 
-  Array &operator=(Array &&a) noexcept {
+  array &operator=(array &&a) noexcept {
     std::move(std::begin(a.array_), std::end(a.array_), &array_[0]);
 
     return *this;
@@ -136,8 +136,8 @@ class Array {
     return ret;
   }
 
-  void swap(Array &other) {
-    Array array(other);
+  void swap(array &other) {
+    array array(other);
 
     other = std::move(*this);
     *this = std::move(array);

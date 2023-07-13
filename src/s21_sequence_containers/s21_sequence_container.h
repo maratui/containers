@@ -86,7 +86,7 @@ class SequenceContainer {
 
   virtual iterator insert(iterator pos, const_reference value) = 0;
 
-  virtual void erace(iterator pos) noexcept = 0;
+  virtual void erase(iterator pos) noexcept = 0;
 
   void push_back(const_reference value) { insert(end(), value); }
 
@@ -94,7 +94,7 @@ class SequenceContainer {
     if (!empty()) {
       iterator end_iter = this->end();
       --end_iter;
-      erace(end_iter);
+      erase(end_iter);
     }
   }
 

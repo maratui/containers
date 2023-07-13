@@ -44,14 +44,14 @@ class map : protected RBTree<K, T> {
   constexpr size_type size() const noexcept;
   constexpr size_type max_size() const noexcept;
 
-  void clear();
+  void clear() noexcept;
   std::pair<iterator, bool> insert(const value_type &value);
   std::pair<iterator, bool> insert(const K &key, const T &obj);
   std::pair<iterator, bool> insert_or_assign(const K &key, const T &obj);
-  void erase(iterator pos);
+  void erase(iterator pos) noexcept;
   void swap(map &other);
   void merge(map &other);
-  bool contains(const K &key);
+  bool contains(const K &key) const noexcept;
   std::vector<std::pair<iterator, bool>> insert_many();
   template <class... Args>
   std::vector<std::pair<iterator, bool>> insert_many(Args &&...args);
@@ -175,7 +175,7 @@ constexpr typename map<K, T>::size_type map<K, T>::max_size() const noexcept {
 }
 
 template <class K, class T>
-void map<K, T>::clear() {
+void map<K, T>::clear() noexcept {
   this->Destory();
   this->root_ = nullptr;
 }
@@ -199,22 +199,18 @@ std::pair<typename map<K, T>::iterator, bool> map<K, T>::insert(const K &key,
 template <class K, class T>
 std::pair<typename map<K, T>::iterator, bool> map<K, T>::insert_or_assign(
     const K &key, const T &obj) {
-  std::pair<iterator, bool> ret;
-
   item_type *node = this->Search(key);
   if (node == nullptr) {
-    ret = insert(key, obj);
+    return insert(key, obj);
   } else {
     node->value.second = obj;
     iterator iter(node);
-    ret = std::pair<iterator, bool>(iter, false);
+    return std::pair<typename map<K, T>::iterator, bool>(iter, false);
   }
-
-  return ret;
 }
 
 template <class K, class T>
-void map<K, T>::erase(iterator pos) {
+void map<K, T>::erase(iterator pos) noexcept {
   this->Remove((*pos).first);
 }
 
@@ -236,7 +232,7 @@ void map<K, T>::merge(map &other) {
 }
 
 template <class K, class T>
-bool map<K, T>::contains(const K &key) {
+bool map<K, T>::contains(const K &key) const noexcept {
   return (this->Search(key) != nullptr);
 }
 

@@ -7,7 +7,7 @@
 
 namespace s21 {
 template <class T>
-class Queue : public ContainerAdaptor<T> {
+class queue : public ContainerAdaptor<T> {
  public:
   using value_type = T;
   using const_reference = const T &;
@@ -15,21 +15,21 @@ class Queue : public ContainerAdaptor<T> {
   using item_type = struct Item<T>;
   using size_type = std::size_t;
 
-  Queue() {}
+  queue() {}
 
-  explicit Queue(std::initializer_list<value_type> const &items) {
+  explicit queue(std::initializer_list<value_type> const &items) {
     this->InitializeContainer_(items);
   }
 
-  Queue(const Queue &q) { CopyContainer_(q); }
+  queue(const queue &q) { CopyContainer_(q); }
 
-  Queue(Queue &&q) noexcept { *this = std::move(q); }
+  queue(queue &&q) noexcept { *this = std::move(q); }
 
-  ~Queue() {
+  ~queue() {
     while (!this->empty()) this->pop();
   }
 
-  Queue &operator=(Queue &&q) noexcept {
+  queue &operator=(queue &&q) noexcept {
     while (!this->empty()) this->pop();
     if (this != &q) {
       SetProtectedFields_(q.size_, q.head_, q.tail_);
@@ -67,8 +67,8 @@ class Queue : public ContainerAdaptor<T> {
     AppendNewItem_(new item_type(value));
   }
 
-  void swap(Queue &other) {
-    Queue q(other);
+  void swap(queue &other) {
+    queue q(other);
 
     other = std::move(*this);
     *this = std::move(q);
@@ -91,7 +91,7 @@ class Queue : public ContainerAdaptor<T> {
  private:
   item_type *tail_ = nullptr;
 
-  void CopyContainer_(const Queue &q) noexcept {
+  void CopyContainer_(const queue &q) {
     item_type *item = q.head_;
     for (size_type j = 0UL; j < q.size(); j += 1UL, item = item->next)
       push((*item).value);
@@ -107,7 +107,7 @@ class Queue : public ContainerAdaptor<T> {
   void CheckMaxSize_(size_type size) override {
     if (size > this->MaxSize_())
       throw std::length_error(
-          "Incorrect input, cannot create s21::Queue larger than max_size()");
+          "Incorrect input, cannot create s21::queue larger than max_size()");
   }
 
   void AppendNewItem_(item_type *new_item) noexcept {

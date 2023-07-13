@@ -5,6 +5,7 @@
 #include "./s21_iterator.h"
 
 namespace s21 {
+
 template <class K, class T>
 class MapIterator
     : public s21::Iterator<std::pair<const K, T>, struct RBTNode<K, T>> {
@@ -14,7 +15,7 @@ class MapIterator
   using value_type = std::pair<const key_type, mapped_type>;
   using item_type = struct RBTNode<K, T>;
 
-  MapIterator() { this->item_ptr_ = nullptr; }
+  MapIterator() = delete;
 
   explicit MapIterator(item_type *item_ptr) { this->item_ptr_ = item_ptr; }
   explicit MapIterator(item_type *item_ptr, item_type *root_ptr) {

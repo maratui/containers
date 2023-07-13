@@ -3,12 +3,12 @@
 template <class T>
 void test_insert_many(std::initializer_list<T> const &items) {
   {
-    using vi_t = typename s21::Vector<T>::item_type;
+    using vi_t = typename s21::vector<T>::item_type;
 
     //---------------------------------------------------------------------------
 
     std::vector<T> std_vector;
-    s21::Vector<T> s21_vector;
+    s21::vector<T> s21_vector;
 
     auto std_ret = std_vector.emplace(std_vector.begin());
     EXPECT_TRUE(std_ret == std_vector.begin());
@@ -93,12 +93,12 @@ void test_insert_many(std::initializer_list<T> const &items) {
     //---------------------------------------------------------------------------
   }
   {
-    using li_t = typename s21::List<T>::item_type;
+    using li_t = typename s21::list<T>::item_type;
 
     //---------------------------------------------------------------------------
 
     std::list<T> std_list;
-    s21::List<T> s21_list;
+    s21::list<T> s21_list;
 
     auto std_ret = std_list.emplace(std_list.begin());
     EXPECT_TRUE(std_ret == std_list.begin());
@@ -201,12 +201,12 @@ void test_insert_many(std::initializer_list<T> const &items) {
     //---------------------------------------------------------------------------
   }
   {
-    using qi_t = typename s21::Queue<T>::item_type;
+    using qi_t = typename s21::queue<T>::item_type;
 
     //---------------------------------------------------------------------------
 
     std::list<T> std_list;
-    s21::Queue<T> s21_queue;
+    s21::queue<T> s21_queue;
 
     T args[items.size()];
     {
@@ -238,12 +238,12 @@ void test_insert_many(std::initializer_list<T> const &items) {
     //---------------------------------------------------------------------------
   }
   {
-    using si_t = typename s21::Stack<T>::item_type;
+    using si_t = typename s21::stack<T>::item_type;
 
     //---------------------------------------------------------------------------
 
     std::list<T> std_list;
-    s21::Stack<T> s21_stack;
+    s21::stack<T> s21_stack;
 
     T args[items.size()];
     {

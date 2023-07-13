@@ -6,38 +6,38 @@ void test_stack(std::initializer_list<T> const &items) {
   //---------------------------------------------------------------------------
 
   std::stack<T> std_default_constructor;
-  s21::Stack<T> s21_default_constructor;
+  s21::stack<T> s21_default_constructor;
   EXPECT_TRUE(
       ExpectEqualStacks(std_default_constructor, s21_default_constructor));
 
   std::stack<T> const std_const_default_constructor;
-  s21::Stack<T> const s21_const_default_constructor;
+  s21::stack<T> const s21_const_default_constructor;
   EXPECT_TRUE(ExpectEqualStacks(std_const_default_constructor,
                                 s21_const_default_constructor));
 
   //---------------------------------------------------------------------------
 
   std::stack<T> std_initializer_list_constructor(items);
-  s21::Stack<T> s21_initializer_list_constructor(items);
+  s21::stack<T> s21_initializer_list_constructor(items);
   EXPECT_TRUE(ExpectEqualStacks(std_initializer_list_constructor,
                                 s21_initializer_list_constructor));
 
   std::stack<T> const std_const_initializer_list_constructor(items);
-  s21::Stack<T> const s21_const_initializer_list_constructor(items);
+  s21::stack<T> const s21_const_initializer_list_constructor(items);
   EXPECT_TRUE(ExpectEqualStacks(std_const_initializer_list_constructor,
                                 s21_const_initializer_list_constructor));
 
   //---------------------------------------------------------------------------
 
   std::stack<T> std_copy_constructor(std_initializer_list_constructor);
-  s21::Stack<T> s21_copy_constructor(s21_initializer_list_constructor);
+  s21::stack<T> s21_copy_constructor(s21_initializer_list_constructor);
   EXPECT_TRUE(ExpectEqualStacks(std_initializer_list_constructor,
                                 s21_initializer_list_constructor));
   EXPECT_TRUE(ExpectEqualStacks(std_copy_constructor, s21_copy_constructor));
 
   std::stack<T> const std_const_copy_constructor(
       std_const_initializer_list_constructor);
-  s21::Stack<T> const s21_const_copy_constructor(
+  s21::stack<T> const s21_const_copy_constructor(
       s21_const_initializer_list_constructor);
   EXPECT_TRUE(ExpectEqualStacks(std_const_initializer_list_constructor,
                                 s21_const_initializer_list_constructor));
@@ -48,7 +48,7 @@ void test_stack(std::initializer_list<T> const &items) {
 
   std::stack<T> std_move_constructor(
       std::move(std_initializer_list_constructor));
-  s21::Stack<T> s21_move_constructor(
+  s21::stack<T> s21_move_constructor(
       std::move(s21_initializer_list_constructor));
   EXPECT_TRUE(ExpectEqualStacks(std_initializer_list_constructor,
                                 s21_initializer_list_constructor));
@@ -56,7 +56,7 @@ void test_stack(std::initializer_list<T> const &items) {
 
   std::stack<T> const std_const_move_constructor(
       std::move(std_const_initializer_list_constructor));
-  s21::Stack<T> const s21_const_move_constructor(
+  s21::stack<T> const s21_const_move_constructor(
       std::move(s21_const_initializer_list_constructor));
   EXPECT_TRUE(ExpectEqualStacks(std_const_initializer_list_constructor,
                                 s21_const_initializer_list_constructor));
@@ -66,7 +66,7 @@ void test_stack(std::initializer_list<T> const &items) {
   //---------------------------------------------------------------------------
 
   std::stack<T> std_operator_overload = std::move(std_move_constructor);
-  s21::Stack<T> s21_operator_overload = std::move(s21_move_constructor);
+  s21::stack<T> s21_operator_overload = std::move(s21_move_constructor);
   EXPECT_TRUE(ExpectEqualStacks(std_operator_overload, s21_operator_overload));
   EXPECT_TRUE(ExpectEqualStacks(std_move_constructor, s21_move_constructor));
 

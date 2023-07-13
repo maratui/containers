@@ -21,10 +21,10 @@ struct RBTNode {
   RBTColor color;
   RBTPtrs *ptrs;
   RBTNode(value_type v, RBTColor c, RBTPtrs *p) : value(v), color(c), ptrs(p){};
-  RBTNode<K, T> *Next();
-  const RBTNode<K, T> *Next() const;
-  RBTNode<K, T> *Prev();
-  const RBTNode<K, T> *Prev() const;
+  RBTNode<K, T> *Next() noexcept;
+  const RBTNode<K, T> *Next() const noexcept;
+  RBTNode<K, T> *Prev() noexcept;
+  const RBTNode<K, T> *Prev() const noexcept;
 };
 
 #define RBTNODE_NEXT                                               \
@@ -50,16 +50,15 @@ struct RBTNode {
   }
 
 template <class K, class T>
-const RBTNode<K, T> *RBTNode<K, T>::Next() const {
+const RBTNode<K, T> *RBTNode<K, T>::Next() const noexcept {
   const RBTNode<K, T> *node = this;
 
   RBTNODE_NEXT
 
   return node;
 }
-
 template <class K, class T>
-RBTNode<K, T> *RBTNode<K, T>::Next() {
+RBTNode<K, T> *RBTNode<K, T>::Next() noexcept {
   RBTNode<K, T> *node = this;
 
   RBTNODE_NEXT
@@ -90,16 +89,15 @@ RBTNode<K, T> *RBTNode<K, T>::Next() {
   }
 
 template <class K, class T>
-const RBTNode<K, T> *RBTNode<K, T>::Prev() const {
+const RBTNode<K, T> *RBTNode<K, T>::Prev() const noexcept {
   const RBTNode<K, T> *node = this;
 
   RBTNODE_PREV
 
   return node;
 }
-
 template <class K, class T>
-RBTNode<K, T> *RBTNode<K, T>::Prev() {
+RBTNode<K, T> *RBTNode<K, T>::Prev() noexcept {
   RBTNode<K, T> *node = this;
 
   RBTNODE_PREV
@@ -117,8 +115,8 @@ class RBTree {
 
   bool Insert(value_type value);
   RBTNode<K, T> *Search(const K key) const noexcept;
-  void Remove(K key);
-  void Destory();
+  void Remove(K key) noexcept;
+  void Destory() noexcept;
 
   RBTNode<K, T> *Begin() const noexcept;
 
@@ -128,7 +126,7 @@ class RBTree {
   RBTNode<K, T> *root_;
 
  private:
-  void Destory_(RBTNode<K, T> *node);
+  void Destory_(RBTNode<K, T> *node) noexcept;
 
   void InsertFixUp_(RBTNode<K, T> *node);
   void Rotate_(RBTNode<K, T> *&parent, RBTNode<K, T> *&node,
@@ -138,8 +136,8 @@ class RBTree {
 
   RBTNode<K, T> *Search_(RBTNode<K, T> *node, const K key) const noexcept;
 
-  void Remove_(RBTNode<K, T> *node);
-  void RemoveFixUp_(RBTNode<K, T> *node, RBTNode<K, T> *parent);
+  void Remove_(RBTNode<K, T> *node) noexcept;
+  void RemoveFixUp_(RBTNode<K, T> *node, RBTNode<K, T> *parent) noexcept;
 };
 
 template <class K, class T>
@@ -168,13 +166,13 @@ RBTNode<K, T> *RBTree<K, T>::Search(const K key) const noexcept {
 }
 
 template <class K, class T>
-void RBTree<K, T>::Remove(K key) {
+void RBTree<K, T>::Remove(K key) noexcept {
   RBTNode<K, T> *node = Search_(root_, key);
   if (node != nullptr) Remove_(node);
 }
 
 template <class K, class T>
-void RBTree<K, T>::Destory() {
+void RBTree<K, T>::Destory() noexcept {
   Destory_(root_);
 }
 
@@ -191,7 +189,7 @@ RBTNode<K, T> *RBTree<K, T>::Begin() const noexcept {
 // private methods
 
 template <class K, class T>
-void RBTree<K, T>::Destory_(RBTNode<K, T> *node) {
+void RBTree<K, T>::Destory_(RBTNode<K, T> *node) noexcept {
   if (node != nullptr) {
     Destory_(node->ptrs->left);
     Destory_(node->ptrs->right);
@@ -342,7 +340,7 @@ RBTNode<K, T> *RBTree<K, T>::Search_(RBTNode<K, T> *node,
 }
 
 template <class K, class T>
-void RBTree<K, T>::Remove_(RBTNode<K, T> *node) {
+void RBTree<K, T>::Remove_(RBTNode<K, T> *node) noexcept {
   RBTNode<K, T> *parent = nullptr;
   RBTNode<K, T> *child = nullptr;
   RBTColor color = Red;
@@ -397,7 +395,8 @@ void RBTree<K, T>::Remove_(RBTNode<K, T> *node) {
 }
 
 template <class K, class T>
-void RBTree<K, T>::RemoveFixUp_(RBTNode<K, T> *node, RBTNode<K, T> *parent) {
+void RBTree<K, T>::RemoveFixUp_(RBTNode<K, T> *node,
+                                RBTNode<K, T> *parent) noexcept {
   RBTNode<K, T> *othernode;
   int brk = 0;
   int left = 0;

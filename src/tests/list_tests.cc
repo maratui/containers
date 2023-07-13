@@ -1,7 +1,7 @@
 #include "./tests.h"
 
 template <class T>
-void CoutLists(const std::list<T> *std_list, const s21::List<T> *s21_list) {
+void CoutLists(const std::list<T> *std_list, const s21::list<T> *s21_list) {
   for (auto std_iter = std_list->begin(), end = std_list->end();
        std_iter != end; ++std_iter)
     std::cout << *std_iter << " ";
@@ -19,64 +19,64 @@ void test_list(std::initializer_list<T> const &items) {
   //---------------------------------------------------------------------------
 
   std::list<T> std_default_constructor;
-  s21::List<T> s21_default_constructor;
+  s21::list<T> s21_default_constructor;
   EXPECT_TRUE(
       ExpectEqualLists(&std_default_constructor, &s21_default_constructor));
 
   std::list<T> const std_const_default_constructor;
-  s21::List<T> const s21_const_default_constructor;
+  s21::list<T> const s21_const_default_constructor;
   EXPECT_TRUE(ExpectEqualLists(&std_const_default_constructor,
                                &s21_const_default_constructor));
 
   //---------------------------------------------------------------------------
 
   std::list<T> std_parameterized_constructor(100);
-  s21::List<T> s21_parameterized_constructor(100);
+  s21::list<T> s21_parameterized_constructor(100);
   EXPECT_TRUE(ExpectEqualLists(&std_parameterized_constructor,
                                &s21_parameterized_constructor));
 
   {
-    EXPECT_THROW(s21::List<T> s21_parameterized_constructor(
+    EXPECT_THROW(s21::list<T> s21_parameterized_constructor(
                      s21_parameterized_constructor.max_size() + 1),
                  std::length_error);
     try {
-      s21::List<T> s21_parameterized_constructor(
+      s21::list<T> s21_parameterized_constructor(
           s21_parameterized_constructor.max_size() + 1);
     } catch (const std::length_error &e) {
       EXPECT_STREQ(
-          "Incorrect input, cannot create s21::List larger than max_size()",
+          "Incorrect input, cannot create s21::list larger than max_size()",
           e.what());
     }
   }
 
   std::list<T> const std_const_parameterized_constructor(100);
-  s21::List<T> const s21_const_parameterized_constructor(100);
+  s21::list<T> const s21_const_parameterized_constructor(100);
   EXPECT_TRUE(ExpectEqualLists(&std_const_parameterized_constructor,
                                &s21_const_parameterized_constructor));
 
   //---------------------------------------------------------------------------
 
   std::list<T> std_initializer_list_constructor(items);
-  s21::List<T> s21_initializer_list_constructor(items);
+  s21::list<T> s21_initializer_list_constructor(items);
   EXPECT_TRUE(ExpectEqualLists(&std_initializer_list_constructor,
                                &s21_initializer_list_constructor));
 
   std::list<T> const std_const_initializer_list_constructor(items);
-  s21::List<T> const s21_const_initializer_list_constructor(items);
+  s21::list<T> const s21_const_initializer_list_constructor(items);
   EXPECT_TRUE(ExpectEqualLists(&std_const_initializer_list_constructor,
                                &s21_const_initializer_list_constructor));
 
   //---------------------------------------------------------------------------
 
   std::list<T> std_copy_constructor(std_initializer_list_constructor);
-  s21::List<T> s21_copy_constructor(s21_initializer_list_constructor);
+  s21::list<T> s21_copy_constructor(s21_initializer_list_constructor);
   EXPECT_TRUE(ExpectEqualLists(&std_initializer_list_constructor,
                                &s21_initializer_list_constructor));
   EXPECT_TRUE(ExpectEqualLists(&std_copy_constructor, &s21_copy_constructor));
 
   std::list<T> const std_const_copy_constructor(
       std_const_initializer_list_constructor);
-  s21::List<T> const s21_const_copy_constructor(
+  s21::list<T> const s21_const_copy_constructor(
       s21_const_initializer_list_constructor);
   EXPECT_TRUE(ExpectEqualLists(&std_const_initializer_list_constructor,
                                &s21_const_initializer_list_constructor));
@@ -87,7 +87,7 @@ void test_list(std::initializer_list<T> const &items) {
 
   std::list<T> std_move_constructor(
       std::move(std_initializer_list_constructor));
-  s21::List<T> s21_move_constructor(
+  s21::list<T> s21_move_constructor(
       std::move(s21_initializer_list_constructor));
   EXPECT_TRUE(ExpectEqualLists(&std_initializer_list_constructor,
                                &s21_initializer_list_constructor));
@@ -95,7 +95,7 @@ void test_list(std::initializer_list<T> const &items) {
 
   std::list<T> const std_const_move_constructor(
       std::move(std_const_initializer_list_constructor));
-  s21::List<T> const s21_const_move_constructor(
+  s21::list<T> const s21_const_move_constructor(
       std::move(s21_const_initializer_list_constructor));
   EXPECT_TRUE(ExpectEqualLists(&std_const_initializer_list_constructor,
                                &s21_const_initializer_list_constructor));
@@ -105,7 +105,7 @@ void test_list(std::initializer_list<T> const &items) {
   //---------------------------------------------------------------------------
 
   std::list<T> std_operator_overload = std::move(std_move_constructor);
-  s21::List<T> s21_operator_overload = std::move(s21_move_constructor);
+  s21::list<T> s21_operator_overload = std::move(s21_move_constructor);
   EXPECT_TRUE(ExpectEqualLists(&std_operator_overload, &s21_operator_overload));
   EXPECT_TRUE(ExpectEqualLists(&std_move_constructor, &s21_move_constructor));
 
@@ -219,7 +219,7 @@ void test_list(std::initializer_list<T> const &items) {
   //---------------------------------------------------------------------------
 
   std_copy_constructor.erase(std_copy_constructor.begin());
-  s21_copy_constructor.erace(s21_copy_constructor.begin());
+  s21_copy_constructor.erase(s21_copy_constructor.begin());
   EXPECT_TRUE(ExpectEqualLists(&std_copy_constructor, &s21_copy_constructor));
 
   std_pos = std_copy_constructor.begin();
@@ -227,7 +227,7 @@ void test_list(std::initializer_list<T> const &items) {
   std_copy_constructor.erase(std_pos);
   s21_pos = s21_copy_constructor.begin();
   ++s21_pos;
-  s21_copy_constructor.erace(s21_pos);
+  s21_copy_constructor.erase(s21_pos);
   EXPECT_TRUE(ExpectEqualLists(&std_copy_constructor, &s21_copy_constructor));
 
   std_pos = std_copy_constructor.end();
@@ -235,7 +235,7 @@ void test_list(std::initializer_list<T> const &items) {
   std_copy_constructor.erase(std_pos);
   s21_pos = s21_copy_constructor.end();
   --s21_pos;
-  s21_copy_constructor.erace(s21_pos);
+  s21_copy_constructor.erase(s21_pos);
   EXPECT_TRUE(ExpectEqualLists(&std_copy_constructor, &s21_copy_constructor));
 
   //---------------------------------------------------------------------------
@@ -272,7 +272,7 @@ void test_list(std::initializer_list<T> const &items) {
   //---------------------------------------------------------------------------
 
   std_initializer_list_constructor = std::list<T>(items);
-  s21_initializer_list_constructor = s21::List<T>(items);
+  s21_initializer_list_constructor = s21::list<T>(items);
   std_initializer_list_constructor.reverse();
   s21_initializer_list_constructor.reverse();
   EXPECT_TRUE(ExpectEqualLists(&std_initializer_list_constructor,
@@ -305,7 +305,7 @@ void test_list(std::initializer_list<T> const &items) {
 
   //---------------------------------------------------------------------------
   std_copy_constructor = std::list<T>(std_move_constructor);
-  s21_copy_constructor = s21::List<T>(s21_move_constructor);
+  s21_copy_constructor = s21::list<T>(s21_move_constructor);
   std_initializer_list_constructor.merge(std_move_constructor);
   s21_initializer_list_constructor.merge(s21_move_constructor);
   EXPECT_TRUE(ExpectEqualLists(&std_initializer_list_constructor,
@@ -344,7 +344,7 @@ void test_list(std::initializer_list<T> const &items) {
   EXPECT_TRUE(ExpectEqualLists(&std_copy_constructor, &s21_copy_constructor));
 
   std_copy_constructor = std::list<T>(std_initializer_list_constructor);
-  s21_copy_constructor = s21::List<T>(s21_initializer_list_constructor);
+  s21_copy_constructor = s21::list<T>(s21_initializer_list_constructor);
   std_initializer_list_constructor.splice(
       std_initializer_list_constructor.begin(), std_copy_constructor);
   s21_initializer_list_constructor.splice(

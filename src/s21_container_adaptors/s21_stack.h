@@ -7,7 +7,7 @@
 
 namespace s21 {
 template <class T>
-class Stack : public ContainerAdaptor<T> {
+class stack : public ContainerAdaptor<T> {
  public:
   using value_type = T;
   using const_reference = const T &;
@@ -15,21 +15,21 @@ class Stack : public ContainerAdaptor<T> {
   using item_type = struct Item<T>;
   using size_type = std::size_t;
 
-  Stack() {}
+  stack() {}
 
-  explicit Stack(std::initializer_list<value_type> const &items) {
+  explicit stack(std::initializer_list<value_type> const &items) {
     this->InitializeContainer_(items);
   }
 
-  Stack(const Stack &s) { CopyContainer_(s); }
+  stack(const stack &s) { CopyContainer_(s); }
 
-  Stack(Stack &&s) noexcept { *this = std::move(s); }
+  stack(stack &&s) noexcept { *this = std::move(s); }
 
-  ~Stack() {
+  ~stack() {
     while (!this->empty()) this->pop();
   }
 
-  Stack &operator=(Stack &&s) noexcept {
+  stack &operator=(stack &&s) noexcept {
     while (!this->empty()) this->pop();
     if (this != &s) {
       SetProtectedFields_(s.size_, s.head_);
@@ -56,8 +56,8 @@ class Stack : public ContainerAdaptor<T> {
     AddNewItem_(new item_type(value));
   }
 
-  void swap(Stack &other) {
-    Stack s(other);
+  void swap(stack &other) {
+    stack s(other);
 
     other = std::move(*this);
     *this = std::move(s);
@@ -77,7 +77,7 @@ class Stack : public ContainerAdaptor<T> {
   }
 
  private:
-  void CopyContainer_(const Stack &s) noexcept {
+  void CopyContainer_(const stack &s) {
     item_type *item = s.head_;
     for (size_type j = 1UL; j < s.size(); j += 1UL) item = item->next;
     for (size_type j = 0UL; j < s.size(); j += 1UL, item = item->prev)
@@ -92,7 +92,7 @@ class Stack : public ContainerAdaptor<T> {
   void CheckMaxSize_(size_type size) override {
     if (size > this->MaxSize_())
       throw std::length_error(
-          "Incorrect input, cannot create s21::Stack larger than max_size()");
+          "Incorrect input, cannot create s21::stack larger than max_size()");
   }
 
   void AddNewItem_(item_type *new_item) noexcept {

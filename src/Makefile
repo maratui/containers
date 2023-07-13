@@ -39,10 +39,6 @@ clang-format:
 	clang-format -n $(FOLDERS) ./tests/*
 	rm -f ./.clang-format
 
-cppcheck:
-	cppcheck --enable=all --suppress=missingIncludeSystem --std=c++17 --language=c++ \
-	$(FOLDERS)
-
 valgrind: CFLAGS+= -g
 valgrind: test
 	valgrind --tool=memcheck --leak-check=yes -s -q ./build/tests

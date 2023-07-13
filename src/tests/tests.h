@@ -37,7 +37,7 @@ struct A {
 
 template <class T>
 ::testing::AssertionResult ExpectEqualVectors(
-    const std::vector<T> *std_vector, const s21::Vector<T> *s21_vector) {
+    const std::vector<T> *std_vector, const s21::vector<T> *s21_vector) {
   bool expect = true;
 
   EXPECT_EQ(std_vector->size(), s21_vector->size());
@@ -65,7 +65,7 @@ template <class T>
 
 template <class T>
 ::testing::AssertionResult ExpectEqualVectorBeginEnd(
-    const std::vector<T> *std_vector, const s21::Vector<T> *s21_vector) {
+    const std::vector<T> *std_vector, const s21::vector<T> *s21_vector) {
   EXPECT_EQ(std_vector->size(), s21_vector->size());
   EXPECT_EQ(std_vector->capacity(), s21_vector->capacity());
   EXPECT_TRUE(std_vector->begin() == std_vector->end());
@@ -81,7 +81,7 @@ template <class T>
 
 template <class T>
 ::testing::AssertionResult ExpectNotEqualVectorBeginEnd(
-    const std::vector<T> *std_vector, const s21::Vector<T> *s21_vector) {
+    const std::vector<T> *std_vector, const s21::vector<T> *s21_vector) {
   EXPECT_EQ(std_vector->size(), s21_vector->size());
   EXPECT_EQ(std_vector->capacity(), s21_vector->capacity());
   EXPECT_TRUE(std_vector->begin() != std_vector->end());
@@ -99,7 +99,7 @@ template <class T>
 
 template <class T>
 ::testing::AssertionResult ExpectEqualLists(const std::list<T> *std_list,
-                                            const s21::List<T> *s21_list) {
+                                            const s21::list<T> *s21_list) {
   bool expect;
 
   EXPECT_EQ(std_list->size(), s21_list->size());
@@ -126,7 +126,7 @@ template <class T>
 
 template <class T>
 ::testing::AssertionResult ExpectEqualListBeginEnd(
-    const std::list<T> *std_list, const s21::List<T> *s21_list) {
+    const std::list<T> *std_list, const s21::list<T> *s21_list) {
   EXPECT_EQ(std_list->size(), s21_list->size());
   EXPECT_TRUE(std_list->begin() == std_list->end());
   EXPECT_TRUE(s21_list->begin() == s21_list->end());
@@ -140,7 +140,7 @@ template <class T>
 
 template <class T>
 ::testing::AssertionResult ExpectNotEqualListBeginEnd(
-    const std::list<T> *std_list, const s21::List<T> *s21_list) {
+    const std::list<T> *std_list, const s21::list<T> *s21_list) {
   EXPECT_EQ(std_list->size(), s21_list->size());
   EXPECT_TRUE(std_list->begin() != std_list->end());
   EXPECT_TRUE(s21_list->begin() != s21_list->end());
@@ -156,7 +156,7 @@ template <class T>
 
 template <class T, std::size_t N>
 ::testing::AssertionResult ExpectEqualArrays(
-    const std::array<T, N> *std_array, const s21::Array<T, N> *s21_array) {
+    const std::array<T, N> *std_array, const s21::array<T, N> *s21_array) {
   bool expect = true;
 
   EXPECT_EQ(std_array->size(), s21_array->size());
@@ -182,7 +182,7 @@ template <class T, std::size_t N>
 
 template <class T, std::size_t N>
 ::testing::AssertionResult ExpectEqualArrayBeginEnd(
-    const std::array<T, N> *std_array, const s21::Array<T, N> *s21_array) {
+    const std::array<T, N> *std_array, const s21::array<T, N> *s21_array) {
   EXPECT_EQ(std_array->size(), s21_array->size());
   EXPECT_TRUE(std_array->begin() == std_array->end());
   EXPECT_TRUE(s21_array->begin() == s21_array->end());
@@ -196,7 +196,7 @@ template <class T, std::size_t N>
 
 template <class T, std::size_t N>
 ::testing::AssertionResult ExpectNotEqualArrayBeginEnd(
-    const std::array<T, N> *std_array, const s21::Array<T, N> *s21_array) {
+    const std::array<T, N> *std_array, const s21::array<T, N> *s21_array) {
   EXPECT_EQ(std_array->size(), s21_array->size());
   EXPECT_TRUE(std_array->begin() != std_array->end());
   EXPECT_TRUE(s21_array->begin() != s21_array->end());
@@ -212,13 +212,13 @@ template <class T, std::size_t N>
 
 template <class T>
 ::testing::AssertionResult ExpectEqualQueues(const std::queue<T> *std_queue,
-                                             const s21::Queue<T> *s21_queue) {
+                                             const s21::queue<T> *s21_queue) {
   bool expect;
 
   EXPECT_EQ(std_queue->size(), s21_queue->size());
 
   std::queue<T> std(*std_queue);
-  s21::Queue<T> s21(*s21_queue);
+  s21::queue<T> s21(*s21_queue);
 
   expect = true;
   for (size_t i = 0U; i < std_queue->size(); ++i, std.pop(), s21.pop()) {
@@ -235,13 +235,13 @@ template <class T>
 
 template <class T>
 ::testing::AssertionResult ExpectEqualListQueue(
-    const std::list<T> *std_list, const s21::Queue<T> *s21_queue) {
+    const std::list<T> *std_list, const s21::queue<T> *s21_queue) {
   bool expect;
 
   EXPECT_EQ(std_list->size(), s21_queue->size());
 
   std::list<T> std(*std_list);
-  s21::Queue<T> s21(*s21_queue);
+  s21::queue<T> s21(*s21_queue);
 
   expect = true;
 
@@ -260,13 +260,13 @@ template <class T>
 
 template <class T>
 ::testing::AssertionResult ExpectEqualStacks(const std::stack<T> &std_stack,
-                                             const s21::Stack<T> &s21_stack) {
+                                             const s21::stack<T> &s21_stack) {
   bool expect;
 
   EXPECT_EQ(std_stack.size(), s21_stack.size());
 
   std::stack<T> std(std_stack);
-  s21::Stack<T> s21(s21_stack);
+  s21::stack<T> s21(s21_stack);
 
   expect = true;
   for (size_t i = 0U; i < std_stack.size(); ++i) {
@@ -287,13 +287,13 @@ template <class T>
 
 template <class T>
 ::testing::AssertionResult ExpectEqualListStack(
-    const std::list<T> &std_list, const s21::Stack<T> &s21_queue) {
+    const std::list<T> &std_list, const s21::stack<T> &s21_queue) {
   bool expect;
 
   EXPECT_EQ(std_list.size(), s21_queue.size());
 
   std::list<T> std(std_list);
-  s21::Stack<T> s21(s21_queue);
+  s21::stack<T> s21(s21_queue);
 
   expect = true;
   auto std_iter = std.begin();

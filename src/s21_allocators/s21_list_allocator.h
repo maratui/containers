@@ -1,7 +1,6 @@
 #ifndef S21_LIST_ALLOCATOR_H
 #define S21_LIST_ALLOCATOR_H
 
-#include <cstddef>
 #include <tuple>
 
 namespace s21 {

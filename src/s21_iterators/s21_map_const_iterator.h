@@ -14,7 +14,7 @@ class MapConstIterator : public s21::Iterator<const std::pair<const K, T>,
   using value_type = const std::pair<const key_type, mapped_type>;
   using item_type = const struct RBTNode<K, T>;
 
-  MapConstIterator() { this->item_ptr_ = nullptr; }
+  MapConstIterator() = delete;
 
   explicit MapConstIterator(item_type *item_ptr) { this->item_ptr_ = item_ptr; }
   explicit MapConstIterator(item_type *item_ptr, item_type *root_ptr) {

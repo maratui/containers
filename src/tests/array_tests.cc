@@ -2,7 +2,7 @@
 
 template <class T, std::size_t N>
 void CoutArrays(const std::array<T, N> *std_array,
-                const s21::Array<T, N> *s21_array) {
+                const s21::array<T, N> *s21_array) {
   for (auto std_iter = std_array->begin(), end = std_array->end();
        std_iter != end; ++std_iter)
     std::cout << (*std_iter).s << " ";
@@ -21,45 +21,45 @@ void test_array(Args... args) {
   //---------------------------------------------------------------------------
 
   std::array<T, 5> std_default_constructor;
-  s21::Array<T, 5> s21_default_constructor;
+  s21::array<T, 5> s21_default_constructor;
   EXPECT_TRUE(ExpectNotEqualArrayBeginEnd(&std_default_constructor,
                                           &s21_default_constructor));
   {
     std::array<T, std_default_constructor.max_size()> std_default_constructor;
-    s21::Array<T, s21_default_constructor.max_size()> s21_default_constructor;
+    s21::array<T, s21_default_constructor.max_size()> s21_default_constructor;
     EXPECT_TRUE(ExpectNotEqualArrayBeginEnd(&std_default_constructor,
                                             &s21_default_constructor));
   }
 
   std::array<T, 0> const std_const_default_constructor;
-  s21::Array<T, 0> const s21_const_default_constructor;
+  s21::array<T, 0> const s21_const_default_constructor;
   EXPECT_TRUE(ExpectEqualArrayBeginEnd(&std_const_default_constructor,
                                        &s21_const_default_constructor));
 
   //---------------------------------------------------------------------------
 
   std::array<T, 10> std_initializer_list_constructor{(T)args...};
-  s21::Array<T, 10> s21_initializer_list_constructor(items);
+  s21::array<T, 10> s21_initializer_list_constructor(items);
   EXPECT_TRUE(ExpectEqualArrays(&std_initializer_list_constructor,
                                 &s21_initializer_list_constructor));
   {
     T init_args[5]{(T)args...};
     std::array<T, 3> std_initializer_list_constructor{
         init_args[0], init_args[1], init_args[2]};
-    s21::Array<T, 3> s21_initializer_list_constructor(items);
+    s21::array<T, 3> s21_initializer_list_constructor(items);
     EXPECT_TRUE(ExpectEqualArrays(&std_initializer_list_constructor,
                                   &s21_initializer_list_constructor));
   }
 
   std::array<T, 10> const std_const_initializer_list_constructor{(T)args...};
-  s21::Array<T, 10> const s21_const_initializer_list_constructor(items);
+  s21::array<T, 10> const s21_const_initializer_list_constructor(items);
   EXPECT_TRUE(ExpectEqualArrays(&std_const_initializer_list_constructor,
                                 &s21_const_initializer_list_constructor));
   {
     T init_args[5]{(T)args...};
     std::array<T, 3> const std_const_initializer_list_constructor{
         init_args[0], init_args[1], init_args[2]};
-    s21::Array<T, 3> const s21_const_initializer_list_constructor(items);
+    s21::array<T, 3> const s21_const_initializer_list_constructor(items);
     EXPECT_TRUE(ExpectEqualArrays(&std_const_initializer_list_constructor,
                                   &s21_const_initializer_list_constructor));
   }
@@ -67,14 +67,14 @@ void test_array(Args... args) {
   //---------------------------------------------------------------------------
 
   std::array<T, 10> std_copy_constructor(std_initializer_list_constructor);
-  s21::Array<T, 10> s21_copy_constructor(s21_initializer_list_constructor);
+  s21::array<T, 10> s21_copy_constructor(s21_initializer_list_constructor);
   EXPECT_TRUE(ExpectEqualArrays(&std_initializer_list_constructor,
                                 &s21_initializer_list_constructor));
   EXPECT_TRUE(ExpectEqualArrays(&std_copy_constructor, &s21_copy_constructor));
 
   std::array<T, 10> const std_const_copy_constructor(
       std_const_initializer_list_constructor);
-  s21::Array<T, 10> const s21_const_copy_constructor(
+  s21::array<T, 10> const s21_const_copy_constructor(
       s21_const_initializer_list_constructor);
   EXPECT_TRUE(ExpectEqualArrays(&std_const_initializer_list_constructor,
                                 &s21_const_initializer_list_constructor));
@@ -85,7 +85,7 @@ void test_array(Args... args) {
 
   std::array<T, 10> std_move_constructor(
       std::move(std_initializer_list_constructor));
-  s21::Array<T, 10> s21_move_constructor(
+  s21::array<T, 10> s21_move_constructor(
       std::move(s21_initializer_list_constructor));
   EXPECT_TRUE(ExpectEqualArrays(&std_move_constructor, &s21_move_constructor));
   EXPECT_TRUE(ExpectEqualArrays(&std_initializer_list_constructor,
@@ -93,7 +93,7 @@ void test_array(Args... args) {
 
   std::array<T, 10> const std_const_move_constructor(
       std::move(std_const_initializer_list_constructor));
-  s21::Array<T, 10> const s21_const_move_constructor(
+  s21::array<T, 10> const s21_const_move_constructor(
       std::move(s21_const_initializer_list_constructor));
   EXPECT_TRUE(ExpectEqualArrays(&std_const_move_constructor,
                                 &s21_const_move_constructor));
@@ -103,7 +103,7 @@ void test_array(Args... args) {
   //---------------------------------------------------------------------------
 
   std::array<T, 10> std_operator_overload = std::move(std_move_constructor);
-  s21::Array<T, 10> s21_operator_overload = std::move(s21_move_constructor);
+  s21::array<T, 10> s21_operator_overload = std::move(s21_move_constructor);
   EXPECT_TRUE(
       ExpectEqualArrays(&std_operator_overload, &s21_operator_overload));
   EXPECT_TRUE(ExpectEqualArrays(&std_move_constructor, &s21_move_constructor));

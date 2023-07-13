@@ -10,7 +10,7 @@
 
 namespace s21 {
 template <class T>
-class List : public SequenceContainer<T, struct Item<T>, ListIterator<T>,
+class list : public SequenceContainer<T, struct Item<T>, ListIterator<T>,
                                       ListConstIterator<T>> {
  public:
   using value_type = T;
@@ -21,27 +21,27 @@ class List : public SequenceContainer<T, struct Item<T>, ListIterator<T>,
   using item_type = struct Item<T>;
   using allocator = ListAllocator<T>;
 
-  List() { std::tie(this->head_, this->tail_) = allocator::Allocate(0); }
+  list() { std::tie(this->head_, this->tail_) = allocator::Allocate(0); }
 
-  explicit List(size_type n) {
+  explicit list(size_type n) {
     CheckMaxSize_(n);
 
     this->size_ = n;
     std::tie(this->head_, this->tail_) = allocator::Allocate(this->size_);
   }
 
-  explicit List(std::initializer_list<value_type> const &items)
-      : List(items.size()) {
+  explicit list(std::initializer_list<value_type> const &items)
+      : list(items.size()) {
     this->InitializeContainer_(items);
   }
 
-  List(const List &l) : List(l.size()) { this->CopyContainer_(l); }
+  list(const list &l) : list(l.size()) { this->CopyContainer_(l); }
 
-  List(List &&l) noexcept { *this = std::move(l); }
+  list(list &&l) noexcept { *this = std::move(l); }
 
-  ~List() { this->head_ = allocator::Delete(this->head_); }
+  ~list() { this->head_ = allocator::Delete(this->head_); }
 
-  List &operator=(List &&l) noexcept {
+  list &operator=(list &&l) noexcept {
     this->head_ = allocator::Delete(this->head_);
     if (this != &l) {
       this->SetProtectedFields_(l.size_, l.head_, l.tail_);
@@ -56,13 +56,13 @@ class List : public SequenceContainer<T, struct Item<T>, ListIterator<T>,
   iterator insert(iterator pos, const_reference value) override {
     CheckMaxSize_(this->size() + 1);
 
-    Splice_(pos, List({value}));
+    Splice_(pos, list({value}));
     --pos;
 
     return pos;
   }
 
-  void erace(iterator pos) noexcept override {
+  void erase(iterator pos) noexcept override {
     if (!this->empty()) {
       iterator iter = this->begin();
       item_type *item = this->head_;
@@ -75,23 +75,23 @@ class List : public SequenceContainer<T, struct Item<T>, ListIterator<T>,
 
   void push_front(const_reference value) { insert(this->begin(), value); }
 
-  void pop_front() noexcept { this->erace(this->begin()); }
+  void pop_front() noexcept { this->erase(this->begin()); }
 
-  void swap(List &other) {
-    List l(other);
+  void swap(list &other) {
+    list l(other);
 
     other = std::move(*this);
     *this = std::move(l);
   }
 
-  void merge(List &other) noexcept {
+  void merge(list &other) {
     if (this != &other && !other.empty()) {
       Splice_(this->end(), std::move(other));
       sort();
     }
   }
 
-  void splice(const_iterator pos, List &other) noexcept {
+  void splice(const_iterator pos, list &other) noexcept {
     Splice_(pos, std::move(other));
   }
 
@@ -101,9 +101,9 @@ class List : public SequenceContainer<T, struct Item<T>, ListIterator<T>,
       iterator end_iter = this->end();
       size_type size = this->size_;
       --end_iter;
-      for (size_type j = 0UL; j < size; j += 1, --end_iter, ++begin_iter) {
+      for (size_type j = 0UL; j < size; j += 1U, --end_iter, ++begin_iter) {
         std::swap(*begin_iter, *end_iter);
-        size -= 1;
+        size -= 1U;
       }
     }
   }
@@ -115,7 +115,7 @@ class List : public SequenceContainer<T, struct Item<T>, ListIterator<T>,
       iterator liter = this->begin();
       for (size_type j = 1UL; j < this->size_; j += 1, ++liter, ++riter) {
         if (*liter == *riter) {
-          this->erace(riter);
+          this->erase(riter);
           riter = this->begin();
           ++riter;
           liter = this->begin();
@@ -126,7 +126,7 @@ class List : public SequenceContainer<T, struct Item<T>, ListIterator<T>,
     }
   }
 
-  void sort() noexcept {
+  void sort() {
     if (!this->empty()) {
       iterator riter = this->begin();
       ++riter;
@@ -195,10 +195,10 @@ class List : public SequenceContainer<T, struct Item<T>, ListIterator<T>,
   void CheckMaxSize_(size_type size) {
     if (size > this->max_size())
       throw std::length_error(
-          "Incorrect input, cannot create s21::List larger than max_size()");
+          "Incorrect input, cannot create s21::list larger than max_size()");
   }
 
-  void Splice_(const_iterator pos, List &&other) noexcept {
+  void Splice_(const_iterator pos, list &&other) noexcept {
     if (this != &other && !other.empty()) {
       size_type p = this->FindConstIterator_(pos);
       item_type *item = GetItem_(p);
