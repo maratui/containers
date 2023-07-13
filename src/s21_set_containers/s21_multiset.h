@@ -10,7 +10,7 @@ class multiset : public s21::set<T> {
   using key_type = value_type;
   using reference = value_type &;
   using const_reference = const value_type &;
-  using size_type = size_t;
+  using size_type = std::size_t;
   using iterator = typename set<value_type>::SetIterator;
   using const_iterator = typename set<value_type>::SetConstIterator;
 
@@ -18,11 +18,11 @@ class multiset : public s21::set<T> {
   multiset();
   multiset(std::initializer_list<value_type> const &items);
   multiset(const multiset &ms);
-  multiset(multiset &&ms);
+  multiset(multiset &&ms) noexcept;
 
-  multiset operator=(multiset &&ms);
+  multiset operator=(multiset &&ms) noexcept;
 
-  size_type count(const key_type &key);
+  constexpr size_type count(const key_type &key) const noexcept;
   iterator insert(const value_type &value);
   void merge(multiset &other);
   std::pair<iterator, iterator> equal_range(const key_type &key);
@@ -33,8 +33,9 @@ class multiset : public s21::set<T> {
 
  protected:
   using Item = typename set<value_type>::Item;
-  void copy(Item *head);
-  typename set<T>::iterator add(value_type value, Item **ptr_head, Item *root);
+
+  void Copy_(Item *head);
+  typename set<T>::iterator Add_(value_type value, Item **ptr_head, Item *root);
 };
 
 template <class T>
@@ -50,27 +51,31 @@ multiset<T>::multiset(std::initializer_list<value_type> const &items)
 
 template <class T>
 multiset<T>::multiset(const multiset &ms) : multiset() {
-  this->copy(ms.head);
+  this->Copy_(ms.head_);
 }
 
 template <class T>
-multiset<T>::multiset(multiset &&ms) : multiset() {
+multiset<T>::multiset(multiset &&ms) noexcept : multiset() {
   this->swap(ms);
 }
 
 template <class T>
-typename multiset<T>::multiset multiset<T>::operator=(multiset &&ms) {
+typename multiset<T>::multiset multiset<T>::operator=(multiset &&ms) noexcept {
   this->clear();
-  this->copy(ms.head);
+  this->Copy_(ms.head_);
   ms.clear();
+
   return *this;
 }
 
 template <class T>
-typename multiset<T>::size_type multiset<T>::count(const key_type &key) {
-  size_type ret = 0;
+constexpr typename multiset<T>::size_type multiset<T>::count(
+    const key_type &key) const noexcept {
+  size_type ret = 0U;
+
   for (auto tmp = this->begin(); tmp != this->end(); ++tmp)
-    if (*tmp == key) ++ret;
+    if (*tmp == key) ret += 1U;
+
   return ret;
 }
 
@@ -78,8 +83,10 @@ template <class T>
 std::pair<typename multiset<T>::iterator, typename multiset<T>::iterator>
 multiset<T>::equal_range(const key_type &key) {
   std::pair<iterator, iterator> it;
+
   it.first = this->lower_bound(key);
   it.second = this->upper_bound(key);
+
   return it;
 }
 
@@ -87,26 +94,29 @@ template <class T>
 typename multiset<T>::iterator multiset<T>::lower_bound(const key_type &key) {
   for (auto tmp = this->begin(); tmp != this->end(); ++tmp)
     if (*tmp >= key) return tmp;
+
   return NULL;
 }
 template <class T>
 typename multiset<T>::iterator multiset<T>::upper_bound(const key_type &key) {
   for (auto tmp = this->begin(); tmp != this->end(); ++tmp)
     if (key < *tmp) return tmp;
+
   return NULL;
 }
 
 template <class T>
 typename multiset<T>::iterator multiset<T>::insert(const value_type &value) {
-  iterator result = this->add(value, &this->head, nullptr);
+  iterator result = this->Add_(value, &this->head_, nullptr);
+
   return result;
 }
 
 template <class T>
-void multiset<T>::copy(Item *head) {
+void multiset<T>::Copy_(Item *head) {
   if (head != NULL) {
-    copy(head->left);
-    copy(head->right);
+    Copy_(head->left);
+    Copy_(head->right);
     this->insert(head->value);
   }
 }
@@ -117,8 +127,8 @@ void multiset<T>::merge(multiset &other) {
 }
 
 template <class T>
-typename set<T>::iterator multiset<T>::add(value_type val, Item **ptr_head,
-                                           Item *root) {
+typename set<T>::iterator multiset<T>::Add_(value_type val, Item **ptr_head,
+                                            Item *root) {
   if (*ptr_head == nullptr) {
     (*ptr_head) = new Item(val, root);
     (*ptr_head)->value = val;
@@ -127,10 +137,11 @@ typename set<T>::iterator multiset<T>::add(value_type val, Item **ptr_head,
     return typename set<T>::SetIterator(*ptr_head);
   } else {
     if (val < (*ptr_head)->value) {
-      add(val, &(*ptr_head)->left, *ptr_head);
+      Add_(val, &(*ptr_head)->left, *ptr_head);
     } else
-      add(val, &(*ptr_head)->right, *ptr_head);
+      Add_(val, &(*ptr_head)->right, *ptr_head);
   }
+
   return typename set<T>::SetIterator();
 }
 
@@ -144,6 +155,7 @@ multiset<T>::insert_many(Args &&...args) {
     auto iter = this->insert(*it);
     ret.push_back(std::make_pair(iter, iter != NULL));
   }
+
   return ret;
 }
 

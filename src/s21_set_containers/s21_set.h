@@ -21,7 +21,7 @@ class set {
   using const_reference = const value_type &;
   using iterator = SetIterator;
   using const_iterator = SetConstIterator;
-  using size_type = size_t;
+  using size_type = std::size_t;
 
   // the main public methods
   set();
@@ -29,27 +29,30 @@ class set {
   set(const set &s);
   set(set &&s);
   ~set();
-  set &operator=(set &&other);
+  set &operator=(set &&other) noexcept;
 
   // the public methods for iterating over class elements
-  iterator begin();
-  iterator end();
+  iterator begin() noexcept;
+  const_iterator begin() const noexcept;
+  iterator end() noexcept;
+  const_iterator end() const noexcept;
 
   // the public methods for accessing the container capacity information
-  bool empty();
-  size_type size();
-  size_type max_size();
+  bool empty() const noexcept;
+  constexpr size_type size() const noexcept;
+  constexpr size_type max_size() const noexcept;
 
   // the public methods for modifying a container
-  void clear();
+  void clear() noexcept;
   std::pair<iterator, bool> insert(const value_type &value);
   void erase(iterator pos);
   void swap(set &other);
   void merge(set &other);
 
   // the public methods for viewing the container
-  iterator find(const key_type &key);
-  bool contains(const key_type &key);
+  iterator find(const key_type &key) noexcept;
+  const_iterator find(const key_type &key) const noexcept;
+  bool contains(const key_type &key) const noexcept;
 
   template <class... Args>
   std::vector<std::pair<iterator, bool>> insert_many(Args &&...args);
@@ -62,7 +65,7 @@ class set {
     Item *right;
     value_type value;
     Item();
-    Item(value_type value, Item *head);
+    Item(value_type value, Item *head_);
   };
 
   class SetIterator {
@@ -76,53 +79,90 @@ class set {
     bool operator!=(const iterator &other);
 
    protected:
-    Item *item;
+    Item *item_;
   };
 
-  class SetConstIterator : SetIterator {};
+  class SetConstIterator {
+   public:
+    SetConstIterator(Item *pointer);
+    SetConstIterator();
+    value_type operator*();
+    value_type *operator->();
+    SetConstIterator &operator++();
+    bool operator==(const const_iterator &other);
+    bool operator!=(const const_iterator &other);
 
-  Item *head;
+   protected:
+    const Item *item_;
+  };
 
-  Item *del(Item *pointer, key_type key);
-  size_type traversal(Item *pointer) const;
-  iterator add(value_type value, Item **pointer_to_head, Item *head);
-  Item *least(Item *pointer);
-  void copy(Item *head);
-  void delete_set(Item *head);
+  Item *head_;
+
+  Item *Del_(Item *pointer, key_type key);
+  size_type Traversal_(Item *pointer) const;
+  iterator Add_(value_type value, Item **pointer_to_head, Item *head);
+  Item *Least_(Item *pointer) const noexcept;
+  void Copy_(Item *head);
+  void DeleteSet_(Item *head);
 };
 
 template <class T>
 set<T>::Item::Item() : value(NULL), top(NULL), left(NULL), right(NULL) {}
 
 template <class T>
-set<T>::Item::Item(T value, Item *head)
-    : top(head), left(NULL), right(NULL), value(value) {}
+set<T>::Item::Item(T value, Item *head_)
+    : top(head_), left(NULL), right(NULL), value(value) {}
 
 template <class T>
-set<T>::SetIterator::SetIterator(Item *pointer) : item(pointer) {}
+set<T>::SetIterator::SetIterator(Item *pointer) : item_(pointer) {}
+template <class T>
+set<T>::SetConstIterator::SetConstIterator(Item *pointer) : item_(pointer) {}
 
 template <class T>
 set<T>::SetIterator::SetIterator() : SetIterator(NULL) {}
+template <class T>
+set<T>::SetConstIterator::SetConstIterator() : SetConstIterator(NULL) {}
 
 template <class T>
 typename set<T>::value_type set<T>::SetIterator::operator*() {
-  if (item == NULL)
+  if (item_ == NULL)
     throw std::invalid_argument("Out of scope");
   else
-    return item->value;
+    return item_->value;
+}
+template <class T>
+typename set<T>::value_type set<T>::SetConstIterator::operator*() {
+  if (item_ == NULL) throw std::invalid_argument("Out of scope");
+
+  return item_->value;
 }
 
 template <class T>
 typename set<T>::SetIterator &set<T>::SetIterator::operator++() {
-  if (item != NULL) {
-    if (item->right != NULL) {
-      item = item->right;
-      while (item->left != NULL) item = item->left;
+  if (item_ != NULL) {
+    if (item_->right != NULL) {
+      item_ = item_->right;
+      while (item_->left != NULL) item_ = item_->left;
     } else {
-      while (item->top != NULL && item->value >= item->top->value) {
-        item = item->top;
+      while (item_->top != NULL && item_->value >= item_->top->value) {
+        item_ = item_->top;
       }
-      item = item->top;
+      item_ = item_->top;
+    }
+  }
+  return *this;
+}
+template <class T>
+typename set<T>::SetConstIterator &set<T>::SetConstIterator::operator++() {
+  if (item_ != NULL) {
+    if (item_->right != NULL) {
+      item_ = item_->right;
+      while (item_->left != NULL) item_ = item_->left;
+    } else {
+      while (item_->top != NULL && item_->value >= item_->top->value) {
+        item_ = item_->top;
+      }
+      item_ = item_->top;
     }
   }
   return *this;
@@ -130,24 +170,38 @@ typename set<T>::SetIterator &set<T>::SetIterator::operator++() {
 
 template <class T>
 typename set<T>::value_type *set<T>::SetIterator::operator->() {
-  if (item == NULL)
+  if (item_ == NULL)
     throw std::out_of_range("Value is NULL");
   else
-    return &(item->value);
+    return &(item_->value);
+}
+template <class T>
+typename set<T>::value_type *set<T>::SetConstIterator::operator->() {
+  if (item_ == NULL) throw std::out_of_range("Value is NULL");
+
+  return &(item_->value);
 }
 
 template <class T>
-bool set<T>::SetIterator::operator==(const SetIterator &other) {
-  return item == other.item;
+bool set<T>::SetIterator::operator==(const iterator &other) {
+  return item_ == other.item_;
+}
+template <class T>
+bool set<T>::SetConstIterator::operator==(const const_iterator &other) {
+  return item_ == other.item_;
 }
 
 template <class T>
-bool set<T>::SetIterator::operator!=(const SetIterator &other) {
-  return item != other.item;
+bool set<T>::SetIterator::operator!=(const iterator &other) {
+  return item_ != other.item_;
+}
+template <class T>
+bool set<T>::SetConstIterator::operator!=(const const_iterator &other) {
+  return item_ != other.item_;
 }
 
 template <class T>
-set<T>::set() : head(NULL) {}
+set<T>::set() : head_(NULL) {}
 
 template <class T>
 set<T>::set(std::initializer_list<value_type> const &items) : set() {
@@ -156,86 +210,95 @@ set<T>::set(std::initializer_list<value_type> const &items) : set() {
 
 template <class T>
 set<T>::set(const set &s) : set() {
-  copy(s.head);
+  Copy_(s.head_);
 }
 
 template <class T>
 set<T>::set(set &&s) : set() {
   swap(s);
-  delete_set(s.head);
+  DeleteSet_(s.head_);
 }
 
 template <class T>
 set<T>::~set() {
-  delete_set(head);
+  DeleteSet_(head_);
 }
 
 template <class T>
-void set<T>::copy(Item *head) {
+void set<T>::Copy_(Item *head) {
   if (head != NULL) {
-    copy(head->left);
-    copy(head->right);
+    Copy_(head->left);
+    Copy_(head->right);
     this->insert(head->value);
   }
 }
 
 template <class T>
-void set<T>::delete_set(Item *head) {
+void set<T>::DeleteSet_(Item *head) {
   if (head != NULL) {
-    delete_set(head->left);
-    delete_set(head->right);
+    DeleteSet_(head->left);
+    DeleteSet_(head->right);
     delete (head);
   }
 }
 
 template <class T>
-typename set<T>::set &set<T>::operator=(set &&other) {
+typename set<T>::set &set<T>::operator=(set &&other) noexcept {
   this->clear();
-  this->copy(other.head);
+  this->Copy_(other.head_);
   other.clear();
   return *this;
 }
 
 template <class T>
-typename set<T>::iterator set<T>::begin() {
-  return SetIterator(least(head));
+typename set<T>::iterator set<T>::begin() noexcept {
+  return SetIterator(Least_(head_));
+}
+template <class T>
+typename set<T>::const_iterator set<T>::begin() const noexcept {
+  return SetConstIterator(Least_(head_));
 }
 
 template <class T>
-typename set<T>::iterator set<T>::end() {
+typename set<T>::iterator set<T>::end() noexcept {
   return SetIterator();
 }
+template <class T>
+typename set<T>::const_iterator set<T>::end() const noexcept {
+  return SetConstIterator();
+}
 
 template <class T>
-bool set<T>::empty() {
+bool set<T>::empty() const noexcept {
   bool ret = true;
-  if (head != NULL && head->left == NULL && head->right == NULL &&
-      head->top == NULL)
+  if (head_ != NULL && head_->left == NULL && head_->right == NULL &&
+      head_->top == NULL)
     ret = false;
+
   return ret;
 }
 
 template <class T>
-typename set<T>::size_type set<T>::size() {
-  return traversal(this->head);
+constexpr typename set<T>::size_type set<T>::size() const noexcept {
+  return Traversal_(this->head_);
 }
 
 template <class T>
-typename set<T>::size_type set<T>::traversal(Item *pointer) const {
+typename set<T>::size_type set<T>::Traversal_(Item *pointer) const {
   int ret = 0;
   if (pointer != NULL)
-    ret = 1 + traversal(pointer->right) + traversal(pointer->left);
+    ret = 1 + Traversal_(pointer->right) + Traversal_(pointer->left);
   return ret;
 }
 
 template <class T>
-typename set<T>::size_type set<T>::max_size() {
+constexpr typename set<T>::size_type set<T>::max_size() const noexcept {
   return std::numeric_limits<size_t>::max() / sizeof(Item);
 }
 template <class T>
-void set<T>::clear() {
-  delete_set(head);
-  head = NULL;
+void set<T>::clear() noexcept {
+  DeleteSet_(head_);
+  head_ = NULL;
 }
 template <class T>
 void set<T>::erase(iterator pos) {
@@ -244,20 +307,20 @@ void set<T>::erase(iterator pos) {
         "A being erased element at pos and an iterator are supposed not to be "
         "empty");
   else
-    head = del(head, *pos);
+    head_ = Del_(head_, *pos);
 }
 
 template <class T>
-typename set<T>::Item *set<T>::del(Item *pointer, key_type key) {
+typename set<T>::Item *set<T>::Del_(Item *pointer, key_type key) {
   Item *tmp = NULL;
   if (pointer != NULL) {
     if (key < pointer->value)  // go left
-      pointer->left = del(pointer->left, key);
+      pointer->left = Del_(pointer->left, key);
     else if (key > pointer->value)  // go right
-      pointer->right = del(pointer->right, key);
+      pointer->right = Del_(pointer->right, key);
     else if (pointer->left != NULL and pointer->right != NULL) {  // found
-      pointer->value = least(pointer->right)->value;
-      pointer->right = del(pointer->right, pointer->value);
+      pointer->value = Least_(pointer->right)->value;
+      pointer->right = Del_(pointer->right, pointer->value);
     } else if (pointer->left != NULL) {  // the lefttmost
       tmp = pointer;
       pointer = pointer->left;
@@ -267,7 +330,7 @@ typename set<T>::Item *set<T>::del(Item *pointer, key_type key) {
       pointer = pointer->right;
       pointer->top = tmp->top;
     } else {  // the one
-      delete_set(pointer);
+      DeleteSet_(pointer);
       pointer = NULL;
     }
     delete (tmp);
@@ -277,9 +340,9 @@ typename set<T>::Item *set<T>::del(Item *pointer, key_type key) {
 
 template <class T>
 void set<T>::swap(set &other) {
-  Item *tmp = this->head;
-  this->head = other.head;
-  other.head = tmp;
+  Item *tmp = this->head_;
+  this->head_ = other.head_;
+  other.head_ = tmp;
 }
 
 template <class T>
@@ -288,44 +351,56 @@ void set<T>::merge(set &other) {
 }
 
 template <class T>
-typename set<T>::iterator set<T>::find(const key_type &key) {
+typename set<T>::iterator set<T>::find(const key_type &key) noexcept {
   iterator ret = NULL;
   for (auto it = this->begin(); ((it != this->end()) && (ret == NULL)); ++it)
     if (*it == key) ret = it;
+
+  return ret;
+}
+template <class T>
+typename set<T>::const_iterator set<T>::find(
+    const key_type &key) const noexcept {
+  const_iterator ret = NULL;
+  for (auto it = this->begin(); ((it != this->end()) && (ret == NULL)); ++it)
+    if (*it == key) ret = it;
+
   return ret;
 }
 
 template <class T>
-bool set<T>::contains(const key_type &key) {
+bool set<T>::contains(const key_type &key) const noexcept {
   return (find(key) != NULL);
 }
 
 template <class T>
-typename set<T>::Item *set<T>::least(Item *pointer) {
+typename set<T>::Item *set<T>::Least_(Item *pointer) const noexcept {
   if (pointer != NULL)
     while (pointer->left != NULL) pointer = pointer->left;
+
   return pointer;
 }
 
 template <class T>
 std::pair<typename set<T>::SetIterator, bool> set<T>::insert(
     const typename set<T>::value_type &value) {
-  iterator result = add(value, &head, NULL);
+  iterator result = Add_(value, &head_, NULL);
+
   return std::pair<set<T>::SetIterator, bool>(result, result != nullptr);
 }
 
 template <class T>
-typename set<T>::iterator set<T>::add(value_type value, Item **pointer_to_head,
-                                      Item *head) {
+typename set<T>::iterator set<T>::Add_(value_type value, Item **pointer_to_head,
+                                       Item *head) {
   iterator result = NULL;
   if (*pointer_to_head == NULL) {
     *pointer_to_head = new Item(value, head);
     result = SetIterator(*pointer_to_head);
   } else {
     if (value < (*pointer_to_head)->value)
-      result = add(value, &(*pointer_to_head)->left, *pointer_to_head);
+      result = Add_(value, &(*pointer_to_head)->left, *pointer_to_head);
     else if (value > (*pointer_to_head)->value)
-      result = add(value, &(*pointer_to_head)->right, *pointer_to_head);
+      result = Add_(value, &(*pointer_to_head)->right, *pointer_to_head);
     else
       return NULL;
   }
@@ -343,6 +418,7 @@ std::vector<std::pair<typename set<T>::SetIterator, bool>> set<T>::insert_many(
   std::vector<std::pair<iterator, bool>> ret;
   for (auto it = list.begin(); it != list.end(); ++it)
     ret.push_back(insert(*it));
+
   return ret;
 }
 
