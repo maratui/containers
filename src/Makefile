@@ -1,8 +1,8 @@
-CC = g++
-CFLAGS = -std=c++17 -Wall -Wextra -Werror -Wuninitialized -fpermissive
-CLIBS  = -lgtest -lgtest_main
+CC = gcc
+CFLAGS = -Wall -Wextra -Werror -Wuninitialized -xc++ -std=c++17
+CLIBS  =  -lstdc++ -lgtest -lgtest_main -lm
 FOLDERS = ./s21_allocators/* ./s21_iterators/* ./s21_sequence_containers/* \
-					./s21_associative_containers/* ./s21_container_adaptors/* ./s21_set_containers/*
+	 ./s21_associative_containers/* ./s21_container_adaptors/* ./s21_set_containers/* ./*.h
 
 all: test
 
@@ -14,14 +14,6 @@ test: clean s21_containers.h s21_containersplus.h
 	mkdir -p build
 	$(CC) $(CFLAGS) tests/* -o build/tests $(CLIBS)
 	./build/tests
-
-s21_containers.o: clean
-	mkdir -p build
-	$(CC) $(CFLAGS) s21_containers.h -o build/s21_containers.o
-
-s21_containersplus.o: clean
-	mkdir -p build
-	$(CC) $(CFLAGS) s21_containersplus.h -o build/s21_containersplus.o
 
 gcov-report: CFLAGS+= --coverage
 gcov-report: test
@@ -45,4 +37,3 @@ valgrind: test
 
 leaks: test
 	CK_FORK=no leaks -atExit -- ./build/tests
-

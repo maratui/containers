@@ -1,5 +1,5 @@
-#ifndef S21_VECTOR_ITERATOR_H
-#define S21_VECTOR_ITERATOR_H
+#ifndef CPP2_S21_CONTAINERS_3_SRC_S21_ITERATORS_S21_VECTOR_ITERATOR_H
+#define CPP2_S21_CONTAINERS_3_SRC_S21_ITERATORS_S21_VECTOR_ITERATOR_H
 
 #include "./s21_iterator.h"
 
@@ -25,16 +25,16 @@ class VectorIterator : public s21::Iterator<T, T> {
  protected:
   using reference = T &;
 
-  reference Asterisc_() noexcept override {
+  reference Asterisc() noexcept override {
     reference ret = *this->item_ptr_;
 
     return ret;
   }
 
-  void Next_() noexcept override { this->item_ptr_ += 1; }
+  void Next() noexcept override { this->item_ptr_ += 1; }
 
-  void Prev_() noexcept override { this->item_ptr_ -= 1; }
+  void Prev() noexcept override { this->item_ptr_ -= 1; }
 };
 }  // namespace s21
 
-#endif  // S21_VECTOR_ITERATOR_H
+#endif  // CPP2_S21_CONTAINERS_3_SRC_S21_ITERATORS_S21_VECTOR_ITERATOR_H

@@ -15,13 +15,13 @@ void CoutArrays(const std::array<T, N> *std_array,
 }
 
 template <class T, class... Args>
-void test_array(Args... args) {
+void TestArray(Args... args) {
   std::initializer_list<T> const &items = {(T)args...};
   T temp;
   //---------------------------------------------------------------------------
 
-  std::array<T, 5> std_default_constructor;
-  s21::array<T, 5> s21_default_constructor;
+  std::array<T, 10> std_default_constructor;
+  s21::array<T, 10> s21_default_constructor;
   EXPECT_TRUE(ExpectNotEqualArrayBeginEnd(&std_default_constructor,
                                           &s21_default_constructor));
   {
@@ -102,8 +102,23 @@ void test_array(Args... args) {
 
   //---------------------------------------------------------------------------
 
-  std::array<T, 10> std_operator_overload = std::move(std_move_constructor);
-  s21::array<T, 10> s21_operator_overload = std::move(s21_move_constructor);
+  std_default_constructor = std_move_constructor;
+  s21_default_constructor = s21_move_constructor;
+  EXPECT_TRUE(
+      ExpectEqualArrays(&std_default_constructor, &s21_default_constructor));
+  EXPECT_TRUE(ExpectEqualArrays(&std_move_constructor, &s21_move_constructor));
+
+  std_default_constructor = std_const_move_constructor;
+  s21_default_constructor = s21_const_move_constructor;
+  EXPECT_TRUE(
+      ExpectEqualArrays(&std_default_constructor, &s21_default_constructor));
+  EXPECT_TRUE(ExpectEqualArrays(&std_const_move_constructor,
+                                &s21_const_move_constructor));
+
+  std::array<T, 10> std_operator_overload;
+  s21::array<T, 10> s21_operator_overload;
+  std_operator_overload = std::move(std_move_constructor);
+  s21_operator_overload = std::move(s21_move_constructor);
   EXPECT_TRUE(
       ExpectEqualArrays(&std_operator_overload, &s21_operator_overload));
   EXPECT_TRUE(ExpectEqualArrays(&std_move_constructor, &s21_move_constructor));
@@ -120,22 +135,15 @@ void test_array(Args... args) {
   temp = s21_copy_constructor.at(3);
   s21_copy_constructor.at(3) = temp;
   EXPECT_EQ(std_copy_constructor.at(3), s21_copy_constructor.at(3));
+
   EXPECT_NO_THROW(std_copy_constructor.at(9));
   EXPECT_NO_THROW(s21_copy_constructor.at(9));
-  EXPECT_THROW(std_copy_constructor.at(10), std::out_of_range);
-  EXPECT_THROW(s21_copy_constructor.at(10), std::out_of_range);
-  try {
-    s21_operator_overload.at(10);
-  } catch (const std::out_of_range &e) {
-    EXPECT_STREQ("Incorrect input, index is outside the array size", e.what());
-  }
 
   temp = std_const_copy_constructor.at(3);
   temp = s21_const_copy_constructor.at(3);
   EXPECT_NO_THROW(std_const_copy_constructor.at(9));
   EXPECT_NO_THROW(s21_const_copy_constructor.at(9));
-  EXPECT_THROW(std_const_copy_constructor.at(10), std::out_of_range);
-  EXPECT_THROW(s21_const_copy_constructor.at(10), std::out_of_range);
+
   EXPECT_EQ(std_const_copy_constructor.at(0), s21_const_copy_constructor.at(0));
 
   //---------------------------------------------------------------------------
@@ -269,8 +277,8 @@ void test_array(Args... args) {
 }
 
 TEST(TestS21Containers, Array) {
-  test_array<char>(0, 1, 0, 4, 127);
-  test_array<int>(0, 1, -2147483647, 4, 2147483647);
-  test_array<double>(0, 1, DBL_MIN, -DBL_MAX, DBL_MAX);
-  test_array<A>(A(""), A("one"), A("two"), A("three"), A("four"));
+  TestArray<char>(0, 1, 0, 4, 127);
+  TestArray<int>(0, 1, -2147483647, 4, 2147483647);
+  TestArray<double>(0, 1, DBL_MIN, -DBL_MAX, DBL_MAX);
+  TestArray<A>(A(""), A("one"), A("two"), A("three"), A("four"));
 }

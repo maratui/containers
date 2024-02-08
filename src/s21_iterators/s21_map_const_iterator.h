@@ -1,5 +1,5 @@
-#ifndef S21_MAP_CONST_ITERATOR_H
-#define S21_MAP_CONST_ITERATOR_H
+#ifndef CPP2_S21_CONTAINERS_3_SRC_S21_ITERATORS_S21_MAP_CONST_ITERATOR_H
+#define CPP2_S21_CONTAINERS_3_SRC_S21_ITERATORS_S21_MAP_CONST_ITERATOR_H
 
 #include "../s21_associative_containers/s21_rbtree.h"
 #include "./s21_iterator.h"
@@ -27,19 +27,19 @@ class MapConstIterator : public s21::Iterator<const std::pair<const K, T>,
  protected:
   using const_reference = const value_type &;
 
-  const_reference Asterisc_() noexcept override {
+  const_reference Asterisc() noexcept override {
     const_reference ret = (*this->item_ptr_).value;
 
     return ret;
   }
 
-  void Next_() noexcept override {
+  void Next() noexcept override {
     if (this->item_ptr_ != nullptr) {
       this->item_ptr_ = this->item_ptr_->Next();
     }
   }
 
-  void Prev_() noexcept override {
+  void Prev() noexcept override {
     if (this->item_ptr_ != nullptr) {
       this->item_ptr_ = this->item_ptr_->Prev();
     } else {
@@ -54,4 +54,4 @@ class MapConstIterator : public s21::Iterator<const std::pair<const K, T>,
 };
 }  // namespace s21
 
-#endif  // S21_MAP_CONST_ITERATOR_H
+#endif  // CPP2_S21_CONTAINERS_3_SRC_S21_ITERATORS_S21_MAP_CONST_ITERATOR_H

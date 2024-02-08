@@ -1,48 +1,48 @@
 #include "./tests.h"
 
 template <class T>
-void test_queue(std::initializer_list<T> const &items) {
+void TestQueue(std::initializer_list<T> const &items) {
   T temp;
   //---------------------------------------------------------------------------
 
   std::queue<T> std_default_constructor;
   s21::queue<T> s21_default_constructor;
   EXPECT_TRUE(
-      ExpectEqualQueues(&std_default_constructor, &s21_default_constructor));
+      ExpectEqualQueues(std_default_constructor, s21_default_constructor));
 
   std::queue<T> const std_const_default_constructor;
   s21::queue<T> const s21_const_default_constructor;
-  EXPECT_TRUE(ExpectEqualQueues(&std_const_default_constructor,
-                                &s21_const_default_constructor));
+  EXPECT_TRUE(ExpectEqualQueues(std_const_default_constructor,
+                                s21_const_default_constructor));
 
   //---------------------------------------------------------------------------
 
   std::queue<T> std_initializer_queue_constructor(items);
   s21::queue<T> s21_initializer_queue_constructor(items);
-  EXPECT_TRUE(ExpectEqualQueues(&std_initializer_queue_constructor,
-                                &s21_initializer_queue_constructor));
+  EXPECT_TRUE(ExpectEqualQueues(std_initializer_queue_constructor,
+                                s21_initializer_queue_constructor));
 
   std::queue<T> const std_const_initializer_queue_constructor(items);
   s21::queue<T> const s21_const_initializer_queue_constructor(items);
-  EXPECT_TRUE(ExpectEqualQueues(&std_const_initializer_queue_constructor,
-                                &s21_const_initializer_queue_constructor));
+  EXPECT_TRUE(ExpectEqualQueues(std_const_initializer_queue_constructor,
+                                s21_const_initializer_queue_constructor));
 
   //---------------------------------------------------------------------------
 
   std::queue<T> std_copy_constructor(std_initializer_queue_constructor);
   s21::queue<T> s21_copy_constructor(s21_initializer_queue_constructor);
-  EXPECT_TRUE(ExpectEqualQueues(&std_initializer_queue_constructor,
-                                &s21_initializer_queue_constructor));
-  EXPECT_TRUE(ExpectEqualQueues(&std_copy_constructor, &s21_copy_constructor));
+  EXPECT_TRUE(ExpectEqualQueues(std_initializer_queue_constructor,
+                                s21_initializer_queue_constructor));
+  EXPECT_TRUE(ExpectEqualQueues(std_copy_constructor, s21_copy_constructor));
 
   std::queue<T> const std_const_copy_constructor(
       std_const_initializer_queue_constructor);
   s21::queue<T> const s21_const_copy_constructor(
       s21_const_initializer_queue_constructor);
-  EXPECT_TRUE(ExpectEqualQueues(&std_const_initializer_queue_constructor,
-                                &s21_const_initializer_queue_constructor));
-  EXPECT_TRUE(ExpectEqualQueues(&std_const_copy_constructor,
-                                &s21_const_copy_constructor));
+  EXPECT_TRUE(ExpectEqualQueues(std_const_initializer_queue_constructor,
+                                s21_const_initializer_queue_constructor));
+  EXPECT_TRUE(ExpectEqualQueues(std_const_copy_constructor,
+                                s21_const_copy_constructor));
 
   //---------------------------------------------------------------------------
 
@@ -50,31 +50,44 @@ void test_queue(std::initializer_list<T> const &items) {
       std::move(std_initializer_queue_constructor));
   s21::queue<T> s21_move_constructor(
       std::move(s21_initializer_queue_constructor));
-  EXPECT_TRUE(ExpectEqualQueues(&std_initializer_queue_constructor,
-                                &s21_initializer_queue_constructor));
-  EXPECT_TRUE(ExpectEqualQueues(&std_move_constructor, &s21_move_constructor));
+  EXPECT_TRUE(ExpectEqualQueues(std_initializer_queue_constructor,
+                                s21_initializer_queue_constructor));
+  EXPECT_TRUE(ExpectEqualQueues(std_move_constructor, s21_move_constructor));
 
   std::queue<T> const std_const_move_constructor(
       std::move(std_const_initializer_queue_constructor));
   s21::queue<T> const s21_const_move_constructor(
       std::move(s21_const_initializer_queue_constructor));
-  EXPECT_TRUE(ExpectEqualQueues(&std_const_initializer_queue_constructor,
-                                &s21_const_initializer_queue_constructor));
-  EXPECT_TRUE(ExpectEqualQueues(&std_const_move_constructor,
-                                &s21_const_move_constructor));
+  EXPECT_TRUE(ExpectEqualQueues(std_const_initializer_queue_constructor,
+                                s21_const_initializer_queue_constructor));
+  EXPECT_TRUE(ExpectEqualQueues(std_const_move_constructor,
+                                s21_const_move_constructor));
 
   //---------------------------------------------------------------------------
 
-  std::queue<T> std_operator_overload = std::move(std_move_constructor);
-  s21::queue<T> s21_operator_overload = std::move(s21_move_constructor);
+  std_default_constructor = std_move_constructor;
+  s21_default_constructor = s21_move_constructor;
   EXPECT_TRUE(
-      ExpectEqualQueues(&std_operator_overload, &s21_operator_overload));
-  EXPECT_TRUE(ExpectEqualQueues(&std_move_constructor, &s21_move_constructor));
+      ExpectEqualQueues(std_default_constructor, s21_default_constructor));
+  EXPECT_TRUE(ExpectEqualQueues(std_move_constructor, s21_move_constructor));
+
+  std_default_constructor = std_const_move_constructor;
+  s21_default_constructor = s21_const_move_constructor;
+  EXPECT_TRUE(
+      ExpectEqualQueues(std_default_constructor, s21_default_constructor));
+  EXPECT_TRUE(ExpectEqualQueues(std_const_move_constructor,
+                                s21_const_move_constructor));
+
+  std::queue<T> std_operator_overload;
+  s21::queue<T> s21_operator_overload;
+  std_operator_overload = std::move(std_move_constructor);
+  s21_operator_overload = std::move(s21_move_constructor);
+  EXPECT_TRUE(ExpectEqualQueues(std_operator_overload, s21_operator_overload));
+  EXPECT_TRUE(ExpectEqualQueues(std_move_constructor, s21_move_constructor));
 
   std_operator_overload = std::move(std_operator_overload);
   s21_operator_overload = std::move(s21_operator_overload);
-  EXPECT_TRUE(
-      ExpectEqualQueues(&std_operator_overload, &s21_operator_overload));
+  EXPECT_TRUE(ExpectEqualQueues(std_operator_overload, s21_operator_overload));
 
   //---------------------------------------------------------------------------
 
@@ -123,11 +136,10 @@ void test_queue(std::initializer_list<T> const &items) {
   do {
     std_copy_constructor.pop();
     s21_copy_constructor.pop();
-    EXPECT_TRUE(
-        ExpectEqualQueues(&std_copy_constructor, &s21_copy_constructor));
+    EXPECT_TRUE(ExpectEqualQueues(std_copy_constructor, s21_copy_constructor));
   } while (!std_copy_constructor.empty() || !s21_copy_constructor.empty());
   s21_copy_constructor.pop();
-  EXPECT_TRUE(ExpectEqualQueues(&std_copy_constructor, &s21_copy_constructor));
+  EXPECT_TRUE(ExpectEqualQueues(std_copy_constructor, s21_copy_constructor));
   EXPECT_TRUE(std_copy_constructor.empty());
   EXPECT_TRUE(s21_copy_constructor.empty());
 
@@ -135,23 +147,33 @@ void test_queue(std::initializer_list<T> const &items) {
   for (auto i = 0; i < 21; i++) {
     std_copy_constructor.push(temp);
     s21_copy_constructor.push(temp);
-    EXPECT_TRUE(
-        ExpectEqualQueues(&std_copy_constructor, &s21_copy_constructor));
+    EXPECT_TRUE(ExpectEqualQueues(std_copy_constructor, s21_copy_constructor));
   }
+
+  std_default_constructor = std_copy_constructor;
+  s21_default_constructor = s21_copy_constructor;
+  EXPECT_TRUE(
+      ExpectEqualQueues(std_default_constructor, s21_default_constructor));
+  EXPECT_TRUE(ExpectEqualQueues(std_copy_constructor, s21_copy_constructor));
+
+  std_default_constructor = std_default_constructor;
+  s21_default_constructor = s21_default_constructor;
+  EXPECT_TRUE(
+      ExpectEqualQueues(std_default_constructor, s21_default_constructor));
 
   //---------------------------------------------------------------------------
 
   std_copy_constructor.swap(std_move_constructor);
   s21_copy_constructor.swap(s21_move_constructor);
-  EXPECT_TRUE(ExpectEqualQueues(&std_copy_constructor, &s21_copy_constructor));
-  EXPECT_TRUE(ExpectEqualQueues(&std_move_constructor, &s21_move_constructor));
+  EXPECT_TRUE(ExpectEqualQueues(std_copy_constructor, s21_copy_constructor));
+  EXPECT_TRUE(ExpectEqualQueues(std_move_constructor, s21_move_constructor));
 
   //---------------------------------------------------------------------------
 }
 
 TEST(TestS21Containers, Queue) {
-  test_queue<char>({0, 1, 0, 4, 127});
-  test_queue<int>({0, 1, -2147483647, 4, 2147483647});
-  test_queue<double>({0, 1, DBL_MIN, -DBL_MAX, DBL_MAX});
-  test_queue<A>({A(""), A("one"), A("two"), A("three"), A("four")});
+  TestQueue<char>({0, 1, 0, 4, 127});
+  TestQueue<int>({0, 1, -2147483647, 4, 2147483647});
+  TestQueue<double>({0, 1, DBL_MIN, -DBL_MAX, DBL_MAX});
+  TestQueue<A>({A(""), A("one"), A("two"), A("three"), A("four")});
 }

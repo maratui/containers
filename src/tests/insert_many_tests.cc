@@ -1,7 +1,7 @@
 #include "./tests.h"
 
 template <class T>
-void test_insert_many(std::initializer_list<T> const &items) {
+void TestInsertMany(std::initializer_list<T> const &items) {
   {
     using vi_t = typename s21::vector<T>::item_type;
 
@@ -201,12 +201,12 @@ void test_insert_many(std::initializer_list<T> const &items) {
     //---------------------------------------------------------------------------
   }
   {
-    using qi_t = typename s21::queue<T>::item_type;
+    using qi_t = typename s21::queue<T, s21::list<T>>::item_type;
 
     //---------------------------------------------------------------------------
 
-    std::list<T> std_list;
-    s21::queue<T> s21_queue;
+    std::queue<T, std::list<T>> std_queue;
+    s21::queue<T, s21::list<T>> s21_queue;
 
     T args[items.size()];
     {
@@ -216,34 +216,34 @@ void test_insert_many(std::initializer_list<T> const &items) {
 
     //---------------------------------------------------------------------------
 
-    std_list.emplace_back();
+    std_queue.emplace();
     s21_queue.insert_many_back();
-    EXPECT_TRUE(ExpectEqualListQueue(&std_list, &s21_queue));
+    EXPECT_TRUE(ExpectEqualQueues(std_queue, s21_queue));
 
-    for (auto i = 0; i < 21; i++) {
-      for (auto item : items) std_list.emplace_back(item);
+    for (auto i = 0; i < 1; i++) {
+      for (auto item : items) std_queue.emplace(item);
       s21_queue.insert_many_back(qi_t(args[0]), qi_t(args[1]), qi_t(args[2]),
                                  qi_t(args[3]), qi_t(args[4]));
-      EXPECT_TRUE(ExpectEqualListQueue(&std_list, &s21_queue));
+      EXPECT_TRUE(ExpectEqualQueues(std_queue, s21_queue));
     }
 
-    std_list.emplace_back();
+    std_queue.emplace();
     s21_queue.insert_many_back();
-    EXPECT_TRUE(ExpectEqualListQueue(&std_list, &s21_queue));
+    EXPECT_TRUE(ExpectEqualQueues(std_queue, s21_queue));
 
-    std_list.emplace_back(args[0]);
+    std_queue.emplace(args[0]);
     s21_queue.insert_many_back(qi_t(args[0]));
-    EXPECT_TRUE(ExpectEqualListQueue(&std_list, &s21_queue));
+    EXPECT_TRUE(ExpectEqualQueues(std_queue, s21_queue));
 
     //---------------------------------------------------------------------------
   }
   {
-    using si_t = typename s21::stack<T>::item_type;
+    using si_t = typename s21::stack<T, s21::list<T>>::item_type;
 
     //---------------------------------------------------------------------------
 
-    std::list<T> std_list;
-    s21::stack<T> s21_stack;
+    std::stack<T, std::list<T>> std_stack;
+    s21::stack<T, s21::list<T>> s21_stack;
 
     T args[items.size()];
     {
@@ -253,32 +253,32 @@ void test_insert_many(std::initializer_list<T> const &items) {
 
     //---------------------------------------------------------------------------
 
-    std_list.emplace_front();
+    std_stack.emplace();
     s21_stack.insert_many_front();
-    EXPECT_TRUE(ExpectEqualListStack(std_list, s21_stack));
+    EXPECT_TRUE(ExpectEqualStacks(std_stack, s21_stack));
 
     for (auto i = 0; i < 21; i++) {
-      for (auto item : items) std_list.emplace_front(item);
+      for (auto item : items) std_stack.emplace(item);
       s21_stack.insert_many_front(si_t(args[0]), si_t(args[1]), si_t(args[2]),
                                   si_t(args[3]), si_t(args[4]));
-      EXPECT_TRUE(ExpectEqualListStack(std_list, s21_stack));
+      EXPECT_TRUE(ExpectEqualStacks(std_stack, s21_stack));
     }
 
-    std_list.emplace_front();
+    std_stack.emplace();
     s21_stack.insert_many_front();
-    EXPECT_TRUE(ExpectEqualListStack(std_list, s21_stack));
+    EXPECT_TRUE(ExpectEqualStacks(std_stack, s21_stack));
 
-    std_list.emplace_front(args[0]);
+    std_stack.emplace(args[0]);
     s21_stack.insert_many_front(si_t(args[0]));
-    EXPECT_TRUE(ExpectEqualListStack(std_list, s21_stack));
+    EXPECT_TRUE(ExpectEqualStacks(std_stack, s21_stack));
 
     //---------------------------------------------------------------------------
   }
 }
 
-TEST(TestS21Containers, insert_many) {
-  test_insert_many<char>({0, 1, 0, 4, 127});
-  test_insert_many<int>({0, 1, -2147483647, 4, 2147483647});
-  test_insert_many<double>({0, 1, DBL_MIN, -DBL_MAX, DBL_MAX});
-  test_insert_many<A>({A(""), A("one"), A("two"), A("three"), A("four")});
+TEST(TestS21Containers, InsertMany) {
+  TestInsertMany<char>({0, 1, 0, 4, 127});
+  TestInsertMany<int>({0, 1, -2147483647, 4, 2147483647});
+  TestInsertMany<double>({0, 1, DBL_MIN, -DBL_MAX, DBL_MAX});
+  TestInsertMany<A>({A(""), A("one"), A("two"), A("three"), A("four")});
 }

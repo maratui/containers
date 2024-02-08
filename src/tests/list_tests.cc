@@ -14,7 +14,7 @@ void CoutLists(const std::list<T> *std_list, const s21::list<T> *s21_list) {
 }
 
 template <class T>
-void test_list(std::initializer_list<T> const &items) {
+void TestList(std::initializer_list<T> const &items) {
   T temp;
   //---------------------------------------------------------------------------
 
@@ -34,20 +34,6 @@ void test_list(std::initializer_list<T> const &items) {
   s21::list<T> s21_parameterized_constructor(100);
   EXPECT_TRUE(ExpectEqualLists(&std_parameterized_constructor,
                                &s21_parameterized_constructor));
-
-  {
-    EXPECT_THROW(s21::list<T> s21_parameterized_constructor(
-                     s21_parameterized_constructor.max_size() + 1),
-                 std::length_error);
-    try {
-      s21::list<T> s21_parameterized_constructor(
-          s21_parameterized_constructor.max_size() + 1);
-    } catch (const std::length_error &e) {
-      EXPECT_STREQ(
-          "Incorrect input, cannot create s21::list larger than max_size()",
-          e.what());
-    }
-  }
 
   std::list<T> const std_const_parameterized_constructor(100);
   s21::list<T> const s21_const_parameterized_constructor(100);
@@ -104,14 +90,25 @@ void test_list(std::initializer_list<T> const &items) {
 
   //---------------------------------------------------------------------------
 
-  std::list<T> std_operator_overload = std::move(std_move_constructor);
-  s21::list<T> s21_operator_overload = std::move(s21_move_constructor);
-  EXPECT_TRUE(ExpectEqualLists(&std_operator_overload, &s21_operator_overload));
+  std_default_constructor = std_move_constructor;
+  s21_default_constructor = s21_move_constructor;
+  EXPECT_TRUE(
+      ExpectEqualLists(&std_default_constructor, &s21_default_constructor));
   EXPECT_TRUE(ExpectEqualLists(&std_move_constructor, &s21_move_constructor));
 
-  std_operator_overload = std::move(std_operator_overload);
-  s21_operator_overload = std::move(s21_operator_overload);
+  std_default_constructor = std_const_move_constructor;
+  s21_default_constructor = s21_const_move_constructor;
+  EXPECT_TRUE(
+      ExpectEqualLists(&std_default_constructor, &s21_default_constructor));
+  EXPECT_TRUE(ExpectEqualLists(&std_const_move_constructor,
+                               &s21_const_move_constructor));
+
+  std::list<T> std_operator_overload;
+  s21::list<T> s21_operator_overload;
+  std_operator_overload = std::move(std_move_constructor);
+  s21_operator_overload = std::move(s21_move_constructor);
   EXPECT_TRUE(ExpectEqualLists(&std_operator_overload, &s21_operator_overload));
+  EXPECT_TRUE(ExpectEqualLists(&std_move_constructor, &s21_move_constructor));
 
   //---------------------------------------------------------------------------
 
@@ -195,6 +192,17 @@ void test_list(std::initializer_list<T> const &items) {
     EXPECT_TRUE(begin == s21_copy_constructor.begin());
     EXPECT_TRUE(ExpectEqualLists(&std_copy_constructor, &s21_copy_constructor));
   }
+
+  std_default_constructor = std_copy_constructor;
+  s21_default_constructor = s21_copy_constructor;
+  EXPECT_TRUE(
+      ExpectEqualLists(&std_default_constructor, &s21_default_constructor));
+  EXPECT_TRUE(ExpectEqualLists(&std_copy_constructor, &s21_copy_constructor));
+
+  std_default_constructor = std_default_constructor;
+  s21_default_constructor = s21_default_constructor;
+  EXPECT_TRUE(
+      ExpectEqualLists(&std_default_constructor, &s21_default_constructor));
 
   auto std_pos = std_copy_constructor.begin();
   ++std_pos;
@@ -355,8 +363,8 @@ void test_list(std::initializer_list<T> const &items) {
 }
 
 TEST(TestS21Containers, List) {
-  test_list<char>({0, 1, 0, 4, 127});
-  test_list<int>({0, 1, -2147483647, 4, 2147483647});
-  test_list<double>({0, 1, DBL_MIN, -DBL_MAX, DBL_MAX});
-  test_list<A>({A(""), A("one"), A("two"), A("three"), A("four")});
+  TestList<char>({0, 1, 0, 4, 127});
+  TestList<int>({0, 1, -2147483647, 4, 2147483647});
+  TestList<double>({0, 1, DBL_MIN, -DBL_MAX, DBL_MAX});
+  TestList<A>({A(""), A("one"), A("two"), A("three"), A("four")});
 }

@@ -1,5 +1,5 @@
-#ifndef S21_VECTOR_H
-#define S21_VECTOR_H
+#ifndef CPP2_S21_CONTAINERS_3_SRC_S21_SEQUENCE_CONTAINERS_S21_VECTOR_H
+#define CPP2_S21_CONTAINERS_3_SRC_S21_SEQUENCE_CONTAINERS_S21_VECTOR_H
 
 #include <stdexcept>
 
@@ -25,7 +25,7 @@ class vector : public SequenceContainer<T, T, VectorIterator<T>,
   vector() {}
 
   explicit vector(size_type n) {
-    CheckMaxSize_(n);
+    CheckMaxSize(n);
 
     this->size_ = n;
     capacity_ = n;
@@ -35,17 +35,10 @@ class vector : public SequenceContainer<T, T, VectorIterator<T>,
 
   explicit vector(std::initializer_list<value_type> const &items)
       : vector(items.size()) {
-    this->InitializeContainer_(items);
+    this->InitializeContainer(items);
   }
 
-  vector(const vector &v) : capacity_(v.capacity_) {
-    CheckMaxSize_(capacity_);
-
-    this->size_ = v.size_;
-    std::tie(this->head_, this->tail_) =
-        allocator::Allocate(this->size_, capacity_);
-    this->CopyContainer_(v);
-  }
+  vector(const vector &v) : vector(v.size_) { this->CopyContainer(v); }
 
   vector(vector &&v) noexcept { *this = std::move(v); }
 
@@ -55,45 +48,43 @@ class vector : public SequenceContainer<T, T, VectorIterator<T>,
     this->head_ = allocator::Delete(this->head_);
     if (this != &v) {
       capacity_ = v.capacity_;
-      this->SetProtectedFields_(v.size_, v.head_, v.tail_);
+      this->SetProtectedFields(v.size_, v.head_, v.tail_);
       v.capacity_ = 0U;
-      v.SetProtectedFields_(0U, nullptr, nullptr);
+      v.SetProtectedFields(0U, nullptr, nullptr);
     } else {
       capacity_ = 0U;
-      this->SetProtectedFields_(0U, nullptr, nullptr);
+      this->SetProtectedFields(0U, nullptr, nullptr);
+    }
+
+    return *this;
+  }
+
+  vector &operator=(const vector &v) {
+    if (this != &v) {
+      *this = vector(v);
     }
 
     return *this;
   }
 
   reference at(size_type pos) {
-    CheckSizeBounds_(pos);
+    CheckSizeBounds(pos);
 
     reference ret = (*this)[pos];
 
     return ret;
   }
   const_reference at(size_type pos) const {
-    CheckSizeBounds_(pos);
+    CheckSizeBounds(pos);
 
     const_reference ret = (*this)[pos];
 
     return ret;
   }
 
-  reference operator[](size_type pos) noexcept {
-    iterator iter = this->begin();
-    for (size_type j = 0UL; j < pos; j += 1UL) ++iter;
-    reference ret = *iter;
-
-    return ret;
-  }
+  reference operator[](size_type pos) noexcept { return this->head_[pos]; }
   const_reference operator[](size_type pos) const noexcept {
-    const_iterator iter = this->begin();
-    for (size_type j = 0UL; j < pos; j += 1UL) ++iter;
-    const_reference ret = *iter;
-
-    return ret;
+    return this->head_[pos];
   }
 
   T *data() noexcept {
@@ -108,22 +99,22 @@ class vector : public SequenceContainer<T, T, VectorIterator<T>,
   }
 
   void reserve(size_type size) {
-    if (size > capacity_) Reserve_(size);
+    if (size > capacity_) Reserve(size);
   }
 
   constexpr size_type capacity() const noexcept { return capacity_; }
 
   void shrink_to_fit() {
-    if (capacity_ > this->size_) Reserve_(this->size_);
+    if (capacity_ > this->size_) Reserve(this->size_);
   }
 
   iterator insert(iterator pos, const_reference value) override {
-    CheckMaxSize_(this->size() + 1);
+    CheckMaxSize(this->size() + 1);
 
-    size_type p = this->FindIterator_(pos);
-    AddNewItem_(p);
+    size_type p = this->FindIterator(pos);
+    AddNewItem(p);
 
-    iterator ret = this->GetIterator_(p);
+    iterator ret = this->GetIterator(p);
     *ret = value;
 
     return ret;
@@ -152,26 +143,26 @@ class vector : public SequenceContainer<T, T, VectorIterator<T>,
   }
 
   iterator insert_many(const_iterator pos) {
-    CheckMaxSize_(this->size() + 1);
+    CheckMaxSize(this->size() + 1);
 
-    size_type p = this->FindConstIterator_(pos);
-    AddNewItem_(p);
+    size_type p = this->FindConstIterator(pos);
+    AddNewItem(p);
     *(this->head_ + p) = std::move(item_type());
-    iterator ret = this->GetIterator_(p);
+    iterator ret = this->GetIterator(p);
 
     return ret;
   }
 
   template <class... Args>
   iterator insert_many(const_iterator pos, Args &&...args) {
-    CheckMaxSize_(this->size() + sizeof...(args));
+    CheckMaxSize(this->size() + sizeof...(args));
 
-    size_type p = this->FindConstIterator_(pos);
+    size_type p = this->FindConstIterator(pos);
     for (item_type arg : {args...}) {
-      AddNewItem_(p);
+      AddNewItem(p);
       *(this->head_ + p) = std::move(arg);
     }
-    iterator ret = this->GetIterator_(p);
+    iterator ret = this->GetIterator(p);
 
     return ret;
   }
@@ -184,7 +175,7 @@ class vector : public SequenceContainer<T, T, VectorIterator<T>,
   }
 
  protected:
-  value_type *SetTail_(value_type *head, size_type size) noexcept override {
+  value_type *FindTail(value_type *head, size_type size) noexcept override {
     value_type *tail;
 
     tail = allocator::SetTail(head, size);
@@ -195,26 +186,26 @@ class vector : public SequenceContainer<T, T, VectorIterator<T>,
  private:
   size_type capacity_ = 0U;
 
-  void CheckMaxSize_(size_type size) {
+  void CheckMaxSize(size_type size) {
     if (size > this->max_size())
       throw std::length_error(
           "Incorrect input, cannot create s21::vector larger than max_size()");
   }
 
-  void CheckSizeBounds_(size_type pos) const {
+  void CheckSizeBounds(size_type pos) const {
     if (pos >= this->size_)
       throw std::out_of_range(
           "Incorrect input, index is outside the vector size");
   }
 
-  void Reserve_(size_type size) {
+  void Reserve(size_type size) {
     vector v(size);
 
-    v.CopyVector_(*this);
+    v.CopyVector(*this);
     *this = std::move(v);
   }
 
-  void CopyVector_(const vector &v) noexcept {
+  void CopyVector(const vector &v) noexcept {
     auto iter = this->begin();
     auto v_iter = v.begin();
     size_type m = std::min(v.size_, std::min(capacity_, v.capacity_));
@@ -224,7 +215,7 @@ class vector : public SequenceContainer<T, T, VectorIterator<T>,
     this->tail_ = allocator::SetTail(this->head_, this->size_);
   }
 
-  void AddNewItem_(size_type pos) {
+  void AddNewItem(size_type pos) {
     std::tie(this->size_, this->capacity_, this->head_, this->tail_) =
         allocator::Append(this->size_, this->capacity_, this->max_size(),
                           this->head_, this->tail_);
@@ -240,4 +231,4 @@ class vector : public SequenceContainer<T, T, VectorIterator<T>,
 };
 }  // namespace s21
 
-#endif  // S21_VECTOR_H
+#endif  // CPP2_S21_CONTAINERS_3_SRC_S21_SEQUENCE_CONTAINERS_S21_VECTOR_H

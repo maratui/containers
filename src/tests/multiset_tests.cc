@@ -1,325 +1,354 @@
-#include <gtest/gtest.h>
+#include "./tests.h"
 
-#include "../s21_set_containers/s21_multiset.h"
-#include "common_tests.h"
+template <class Key>
+void CoutMultisets(const std::multiset<Key> *std_multiset,
+                   const s21::multiset<Key> *s21_multiset) {
+  for (auto std_iter = std_multiset->begin(), end = std_multiset->end();
+       std_iter != end; ++std_iter)
+    std::cout << (*std_iter) << " ";
+  std::cout << "\n";
 
-template <class T>
-void is_equal(multiset<T> &x, std::multiset<T> &x_orig) {
-  ASSERT_EQ(x.size(), x_orig.size());
-  auto it = x.begin();
-  auto it_orig = x_orig.begin();
-  for (; (it_orig != x_orig.end() && it != x.end()); ++it_orig, ++it)
-    ASSERT_EQ((*it), (*it_orig));
+  for (auto s21_iter = s21_multiset->begin(), end = s21_multiset->end();
+       s21_iter != end; ++s21_iter)
+    std::cout << (*s21_iter) << " ";
+  std::cout << "\n";
 }
 
-TEST(s21_multiset, constructors) {
-  multiset<double> x;
-  std::multiset<double> x_orig;
-  x.insert(10.102);
-  x.insert(-0.02);
-  x.insert(91);
-  x.insert(47.102);
-  x.insert(11.23);
-  x_orig.insert(10.102);
-  x_orig.insert(-0.02);
-  x_orig.insert(91);
-  x_orig.insert(47.102);
-  x_orig.insert(11.23);
-  is_equal(x, x_orig);
+template <class Key, class... Args>
+void TestMultiset(Args... args) {
+  std::initializer_list<Key> const &items = {(Key)args...};
+  //---------------------------------------------------------------------------
 
-  multiset<int> y;
-  auto it = y.insert(2);
-  y.insert(2);
-  y.insert(3);
-  ++it;
-  ++it;
-  EXPECT_EQ(*it, 3);
+  std::multiset<Key> std_default_constructor;
+  s21::multiset<Key> s21_default_constructor;
+  EXPECT_TRUE(ExpectEqualMultisetBeginEnd(&std_default_constructor,
+                                          &s21_default_constructor));
 
-  multiset<int> z{10, 20, 30, 10, 20, 30};
-  std::multiset<int> z_orig{10, 20, 30, 10, 20, 30};
-  is_equal(z, z_orig);
+  std::multiset<Key> const std_const_default_constructor;
+  s21::multiset<Key> const s21_const_default_constructor;
+  EXPECT_TRUE(ExpectEqualMultisetBeginEnd(&std_const_default_constructor,
+                                          &s21_const_default_constructor));
 
-  multiset<int> v(z);
-  std::multiset<int> v_orig(z_orig);
-  is_equal(v, v_orig);
+  //---------------------------------------------------------------------------
 
-  multiset<int> w(std::move(z));
-  std::multiset<int> w_orig(std::move(z_orig));
-  is_equal(z, z_orig);
-  is_equal(w, w_orig);
-}
+  std::multiset<Key> std_initializer_list_constructor(items);
+  s21::multiset<Key> s21_initializer_list_constructor(items);
+  EXPECT_TRUE(ExpectEqualMultisets(&std_initializer_list_constructor,
+                                   &s21_initializer_list_constructor));
 
-TEST(s21_multiset, lower_bound) {
-  multiset<int> x{1, 2, 3, -2, 4};
-  std::multiset<int> x_orig{1, 2, 3, -2, 4};
-  for (int key = -5; key < 5; ++key) {
-    auto it = x.lower_bound(key);
-    auto it_orig = x_orig.lower_bound(key);
-    EXPECT_EQ(*it, *it_orig);
+  std::multiset<Key> const std_const_initializer_list_constructor(items);
+  s21::multiset<Key> const s21_const_initializer_list_constructor(items);
+  EXPECT_TRUE(ExpectEqualMultisets(&std_const_initializer_list_constructor,
+                                   &s21_const_initializer_list_constructor));
+
+  auto std_const_prev_iter = std_const_initializer_list_constructor.end();
+  auto s21_const_prev_iter = s21_const_initializer_list_constructor.end();
+  --std_const_prev_iter;
+  --s21_const_prev_iter;
+  EXPECT_EQ(*std_const_prev_iter, *s21_const_prev_iter);
+  --std_const_prev_iter;
+  --s21_const_prev_iter;
+  EXPECT_EQ(*std_const_prev_iter, *s21_const_prev_iter);
+
+  //---------------------------------------------------------------------------
+
+  std::multiset<Key> std_copy_constructor(std_initializer_list_constructor);
+  s21::multiset<Key> s21_copy_constructor(s21_initializer_list_constructor);
+  EXPECT_TRUE(ExpectEqualMultisets(&std_initializer_list_constructor,
+                                   &s21_initializer_list_constructor));
+  EXPECT_TRUE(
+      ExpectEqualMultisets(&std_copy_constructor, &s21_copy_constructor));
+
+  std::multiset<Key> const std_const_copy_constructor(
+      std_const_initializer_list_constructor);
+  s21::multiset<Key> const s21_const_copy_constructor(
+      s21_const_initializer_list_constructor);
+  EXPECT_TRUE(ExpectEqualMultisets(&std_const_initializer_list_constructor,
+                                   &s21_const_initializer_list_constructor));
+  EXPECT_TRUE(ExpectEqualMultisets(&std_const_copy_constructor,
+                                   &s21_const_copy_constructor));
+
+  //---------------------------------------------------------------------------
+
+  std::multiset<Key> std_move_constructor(
+      std::move(std_initializer_list_constructor));
+  s21::multiset<Key> s21_move_constructor(
+      std::move(s21_initializer_list_constructor));
+  EXPECT_TRUE(
+      ExpectEqualMultisets(&std_move_constructor, &s21_move_constructor));
+  EXPECT_TRUE(ExpectEqualMultisets(&std_initializer_list_constructor,
+                                   &s21_initializer_list_constructor));
+
+  std::multiset<Key> const std_const_move_constructor(
+      std::move(std_const_initializer_list_constructor));
+  s21::multiset<Key> const s21_const_move_constructor(
+      std::move(s21_const_initializer_list_constructor));
+  EXPECT_TRUE(ExpectEqualMultisets(&std_const_move_constructor,
+                                   &s21_const_move_constructor));
+  EXPECT_TRUE(ExpectEqualMultisets(&std_const_initializer_list_constructor,
+                                   &s21_const_initializer_list_constructor));
+
+  //---------------------------------------------------------------------------
+
+  std_default_constructor = std_move_constructor;
+  s21_default_constructor = s21_move_constructor;
+  EXPECT_TRUE(
+      ExpectEqualMultisets(&std_default_constructor, &s21_default_constructor));
+  EXPECT_TRUE(
+      ExpectEqualMultisets(&std_move_constructor, &s21_move_constructor));
+
+  std_default_constructor = std_const_move_constructor;
+  s21_default_constructor = s21_const_move_constructor;
+  EXPECT_TRUE(
+      ExpectEqualMultisets(&std_default_constructor, &s21_default_constructor));
+  EXPECT_TRUE(ExpectEqualMultisets(&std_const_move_constructor,
+                                   &s21_const_move_constructor));
+
+  std::multiset<Key> std_operator_overload;
+  s21::multiset<Key> s21_operator_overload;
+  std_operator_overload = std::move(std_move_constructor);
+  s21_operator_overload = std::move(s21_move_constructor);
+  EXPECT_TRUE(
+      ExpectEqualMultisets(&std_operator_overload, &s21_operator_overload));
+  EXPECT_TRUE(
+      ExpectEqualMultisets(&std_move_constructor, &s21_move_constructor));
+
+  std_operator_overload = std::move(std_operator_overload);
+  s21_operator_overload = std::move(s21_operator_overload);
+  EXPECT_TRUE(
+      ExpectEqualMultisets(&std_operator_overload, &s21_operator_overload));
+
+  //---------------------------------------------------------------------------
+
+  EXPECT_EQ(*std_copy_constructor.begin(), *s21_copy_constructor.begin());
+  EXPECT_EQ(*std_const_copy_constructor.begin(),
+            *s21_const_copy_constructor.begin());
+  EXPECT_TRUE(ExpectNotEqualMultisetBeginEnd(&std_copy_constructor,
+                                             &s21_copy_constructor));
+  EXPECT_TRUE(ExpectNotEqualMultisetBeginEnd(&std_const_copy_constructor,
+                                             &s21_const_copy_constructor));
+
+  //---------------------------------------------------------------------------
+
+  EXPECT_FALSE(std_copy_constructor.empty());
+  EXPECT_FALSE(s21_copy_constructor.empty());
+  EXPECT_FALSE(std_const_copy_constructor.empty());
+  EXPECT_FALSE(s21_const_copy_constructor.empty());
+  EXPECT_TRUE(std_const_default_constructor.empty());
+  EXPECT_TRUE(s21_const_default_constructor.empty());
+
+  //---------------------------------------------------------------------------
+
+  EXPECT_EQ(std_copy_constructor.size(), s21_copy_constructor.size());
+  EXPECT_EQ(std_const_copy_constructor.size(),
+            s21_const_copy_constructor.size());
+  EXPECT_EQ(std_const_default_constructor.size(),
+            s21_const_default_constructor.size());
+
+  //---------------------------------------------------------------------------
+
+  std_copy_constructor.clear();
+  s21_copy_constructor.clear();
+  EXPECT_TRUE(ExpectEqualMultisetBeginEnd(&std_copy_constructor,
+                                          &s21_copy_constructor));
+  EXPECT_TRUE(
+      ExpectEqualMultisets(&std_copy_constructor, &s21_copy_constructor));
+
+  //---------------------------------------------------------------------------
+
+  auto item = items.end();
+  --item;
+
+  EXPECT_EQ(*(std_copy_constructor.insert(*item)),
+            *(s21_copy_constructor.insert(*item)));
+  EXPECT_EQ(*(std_copy_constructor.insert(*item)),
+            *(s21_copy_constructor.insert(*item)));
+  EXPECT_EQ(std_copy_constructor.size(), s21_copy_constructor.size());
+  EXPECT_EQ(*(std_copy_constructor.insert(*item)),
+            *(s21_copy_constructor.insert(*item)));
+  EXPECT_EQ(*(std_copy_constructor.insert(*item)),
+            *(s21_copy_constructor.insert(*item)));
+  EXPECT_TRUE(
+      ExpectEqualMultisets(&std_copy_constructor, &s21_copy_constructor));
+
+  std_default_constructor = std_copy_constructor;
+  s21_default_constructor = s21_copy_constructor;
+  EXPECT_TRUE(
+      ExpectEqualMultisets(&std_default_constructor, &s21_default_constructor));
+  EXPECT_TRUE(
+      ExpectEqualMultisets(&std_copy_constructor, &s21_copy_constructor));
+
+  std_default_constructor = std_default_constructor;
+  s21_default_constructor = s21_default_constructor;
+  EXPECT_TRUE(
+      ExpectEqualMultisets(&std_default_constructor, &s21_default_constructor));
+
+  for (auto item = items.begin(); item != items.end(); ++item) {
+    std_copy_constructor.insert(*item);
+    s21_copy_constructor.insert(*item);
   }
+  EXPECT_TRUE(
+      ExpectEqualMultisets(&std_copy_constructor, &s21_copy_constructor));
 
-  auto it = x.lower_bound(5);
-  auto it_orig = x_orig.lower_bound(5);
-  EXPECT_EQ(it, x.end());
-  EXPECT_EQ(it_orig, x_orig.end());
-}
+  //---------------------------------------------------------------------------
 
-TEST(s21_multiset, upper_bound) {
-  multiset<int> x{1, 2, 3, -2, 4};
-  std::multiset<int> x_orig{1, 2, 3, -2, 4};
+  EXPECT_EQ(std_copy_constructor.count(*item),
+            s21_copy_constructor.count(*item));
 
-  for (int key = -5; key < 4; ++key) {
-    auto it = x.upper_bound(key);
-    auto it_orig = x_orig.upper_bound(key);
-    EXPECT_EQ(*it, *it_orig);
+  //---------------------------------------------------------------------------
+
+  EXPECT_EQ(*(std_copy_constructor.lower_bound(*item)),
+            *(s21_copy_constructor.lower_bound(*item)));
+
+  EXPECT_EQ(*((std_copy_constructor.equal_range(*item)).first),
+            *((s21_copy_constructor.equal_range(*item)).first));
+
+  //---------------------------------------------------------------------------
+
+  std_copy_constructor.erase(std_copy_constructor.begin());
+  s21_copy_constructor.erase(s21_copy_constructor.begin());
+  EXPECT_TRUE(
+      ExpectEqualMultisets(&std_copy_constructor, &s21_copy_constructor));
+
+  auto std_pos = std_copy_constructor.begin();
+  ++std_pos;
+  std_copy_constructor.erase(std_pos);
+  auto s21_pos = s21_copy_constructor.begin();
+  ++s21_pos;
+  s21_copy_constructor.erase(s21_pos);
+  EXPECT_TRUE(
+      ExpectEqualMultisets(&std_copy_constructor, &s21_copy_constructor));
+
+  std_pos = std_copy_constructor.end();
+  --std_pos;
+  std_copy_constructor.erase(std_pos);
+  std_pos = std_copy_constructor.end();
+  --std_pos;
+  --std_pos;
+  std_copy_constructor.erase(std_pos);
+  s21_pos = s21_copy_constructor.end();
+  --s21_pos;
+  s21_copy_constructor.erase(s21_pos);
+  s21_pos = s21_copy_constructor.end();
+  --s21_pos;
+  --s21_pos;
+  s21_copy_constructor.erase(s21_pos);
+  EXPECT_TRUE(
+      ExpectEqualMultisets(&std_copy_constructor, &s21_copy_constructor));
+
+  for (; !std_copy_constructor.empty() && !s21_copy_constructor.empty();) {
+    ;
+    std_pos = std_copy_constructor.begin();
+    s21_pos = s21_copy_constructor.begin();
+    std_copy_constructor.erase(std_pos);
+    s21_copy_constructor.erase(s21_pos);
+    EXPECT_TRUE(
+        ExpectEqualMultisets(&std_copy_constructor, &s21_copy_constructor));
   }
+  EXPECT_TRUE(std_copy_constructor.empty());
+  EXPECT_TRUE(s21_copy_constructor.empty());
 
-  auto it = x.upper_bound(5);
-  auto it_orig = x_orig.upper_bound(5);
-  EXPECT_EQ(it, x.end());
-  EXPECT_EQ(it_orig, x_orig.end());
-}
+  //---------------------------------------------------------------------------
 
-TEST(s21_multiset, count) {
-  multiset<int> x{1, 2, 3, 3};
-  std::multiset<int> x_orig{1, 2, 3, 3};
+  for (auto item = items.begin(); item != items.end(); ++item) {
+    std_copy_constructor.insert(*item);
+    s21_copy_constructor.insert(*item);
+  }
+  EXPECT_TRUE(
+      ExpectEqualMultisets(&std_copy_constructor, &s21_copy_constructor));
 
-  EXPECT_EQ(x.count(3), x_orig.count(3));
-}
+  std_copy_constructor.swap(std_move_constructor);
+  s21_copy_constructor.swap(s21_move_constructor);
+  EXPECT_TRUE(
+      ExpectEqualMultisets(&std_copy_constructor, &s21_copy_constructor));
+  EXPECT_TRUE(
+      ExpectEqualMultisets(&std_move_constructor, &s21_move_constructor));
 
-TEST(s21_multiset, eq_range) {
-  multiset<int> x{1, 2, 3, 3};
-  std::multiset<int> x_orig{1, 2, 3, 3};
+  //---------------------------------------------------------------------------
 
-  for (int key = -7; key < 7; ++key) {
-    auto it = x.equal_range(key);
-    auto it_orig = x_orig.equal_range(key);
-    if (it.first != x.end()) {
-      EXPECT_EQ(*it.first, *it_orig.first);
+  std_copy_constructor = std::multiset<Key>(std_move_constructor);
+  s21_copy_constructor = s21::multiset<Key>(s21_move_constructor);
+
+  std_initializer_list_constructor.merge(std_move_constructor);
+  s21_initializer_list_constructor.merge(s21_move_constructor);
+  EXPECT_TRUE(ExpectEqualMultisets(&std_initializer_list_constructor,
+                                   &s21_initializer_list_constructor));
+  EXPECT_TRUE(
+      ExpectEqualMultisets(&std_move_constructor, &s21_move_constructor));
+
+  std_initializer_list_constructor.merge(std_move_constructor);
+  s21_initializer_list_constructor.merge(s21_move_constructor);
+  EXPECT_TRUE(ExpectEqualMultisets(&std_initializer_list_constructor,
+                                   &s21_initializer_list_constructor));
+  EXPECT_TRUE(
+      ExpectEqualMultisets(&std_move_constructor, &s21_move_constructor));
+
+  //---------------------------------------------------------------------------
+
+  EXPECT_EQ(*std_copy_constructor.find(*(items.begin())),
+            *s21_copy_constructor.find(*(items.begin())));
+
+  //---------------------------------------------------------------------------
+
+  EXPECT_TRUE(s21_copy_constructor.contains(*(items.begin())));
+
+  //---------------------------------------------------------------------------
+
+  {
+    using multiset_t = typename s21::multiset<Key>::item_type;
+
+    //---------------------------------------------------------------------------
+
+    std::multiset<Key> std_multiset;
+    s21::multiset<Key> s21_multiset;
+
+    std_multiset.emplace();
+    s21_multiset.insert_many();
+    std_multiset.emplace();
+    s21_multiset.insert_many();
+    EXPECT_TRUE(ExpectEqualMultisets(&std_multiset, &s21_multiset));
+
+    std::pair<Key, Key> args[items.size()];
+    {
+      int i = 0;
+      for (auto item : items) {
+        args[i].first = item;
+        args[i++].second = item;
+      }
     }
-    if (it.second != x.end()) {
-      EXPECT_EQ(*it.second, *it_orig.second);
+
+    for (auto i = 0; i < 3; i++) {
+      int j = 5;
+      for (Key item : items) {
+        std_multiset.emplace(item);
+        if (--j <= 0) break;
+      }
+      typename multiset_t::RBTPtrs *ptrs[5];
+      for (int i = 0; i < 5; i++) {
+        ptrs[i] = new typename multiset_t::RBTPtrs(nullptr, nullptr, nullptr);
+      }
+      auto ress =
+          s21_multiset.insert_many(multiset_t(args[0], s21::Red, ptrs[0]),
+                                   multiset_t(args[1], s21::Red, ptrs[1]),
+                                   multiset_t(args[2], s21::Red, ptrs[2]),
+                                   multiset_t(args[3], s21::Red, ptrs[3]),
+                                   multiset_t(args[4], s21::Red, ptrs[4]));
+      EXPECT_TRUE(ExpectEqualMultisets(&std_multiset, &s21_multiset));
+      for (auto res : ress) {
+        EXPECT_TRUE(s21_multiset.contains(*(res.first)));
+      }
     }
+
+    //---------------------------------------------------------------------------
   }
 }
 
-TEST(s21_multiset, insert_many) {
-  multiset<double> x{-0.2};
-  x.insert_many(0.4);
-  x.insert_many(4.123);
-  x.insert_many(10.11);
-  x.insert_many(4.4);
-  x.insert_many(5.04);
-  x.insert_many(5.04);
-  std::multiset<double> x_orig{-0.2};
-  x_orig.emplace(0.4);
-  x_orig.emplace(4.123);
-  x_orig.emplace(10.11);
-  x_orig.emplace(4.4);
-  x_orig.emplace(5.04);
-  x_orig.emplace(5.04);
-  is_equal(x, x_orig);
-}
-
-TEST(s21_multiset, iterators) {
-  multiset<int> x{6, 2, 1,    0,  78, 0,  7,  -1,  90,
-                  3, 8, -234, 98, 33, -0, 11, -99, 1234};
-  std::multiset<int> x_orig{6, 2, 1,    0,  78, 0,  7,  -1,  90,
-                            3, 8, -234, 98, 33, -0, 11, -99, 1234};
-  auto it = x.begin();
-  auto it_orig = x_orig.begin();
-  ASSERT_EQ(*it, *it_orig);
-
-  x.clear();
-  it = x.begin();
-  ASSERT_EQ(it, x.end());
-  EXPECT_ANY_THROW(*it);
-
-  x = {6, 2, 1, 0, 78, 0, 7, -1, 90, 3, 8, -234, 98, 33, -0, 11, -99, 1234};
-  x_orig = {6, 2, 1,    0,  78, 0,  7,  -1,  90,
-            3, 8, -234, 98, 33, -0, 11, -99, 1234};
-  it = x.begin();
-  it_orig = x_orig.begin();
-  for (unsigned int i = 0; i < x.size(); ++i, ++it, ++it_orig)
-    ASSERT_EQ(*it, *it_orig);
-
-  x = {6, 2, 1, 0, 78, 0, 7, -1, 90, 3, 8, -234, 98, 33, -0, 11, -99, 1234};
-  it = x.begin();
-  for (unsigned int i = 0; i < x.size() - 1; ++i, ++it)
-    ;
-  ASSERT_EQ(1234, *it);
-}
-
-TEST(s21_multiset, empty) {
-  multiset<int> x;
-  std::multiset<int> x_orig;
-  ASSERT_EQ(x.empty(), x_orig.empty());
-
-  x = {9};
-  x_orig = {9};
-  ASSERT_EQ(x.empty(), x_orig.empty());
-}
-
-TEST(s21_multiset, size) {
-  multiset<int> x{1, 2, 3};
-  std::multiset<int> x_orig{1, 2, 3};
-  ASSERT_EQ(x.size(), x_orig.size());
-}
-
-TEST(s21_multiset, max_size) {
-  multiset<double> x;
-  std::multiset<double> x_orig;
-  EXPECT_GE(x.max_size(), 0);
-  EXPECT_GE(x_orig.max_size(), 0);
-}
-
-TEST(s21_multiset, clear) {
-  multiset<int> x{1, 2, 3};
-  std::multiset<int> x_orig{1, 2, 3};
-  x.clear();
-  x_orig.clear();
-  is_equal(x, x_orig);
-}
-
-TEST(s21_multiset, insert) {
-  multiset<int> x;
-  std::multiset<int> x_orig;
-  for (int i = -10; i <= 10; i++) {
-    x.insert(i);
-    x_orig.insert(i);
-  }
-  is_equal(x, x_orig);
-
-  x.insert(1);
-  x_orig.insert(1);
-  is_equal(x, x_orig);
-
-  x.insert(11);
-  x_orig.insert(11);
-  is_equal(x, x_orig);
-}
-
-TEST(s21_multiset, erase) {
-  multiset<int> x{6, 2, 1,    0,  78, 0,  7,  -1,  90,
-                  3, 8, -234, 98, 33, -0, 11, -99, 1234};
-  std::multiset<int> x_orig{6, 2, 1,    0,  78, 0,  7,  -1,  90,
-                            3, 8, -234, 98, 33, -0, 11, -99, 1234};
-  auto it = x.begin();
-  auto it_orig = x_orig.begin();
-  for (long unsigned int i = 0; i < x.size() / 2; ++i, ++it, ++it_orig)
-    ;
-  x.erase(it);
-  x_orig.erase(it_orig);
-  is_equal(x, x_orig);
-
-  x = {9, 1, 4};
-  x_orig = {9, 1, 4};
-  it = x.begin();
-  it_orig = x_orig.begin();
-  x.erase(it);
-  x_orig.erase(it_orig);
-  is_equal(x, x_orig);
-
-  x = {1234};
-  x_orig = {1234};
-  it_orig = x_orig.begin();
-  it = x.begin();
-  x.erase(it);
-  x_orig.erase(it_orig);
-  is_equal(x, x_orig);
-
-  x.clear();
-  it = x.begin();
-  EXPECT_ANY_THROW(x.erase(it));
-
-  x = {9, 1, 4};
-  int initail_size = x.size();
-  it = x.begin();
-  x.erase(it);
-  ASSERT_EQ(x.size(), initail_size - 1);
-
-  x = {-2, -3, -4, -5, -6, -7};
-  initail_size = x.size();
-  it = x.begin();
-  for (unsigned int i = 0; i < x.size() - 1; ++i, ++it)
-    ;
-  x.erase(it);
-  ASSERT_EQ(x.size(), initail_size - 1);
-
-  x = {6, 2, 1, 0, 78, 0, 7, -1, 90, 3, 8, -234, 98, 33, -0, 11, -99, 1234};
-  x_orig = {6, 2, 1,    0,  78, 0,  7,  -1,  90,
-            3, 8, -234, 98, 33, -0, 11, -99, 1234};
-  it = x.begin();
-  it_orig = x_orig.begin();
-  x.erase(it);
-  x_orig.erase(it_orig);
-  is_equal(x, x_orig);
-
-  x = {6, 2, 1, 0, 78, 0, 7, -1, 90};
-  x_orig = {6, 2, 1, 0, 78, 0, 7, -1, 90};
-
-  it = x.begin();
-  it_orig = x_orig.begin();
-  ++it;
-  ++it_orig;
-  x.erase(it);
-  x_orig.erase(it_orig);
-  is_equal(x, x_orig);
-
-  x = {9, 1, 4};
-  it = x.begin();
-  x.clear();
-  ASSERT_EQ(x.size(), 0);
-  EXPECT_ANY_THROW(x.erase(it));
-}
-
-TEST(s21_multiset, swap) {
-  multiset<int> x{1, 2, 3};
-  multiset<int> y;
-  std::multiset<int> x_orig{1, 2, 3};
-  std::multiset<int> y_orig;
-  y.swap(x);
-  y_orig.swap(x_orig);
-  is_equal(y, y_orig);
-  is_equal(x, x_orig);
-
-  x.swap(x);
-  x_orig.swap(x_orig);
-  is_equal(x, x_orig);
-}
-
-TEST(s21_multiset, merge) {
-  multiset<int> x{1, 2, 3};
-  multiset<int> y{6, 5, 4, 3};
-  std::multiset<int> x_orig{1, 2, 3};
-  std::multiset<int> y_orig{6, 5, 4, 3};
-
-  y.merge(x);
-  y_orig.merge(x_orig);
-  is_equal(y, y_orig);
-}
-
-TEST(s21_multiset, find) {
-  multiset<int> x{1, 2, 3};
-  std::multiset<int> x_orig{1, 2, 3};
-  auto it = x.find(2);
-  auto it_orig = x_orig.find(2);
-  ASSERT_EQ(*it, *it_orig);
-
-  it = x.find(4);
-  it_orig = x_orig.find(4);
-  ASSERT_EQ(it, x.end());
-  ASSERT_EQ(it_orig, x_orig.end());
-}
-
-TEST(s21_multiset, contains) {
-  multiset<int> x;
-  ASSERT_EQ(x.contains(4), false);
-
-  x = {1, 2, 3};
-  ASSERT_EQ(x.contains(4), false);
-
-  set<double> y{-0.8563859, 1.9473646};
-  ASSERT_EQ(y.contains(-0.8563855), false);
-  ASSERT_EQ(y.contains(1.9473646), true);
+TEST(TestS21Containers, Multiset) {
+  TestMultiset<char>('a', 'b', 'c', 'd', 'e');
+  TestMultiset<int>(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 19, 18, 17, 16, 15, 14,
+                    13, 12, 11);
+  TestMultiset<int>(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+                    17, 18, 19);
+  TestMultiset<double>(0, 1, DBL_MIN, -DBL_MAX, DBL_MAX);
+  TestMultiset<A>(A(""), A("one"), A("two"), A("three"), A("four"));
 }

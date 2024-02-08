@@ -1,9 +1,13 @@
+#ifndef CPP2_S21_CONTAINERS_3_SRC_TESTS_TESTS_H
+#define CPP2_S21_CONTAINERS_3_SRC_TESTS_TESTS_H
+
 #include <gtest/gtest.h>
 
 #include <array>
 #include <list>
 #include <map>
 #include <queue>
+#include <set>
 #include <stack>
 #include <type_traits>
 #include <vector>
@@ -211,22 +215,23 @@ template <class T, std::size_t N>
 //---------------------------------------------------------------------------
 
 template <class T>
-::testing::AssertionResult ExpectEqualQueues(const std::queue<T> *std_queue,
-                                             const s21::queue<T> *s21_queue) {
+::testing::AssertionResult ExpectEqualQueues(
+    const std::queue<T, std::list<T>> &std_queue,
+    const s21::queue<T, s21::list<T>> &s21_queue) {
   bool expect;
 
-  EXPECT_EQ(std_queue->size(), s21_queue->size());
+  EXPECT_EQ(std_queue.size(), s21_queue.size());
 
-  std::queue<T> std(*std_queue);
-  s21::queue<T> s21(*s21_queue);
+  std::queue<T, std::list<T>> std(std_queue);
+  s21::queue<T, s21::list<T>> s21(s21_queue);
 
   expect = true;
-  for (size_t i = 0U; i < std_queue->size(); ++i, std.pop(), s21.pop()) {
+  for (size_t i = 0U; i < std_queue.size(); ++i, std.pop(), s21.pop()) {
     EXPECT_EQ(std.front(), s21.front());
     if (std.front() != s21.front()) expect = false;
   }
 
-  return ((std_queue->size() == s21_queue->size()) && expect)
+  return ((std_queue.size() == s21_queue.size()) && expect)
              ? ::testing::AssertionSuccess()
              : ::testing::AssertionFailure();
 }
@@ -234,24 +239,23 @@ template <class T>
 //---------------------------------------------------------------------------
 
 template <class T>
-::testing::AssertionResult ExpectEqualListQueue(
-    const std::list<T> *std_list, const s21::queue<T> *s21_queue) {
+::testing::AssertionResult ExpectEqualQueues(const std::queue<T> &std_queue,
+                                             const s21::queue<T> &s21_queue) {
   bool expect;
 
-  EXPECT_EQ(std_list->size(), s21_queue->size());
+  EXPECT_EQ(std_queue.size(), s21_queue.size());
 
-  std::list<T> std(*std_list);
-  s21::queue<T> s21(*s21_queue);
+  std::queue<T> std(std_queue);
+  s21::queue<T> s21(s21_queue);
 
   expect = true;
 
-  auto std_iter = std.begin();
-  for (size_t i = 0U; i < std_list->size(); ++i, ++std_iter, s21.pop()) {
-    EXPECT_EQ(*std_iter, s21.front());
-    if (*std_iter != s21.front()) expect = false;
+  for (size_t i = 0U; i < std_queue.size(); ++i, std.pop(), s21.pop()) {
+    EXPECT_EQ(std.front(), s21.front());
+    if (std.front() != s21.front()) expect = false;
   }
 
-  return ((std_list->size() == s21_queue->size()) && expect)
+  return ((std_queue.size() == s21_queue.size()) && expect)
              ? ::testing::AssertionSuccess()
              : ::testing::AssertionFailure();
 }
@@ -286,23 +290,23 @@ template <class T>
 //---------------------------------------------------------------------------
 
 template <class T>
-::testing::AssertionResult ExpectEqualListStack(
-    const std::list<T> &std_list, const s21::stack<T> &s21_queue) {
+::testing::AssertionResult ExpectEqualStacks(
+    const std::stack<T, std::list<T>> &std_stack,
+    const s21::stack<T, s21::list<T>> &s21_stack) {
   bool expect;
 
-  EXPECT_EQ(std_list.size(), s21_queue.size());
+  EXPECT_EQ(std_stack.size(), s21_stack.size());
 
-  std::list<T> std(std_list);
-  s21::stack<T> s21(s21_queue);
+  std::stack<T, std::list<T>> std(std_stack);
+  s21::stack<T, s21::list<T>> s21(s21_stack);
 
   expect = true;
-  auto std_iter = std.begin();
-  for (size_t i = 0U; i < std_list.size(); ++i, ++std_iter, s21.pop()) {
-    EXPECT_EQ(*std_iter, s21.top());
-    if (*std_iter != s21.top()) expect = false;
+  for (std::size_t i = 0U; i < std_stack.size(); ++i, std.pop(), s21.pop()) {
+    EXPECT_EQ(std.top(), s21.top());
+    if (std.top() != s21.top()) expect = false;
   }
 
-  return ((std_list.size() == s21_queue.size()) && expect)
+  return ((std_stack.size() == s21_stack.size()) && expect)
              ? ::testing::AssertionSuccess()
              : ::testing::AssertionFailure();
 }
@@ -364,3 +368,120 @@ template <class K, class T>
 }
 
 //---------------------------------------------------------------------------
+
+template <class Key>
+::testing::AssertionResult ExpectEqualSets(const std::set<Key> *std_set,
+                                           const s21::set<Key> *s21_set) {
+  bool expect = true;
+
+  EXPECT_EQ(std_set->size(), s21_set->size());
+
+  auto s21_iter = s21_set->begin();
+  for (auto std_iter = std_set->begin(), end = std_set->end(); std_iter != end;
+       ++std_iter, ++s21_iter) {
+    EXPECT_EQ(*std_iter, *s21_iter);
+    if (*std_iter != *s21_iter) expect = false;
+  }
+
+  auto std_iter = std_set->begin();
+  for (auto s21_iter = s21_set->begin(), end = s21_set->end(); s21_iter != end;
+       ++std_iter, ++s21_iter) {
+    EXPECT_EQ(*std_iter, *s21_iter);
+    if (*std_iter != *s21_iter) expect = false;
+  }
+
+  return ((std_set->size() == s21_set->size()) && expect)
+             ? ::testing::AssertionSuccess()
+             : ::testing::AssertionFailure();
+}
+
+template <class Key>
+::testing::AssertionResult ExpectEqualSetBeginEnd(
+    const std::set<Key> *std_set, const s21::set<Key> *s21_set) {
+  EXPECT_EQ(std_set->size(), s21_set->size());
+  EXPECT_TRUE(std_set->begin() == std_set->end());
+  EXPECT_TRUE(s21_set->begin() == s21_set->end());
+
+  return ((std_set->size() == s21_set->size()) &&
+          (std_set->begin() == std_set->end()) &&
+          (s21_set->begin() == s21_set->end()))
+             ? ::testing::AssertionSuccess()
+             : ::testing::AssertionFailure();
+}
+
+template <class Key>
+::testing::AssertionResult ExpectNotEqualSetBeginEnd(
+    const std::set<Key> *std_set, const s21::set<Key> *s21_set) {
+  EXPECT_EQ(std_set->size(), s21_set->size());
+  EXPECT_TRUE(std_set->begin() != std_set->end());
+  EXPECT_TRUE(s21_set->begin() != s21_set->end());
+
+  return ((std_set->size() == s21_set->size()) &&
+          (std_set->begin() != std_set->end()) &&
+          (s21_set->begin() != s21_set->end()))
+             ? ::testing::AssertionSuccess()
+             : ::testing::AssertionFailure();
+}
+
+//---------------------------------------------------------------------------
+
+template <class Key>
+::testing::AssertionResult ExpectEqualMultisets(
+    const std::multiset<Key> *std_multiset,
+    const s21::multiset<Key> *s21_multiset) {
+  bool expect = true;
+
+  EXPECT_EQ(std_multiset->size(), s21_multiset->size());
+
+  auto s21_iter = s21_multiset->begin();
+  for (auto std_iter = std_multiset->begin(), end = std_multiset->end();
+       std_iter != end; ++std_iter, ++s21_iter) {
+    EXPECT_EQ(*std_iter, *s21_iter);
+    if (*std_iter != *s21_iter) expect = false;
+  }
+
+  auto std_iter = std_multiset->begin();
+  for (auto s21_iter = s21_multiset->begin(), end = s21_multiset->end();
+       s21_iter != end; ++std_iter, ++s21_iter) {
+    EXPECT_EQ(*std_iter, *s21_iter);
+    if (*std_iter != *s21_iter) expect = false;
+  }
+
+  return ((std_multiset->size() == s21_multiset->size()) && expect)
+             ? ::testing::AssertionSuccess()
+             : ::testing::AssertionFailure();
+}
+
+template <class Key>
+::testing::AssertionResult ExpectEqualMultisetBeginEnd(
+    const std::multiset<Key> *std_multiset,
+    const s21::multiset<Key> *s21_multiset) {
+  EXPECT_EQ(std_multiset->size(), s21_multiset->size());
+  EXPECT_TRUE(std_multiset->begin() == std_multiset->end());
+  EXPECT_TRUE(s21_multiset->begin() == s21_multiset->end());
+
+  return ((std_multiset->size() == s21_multiset->size()) &&
+          (std_multiset->begin() == std_multiset->end()) &&
+          (s21_multiset->begin() == s21_multiset->end()))
+             ? ::testing::AssertionSuccess()
+             : ::testing::AssertionFailure();
+}
+
+template <class Key>
+::testing::AssertionResult ExpectNotEqualMultisetBeginEnd(
+    const std::multiset<Key> *std_multiset,
+    const s21::multiset<Key> *s21_multiset) {
+  EXPECT_EQ(std_multiset->size(), s21_multiset->size());
+  EXPECT_TRUE(std_multiset->begin() != std_multiset->end());
+  EXPECT_TRUE(s21_multiset->begin() != s21_multiset->end());
+
+  return ((std_multiset->size() == s21_multiset->size()) &&
+          (std_multiset->begin() != std_multiset->end()) &&
+          (s21_multiset->begin() != s21_multiset->end()))
+             ? ::testing::AssertionSuccess()
+             : ::testing::AssertionFailure();
+}
+
+//---------------------------------------------------------------------------
+
+#endif  // CPP2_S21_CONTAINERS_3_SRC_TESTS_TESTS_H

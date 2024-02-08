@@ -1,5 +1,5 @@
-#ifndef S21_RBTREE_H
-#define S21_RBTREE_H
+#ifndef CPP2_S21_CONTAINERS_3_SRC_S21_ASSOCIATIVE_CONTAINERS_S21_RBTREE_H
+#define CPP2_S21_CONTAINERS_3_SRC_S21_ASSOCIATIVE_CONTAINERS_S21_RBTREE_H
 
 #include <utility>
 
@@ -113,7 +113,7 @@ class RBTree {
   RBTree();
   ~RBTree();
 
-  bool Insert(value_type value);
+  RBTNode<K, T> *Insert(value_type value);
   RBTNode<K, T> *Search(const K key) const noexcept;
   void Remove(K key) noexcept;
   void Destory() noexcept;
@@ -126,18 +126,18 @@ class RBTree {
   RBTNode<K, T> *root_;
 
  private:
-  void Destory_(RBTNode<K, T> *node) noexcept;
+  void Destory(RBTNode<K, T> *node) noexcept;
 
-  void InsertFixUp_(RBTNode<K, T> *node);
-  void Rotate_(RBTNode<K, T> *&parent, RBTNode<K, T> *&node,
-               RBTNode<K, T> *gparent);
-  void LeftRotate_(RBTNode<K, T> *node);
-  void RightRotate_(RBTNode<K, T> *node);
+  void BalanceInsert(RBTNode<K, T> *node);
+  void Rotate(RBTNode<K, T> *&parent, RBTNode<K, T> *&node,
+              RBTNode<K, T> *gparent);
+  void LeftRotate(RBTNode<K, T> *node);
+  void RightRotate(RBTNode<K, T> *node);
 
-  RBTNode<K, T> *Search_(RBTNode<K, T> *node, const K key) const noexcept;
+  RBTNode<K, T> *Rotate(RBTNode<K, T> *node, const K key) const noexcept;
 
-  void Remove_(RBTNode<K, T> *node) noexcept;
-  void RemoveFixUp_(RBTNode<K, T> *node, RBTNode<K, T> *parent) noexcept;
+  void Remove(RBTNode<K, T> *node) noexcept;
+  void BalanceRemove(RBTNode<K, T> *node, RBTNode<K, T> *parent) noexcept;
 };
 
 template <class K, class T>
@@ -145,35 +145,35 @@ RBTree<K, T>::RBTree() : root_(nullptr) {}
 
 template <class K, class T>
 RBTree<K, T>::~RBTree() {
-  Destory_(root_);
+  Destory(root_);
 }
 
 template <class K, class T>
-bool RBTree<K, T>::Insert(value_type value) {
-  bool ret;
-
+RBTNode<K, T> *RBTree<K, T>::Insert(value_type value) {
   struct RBTNode<K, T>::RBTPtrs *ptrs =
       new struct RBTNode<K, T>::RBTPtrs(nullptr, nullptr, nullptr);
   RBTNode<K, T> *node = new RBTNode<K, T>(value, Red, ptrs);
-  ret = Insert_(node);
+  if (!Insert_(node)) {
+    node = nullptr;
+  }
 
-  return ret;
+  return node;
 }
 
 template <class K, class T>
 RBTNode<K, T> *RBTree<K, T>::Search(const K key) const noexcept {
-  return Search_(root_, key);
+  return Rotate(root_, key);
 }
 
 template <class K, class T>
 void RBTree<K, T>::Remove(K key) noexcept {
-  RBTNode<K, T> *node = Search_(root_, key);
-  if (node != nullptr) Remove_(node);
+  RBTNode<K, T> *node = Rotate(root_, key);
+  if (node != nullptr) Remove(node);
 }
 
 template <class K, class T>
 void RBTree<K, T>::Destory() noexcept {
-  Destory_(root_);
+  Destory(root_);
 }
 
 template <class K, class T>
@@ -189,10 +189,10 @@ RBTNode<K, T> *RBTree<K, T>::Begin() const noexcept {
 // private methods
 
 template <class K, class T>
-void RBTree<K, T>::Destory_(RBTNode<K, T> *node) noexcept {
+void RBTree<K, T>::Destory(RBTNode<K, T> *node) noexcept {
   if (node != nullptr) {
-    Destory_(node->ptrs->left);
-    Destory_(node->ptrs->right);
+    Destory(node->ptrs->left);
+    Destory(node->ptrs->right);
     delete node->ptrs;
     delete node;
   }
@@ -208,7 +208,8 @@ bool RBTree<K, T>::Insert_(RBTNode<K, T> *node) {
     parent = head;
     if (node->value.first > head->value.first)
       head = head->ptrs->right;
-    else if (node->value.first < head->value.first)
+    else if ((node->value.first < head->value.first) ||
+             (node->value.first == head->value.first))
       head = head->ptrs->left;
     else {
       delete node->ptrs;
@@ -228,14 +229,14 @@ bool RBTree<K, T>::Insert_(RBTNode<K, T> *node) {
       root_ = node;
 
     node->color = Red;
-    InsertFixUp_(node);
+    BalanceInsert(node);
   }
 
   return ret;
 }
 
 template <class K, class T>
-void RBTree<K, T>::InsertFixUp_(RBTNode<K, T> *node) {
+void RBTree<K, T>::BalanceInsert(RBTNode<K, T> *node) {
   RBTNode<K, T> *parent = node->ptrs->parent;
   RBTNode<K, T> *gparent = nullptr;
   RBTNode<K, T> *uncle = nullptr;
@@ -255,7 +256,7 @@ void RBTree<K, T>::InsertFixUp_(RBTNode<K, T> *node) {
       node = gparent;
       parent = node->ptrs->parent;
     } else {
-      Rotate_(parent, node, gparent);
+      Rotate(parent, node, gparent);
       gparent->color = Red;
       parent->color = Black;
       brk = 1;
@@ -265,25 +266,25 @@ void RBTree<K, T>::InsertFixUp_(RBTNode<K, T> *node) {
 }
 
 template <class K, class T>
-void RBTree<K, T>::Rotate_(RBTNode<K, T> *&parent, RBTNode<K, T> *&node,
-                           RBTNode<K, T> *gparent) {
+void RBTree<K, T>::Rotate(RBTNode<K, T> *&parent, RBTNode<K, T> *&node,
+                          RBTNode<K, T> *gparent) {
   if (gparent->ptrs->left == parent) {
     if (parent->ptrs->right == node) {
-      LeftRotate_(parent);
+      LeftRotate(parent);
       std::swap(parent, node);
     }
-    RightRotate_(gparent);
+    RightRotate(gparent);
   } else {
     if (parent->ptrs->left == node) {
-      RightRotate_(parent);
+      RightRotate(parent);
       std::swap(parent, node);
     }
-    LeftRotate_(gparent);
+    LeftRotate(gparent);
   }
 }
 
 template <class K, class T>
-void RBTree<K, T>::LeftRotate_(RBTNode<K, T> *node) {
+void RBTree<K, T>::LeftRotate(RBTNode<K, T> *node) {
   RBTNode<K, T> *right = node->ptrs->right;
 
   node->ptrs->right = right->ptrs->left;
@@ -304,7 +305,7 @@ void RBTree<K, T>::LeftRotate_(RBTNode<K, T> *node) {
 }
 
 template <class K, class T>
-void RBTree<K, T>::RightRotate_(RBTNode<K, T> *node) {
+void RBTree<K, T>::RightRotate(RBTNode<K, T> *node) {
   RBTNode<K, T> *left = node->ptrs->left;
 
   node->ptrs->left = left->ptrs->right;
@@ -325,22 +326,22 @@ void RBTree<K, T>::RightRotate_(RBTNode<K, T> *node) {
 }
 
 template <class K, class T>
-RBTNode<K, T> *RBTree<K, T>::Search_(RBTNode<K, T> *node,
-                                     const K key) const noexcept {
+RBTNode<K, T> *RBTree<K, T>::Rotate(RBTNode<K, T> *node,
+                                    const K key) const noexcept {
   RBTNode<K, T> *ret;
 
   if (node == nullptr || node->value.first == key)
     ret = node;
   else if (key > node->value.first)
-    ret = Search_(node->ptrs->right, key);
+    ret = Rotate(node->ptrs->right, key);
   else
-    ret = Search_(node->ptrs->left, key);
+    ret = Rotate(node->ptrs->left, key);
 
   return ret;
 }
 
 template <class K, class T>
-void RBTree<K, T>::Remove_(RBTNode<K, T> *node) noexcept {
+void RBTree<K, T>::Remove(RBTNode<K, T> *node) noexcept {
   RBTNode<K, T> *parent = nullptr;
   RBTNode<K, T> *child = nullptr;
   RBTColor color = Red;
@@ -389,14 +390,14 @@ void RBTree<K, T>::Remove_(RBTNode<K, T> *node) noexcept {
     }
   }
   if ((child != nullptr || parent != nullptr) && (color == Black))
-    RemoveFixUp_(child, parent);
+    BalanceRemove(child, parent);
   delete node->ptrs;
   delete node;
 }
 
 template <class K, class T>
-void RBTree<K, T>::RemoveFixUp_(RBTNode<K, T> *node,
-                                RBTNode<K, T> *parent) noexcept {
+void RBTree<K, T>::BalanceRemove(RBTNode<K, T> *node,
+                                 RBTNode<K, T> *parent) noexcept {
   RBTNode<K, T> *othernode;
   int brk = 0;
   int left = 0;
@@ -412,10 +413,10 @@ void RBTree<K, T>::RemoveFixUp_(RBTNode<K, T> *node,
       othernode->color = Black;
       parent->color = Red;
       if (left) {
-        LeftRotate_(parent);
+        LeftRotate(parent);
         othernode = parent->ptrs->right;
       } else {
-        RightRotate_(parent);
+        RightRotate(parent);
         othernode = parent->ptrs->left;
       }
     }
@@ -432,7 +433,7 @@ void RBTree<K, T>::RemoveFixUp_(RBTNode<K, T> *node,
             othernode->ptrs->right->color == Black) {
           othernode->ptrs->left->color = Black;
           othernode->color = Red;
-          RightRotate_(othernode);
+          RightRotate(othernode);
           othernode = parent->ptrs->right;
         }
       } else {
@@ -440,7 +441,7 @@ void RBTree<K, T>::RemoveFixUp_(RBTNode<K, T> *node,
             othernode->ptrs->left->color == Black) {
           othernode->ptrs->right->color = Black;
           othernode->color = Red;
-          LeftRotate_(othernode);
+          LeftRotate(othernode);
           othernode = parent->ptrs->left;
         }
       }
@@ -448,10 +449,10 @@ void RBTree<K, T>::RemoveFixUp_(RBTNode<K, T> *node,
       parent->color = Black;
       if (left) {
         othernode->ptrs->right->color = Black;
-        LeftRotate_(parent);
+        LeftRotate(parent);
       } else {
         othernode->ptrs->left->color = Black;
-        RightRotate_(parent);
+        RightRotate(parent);
       }
       node = root_;
       brk = 1;
@@ -463,4 +464,4 @@ void RBTree<K, T>::RemoveFixUp_(RBTNode<K, T> *node,
 
 }  // namespace s21
 
-#endif  // S21_RBTREE_H
+#endif  // CPP2_S21_CONTAINERS_3_SRC_S21_ASSOCIATIVE_CONTAINERS_S21_RBTREE_H

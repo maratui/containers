@@ -1,5 +1,5 @@
-#ifndef S21_LIST_ALLOCATOR_H
-#define S21_LIST_ALLOCATOR_H
+#ifndef CPP2_S21_CONTAINERS_3_SRC_S21_ALLOCATORS_S21_LIST_ALLOCATOR_H
+#define CPP2_S21_CONTAINERS_3_SRC_S21_ALLOCATORS_S21_LIST_ALLOCATOR_H
 
 #include <tuple>
 
@@ -26,7 +26,7 @@ class ListAllocator {
     item_type *head = new item_type();
     item_type *tail = head;
 
-    for (size_type j = 0UL; j < capacity; j += 1UL) tail = Append_(tail);
+    for (size_type j = 0UL; j < capacity; j += 1UL) tail = Append(tail);
 
     return {head, tail};
   }
@@ -53,7 +53,7 @@ class ListAllocator {
   }
 
  private:
-  static item_type *Append_(item_type *tail) {
+  static item_type *Append(item_type *tail) {
     item_type *item = new item_type();
     item->prev = tail;
     tail->next = item;
@@ -64,4 +64,4 @@ class ListAllocator {
 };
 }  // namespace s21
 
-#endif  // S21_LIST_ALLOCATOR_H
+#endif  // CPP2_S21_CONTAINERS_3_SRC_S21_ALLOCATORS_S21_LIST_ALLOCATOR_H

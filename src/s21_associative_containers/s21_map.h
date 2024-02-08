@@ -1,5 +1,5 @@
-#ifndef S21_MAP_H
-#define S21_MAP_H
+#ifndef CPP2_S21_CONTAINERS_3_SRC_S21_ASSOCIATIVE_CONTAINERS_S21_MAP_H
+#define CPP2_S21_CONTAINERS_3_SRC_S21_ASSOCIATIVE_CONTAINERS_S21_MAP_H
 
 #include <stdexcept>
 #include <vector>
@@ -29,6 +29,7 @@ class map : protected RBTree<K, T> {
   map(map &&m) noexcept;
   ~map();
   map &operator=(map &&m) noexcept;
+  map &operator=(const map &m);
 
   T &at(const K &key);
   const T &at(const K &key) const;
@@ -57,8 +58,8 @@ class map : protected RBTree<K, T> {
   std::vector<std::pair<iterator, bool>> insert_many(Args &&...args);
 
  private:
-  void CheckSizeBounds_(const item_type *node) const;
-  size_type Traversal_(item_type *item_ptr) const noexcept;
+  void CheckSizeBounds(const item_type *node) const;
+  size_type Traversal(item_type *item_ptr) const noexcept;
 };
 
 template <class K, class T>
@@ -97,16 +98,25 @@ map<K, T> &map<K, T>::operator=(map &&m) noexcept {
 }
 
 template <class K, class T>
+map<K, T> &map<K, T>::operator=(const map &m) {
+  if (this != &m) {
+    *this = map(m);
+  }
+
+  return *this;
+}
+
+template <class K, class T>
 T &map<K, T>::at(const K &key) {
   item_type *node = this->Search(key);
-  CheckSizeBounds_(node);
+  CheckSizeBounds(node);
 
   return node->value.second;
 }
 template <class K, class T>
 const T &map<K, T>::at(const K &key) const {
   item_type *node = this->Search(key);
-  CheckSizeBounds_(node);
+  CheckSizeBounds(node);
 
   return node->value.second;
 }
@@ -127,14 +137,14 @@ const T &map<K, T>::operator[](const K &key) const noexcept {
 template <class K, class T>
 typename map<K, T>::iterator map<K, T>::begin() noexcept {
   item_type *node = this->Begin();
-  iterator ret(node);
+  iterator ret(node, this->root_);
 
   return ret;
 }
 template <class K, class T>
 typename map<K, T>::const_iterator map<K, T>::begin() const noexcept {
   item_type *node = this->Begin();
-  const_iterator ret(node);
+  const_iterator ret(node, this->root_);
 
   return ret;
 }
@@ -162,7 +172,7 @@ bool map<K, T>::empty() const noexcept {
 
 template <class K, class T>
 constexpr typename map<K, T>::size_type map<K, T>::size() const noexcept {
-  size_type ret = Traversal_(this->root_);
+  size_type ret = Traversal(this->root_);
 
   return ret;
 }
@@ -183,8 +193,12 @@ void map<K, T>::clear() noexcept {
 template <class K, class T>
 std::pair<typename map<K, T>::iterator, bool> map<K, T>::insert(
     const value_type &value) {
-  bool inserted = this->Insert(value);
+  bool inserted = false;
   item_type *node = this->Search(value.first);
+  if (node == nullptr) {
+    node = this->Insert(value);
+    if (node != nullptr) inserted = true;
+  }
   iterator iter(node);
 
   return std::pair(iter, inserted);
@@ -266,24 +280,24 @@ map<K, T>::insert_many(Args &&...args) {
 // private methods
 
 template <class K, class T>
-void map<K, T>::CheckSizeBounds_(const item_type *node) const {
+void map<K, T>::CheckSizeBounds(const item_type *node) const {
   if (node == nullptr) {
     throw std::out_of_range("Incorrect input, key is outside the map");
   }
 }
 
 template <class K, class T>
-typename map<K, T>::size_type map<K, T>::Traversal_(
+typename map<K, T>::size_type map<K, T>::Traversal(
     item_type *item_ptr) const noexcept {
   int ret = 0;
 
   if (item_ptr != nullptr)
-    ret = 1 + Traversal_(item_ptr->ptrs->right) +
-          Traversal_(item_ptr->ptrs->left);
+    ret =
+        1 + Traversal(item_ptr->ptrs->right) + Traversal(item_ptr->ptrs->left);
 
   return ret;
 }
 
 }  // namespace s21
 
-#endif  // S21_MAP_H
+#endif  // CPP2_S21_CONTAINERS_3_SRC_S21_ASSOCIATIVE_CONTAINERS_S21_MAP_H

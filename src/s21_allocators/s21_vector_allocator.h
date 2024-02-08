@@ -1,5 +1,5 @@
-#ifndef S21_VECTOR_ALLOCATOR_H
-#define S21_VECTOR_ALLOCATOR_H
+#ifndef CPP2_S21_CONTAINERS_3_SRC_S21_ALLOCATORS_S21_VECTOR_ALLOCATOR_H
+#define CPP2_S21_CONTAINERS_3_SRC_S21_ALLOCATORS_S21_VECTOR_ALLOCATOR_H
 
 #include <tuple>
 
@@ -12,7 +12,7 @@ class VectorAllocator {
 
   static std::tuple<item_type *, item_type *> Allocate(size_type size,
                                                        size_type capacity) {
-    item_type *head = Allocate_(capacity);
+    item_type *head = Allocate(capacity);
     item_type *tail = SetTail(head, size);
 
     return {head, tail};
@@ -44,7 +44,7 @@ class VectorAllocator {
         capacity = 1UL;
       }
       item_type *array = head;
-      head = Allocate_(capacity);
+      head = Allocate(capacity);
       for (size_type j = 0UL; j < size; j += 1UL) head[j] = array[j];
       Delete(array);
     }
@@ -55,7 +55,7 @@ class VectorAllocator {
   }
 
  private:
-  static item_type *Allocate_(size_type capacity) {
+  static item_type *Allocate(size_type capacity) {
     item_type *head = nullptr;
 
     if (capacity > 0UL) head = new item_type[capacity]{};
@@ -65,4 +65,4 @@ class VectorAllocator {
 };
 }  // namespace s21
 
-#endif  // S21_VECTOR_ALLOCATOR_H
+#endif  // CPP2_S21_CONTAINERS_3_SRC_S21_ALLOCATORS_S21_VECTOR_ALLOCATOR_H

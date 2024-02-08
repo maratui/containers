@@ -1,5 +1,5 @@
-#ifndef S21_ARRAY_H
-#define S21_ARRAY_H
+#ifndef CPP2_S21_CONTAINERS_3_SRC_S21_SEQUENCE_CONTAINERS_S21_ARRAY_H
+#define CPP2_S21_CONTAINERS_3_SRC_S21_SEQUENCE_CONTAINERS_S21_ARRAY_H
 
 #include <stdexcept>
 
@@ -20,10 +20,10 @@ class array {
   array() {}
 
   explicit array(std::initializer_list<value_type> const &items) {
-    InitializeArray_<std::initializer_list<value_type> const &>(items);
+    InitializeArray<std::initializer_list<value_type> const &>(items);
   }
 
-  array(const array &a) { InitializeArray_<const array &>(a); }
+  array(const array &a) { InitializeArray<const array &>(a); }
 
   array(array &&a) noexcept { *this = std::move(a); }
 
@@ -35,34 +35,31 @@ class array {
     return *this;
   }
 
+  array &operator=(const array &a) {
+    if (this->size() != a.size()) throw std::out_of_range("no match size");
+    std::copy(std::begin(a.array_), std::end(a.array_), &array_[0]);
+
+    return *this;
+  }
+
   reference at(size_type pos) {
-    CheckSizeBounds_(pos);
+    CheckSizeBounds(pos);
 
     reference ret = (*this)[pos];
 
     return ret;
   }
   const_reference at(size_type pos) const {
-    CheckSizeBounds_(pos);
+    CheckSizeBounds(pos);
 
     const_reference ret = (*this)[pos];
 
     return ret;
   }
 
-  reference operator[](size_type pos) noexcept {
-    iterator iter = begin();
-    for (size_type j = 0UL; j < pos; j += 1UL) ++iter;
-    reference ret = *iter;
-
-    return ret;
-  }
+  reference operator[](size_type pos) noexcept { return this->array_[pos]; }
   const_reference operator[](size_type pos) const noexcept {
-    const_iterator iter = begin();
-    for (size_type j = 0UL; j < pos; j += 1UL) ++iter;
-    const_reference ret = *iter;
-
-    return ret;
+    return this->array_[pos];
   }
 
   reference front() noexcept {
@@ -153,7 +150,7 @@ class array {
   value_type array_[N];
 
   template <class C>
-  void InitializeArray_(C items) noexcept {
+  void InitializeArray(C items) noexcept {
     if (!empty()) {
       auto iter = begin();
       auto end_iter = end();
@@ -164,7 +161,7 @@ class array {
     }
   }
 
-  void CheckSizeBounds_(size_type pos) const {
+  void CheckSizeBounds(size_type pos) const {
     if (pos >= N)
       throw std::out_of_range(
           "Incorrect input, index is outside the array size");
@@ -172,4 +169,4 @@ class array {
 };
 }  // namespace s21
 
-#endif  // S21_ARRAY_H
+#endif  // CPP2_S21_CONTAINERS_3_SRC_S21_SEQUENCE_CONTAINERS_S21_ARRAY_H

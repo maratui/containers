@@ -1,5 +1,5 @@
-#ifndef S21_SEQUENCE_CONTAINER_H
-#define S21_SEQUENCE_CONTAINER_H
+#ifndef CPP2_S21_CONTAINERS_3_SRC_S21_SEQUENCE_CONTAINERS_H
+#define CPP2_S21_CONTAINERS_3_SRC_S21_SEQUENCE_CONTAINERS_H
 
 #include <memory>
 
@@ -81,7 +81,7 @@ class SequenceContainer {
 
   void clear() noexcept {
     size_ = 0;
-    tail_ = SetTail_(head_, size_);
+    tail_ = FindTail(head_, size_);
   }
 
   virtual iterator insert(iterator pos, const_reference value) = 0;
@@ -103,7 +103,7 @@ class SequenceContainer {
   item_type *head_ = nullptr;
   item_type *tail_ = nullptr;
 
-  void InitializeContainer_(
+  void InitializeContainer(
       std::initializer_list<value_type> const &items) noexcept {
     auto iter = begin();
     if (!empty())
@@ -112,28 +112,28 @@ class SequenceContainer {
         *iter = *item;
   }
 
-  void CopyContainer_(const SequenceContainer &sc) noexcept {
+  void CopyContainer(const SequenceContainer &sc) noexcept {
     auto iter = begin();
     if (!empty())
       for (auto item = sc.begin(), end = sc.end(); item != end; ++item, ++iter)
         *iter = *item;
   }
 
-  void SetProtectedFields_(size_type size, item_type *head,
-                           item_type *tail) noexcept {
+  void SetProtectedFields(size_type size, item_type *head,
+                          item_type *tail) noexcept {
     size_ = size;
     head_ = head;
     tail_ = tail;
   }
 
-  size_type FindIterator_(iterator pos) noexcept {
+  size_type FindIterator(iterator pos) noexcept {
     size_type ret = 0U;
 
     for (iterator iter = begin(); iter != pos; ++iter) ++ret;
 
     return ret;
   }
-  iterator GetIterator_(size_type pos) noexcept {
+  iterator GetIterator(size_type pos) noexcept {
     iterator ret = begin();
 
     for (size_type i = 0U; i < pos; ++i) ++ret;
@@ -141,7 +141,7 @@ class SequenceContainer {
     return ret;
   }
 
-  size_type FindConstIterator_(const_iterator pos) noexcept {
+  size_type FindConstIterator(const_iterator pos) noexcept {
     size_type ret = 0U;
 
     for (const_iterator iter = begin(); iter != pos; ++iter) ++ret;
@@ -149,8 +149,8 @@ class SequenceContainer {
     return ret;
   }
 
-  virtual item_type *SetTail_(item_type *head, size_type size) noexcept = 0;
+  virtual item_type *FindTail(item_type *head, size_type size) noexcept = 0;
 };
 }  // namespace s21
 
-#endif  // S21_SEQUENCE_CONTAINER_H
+#endif  // CPP2_S21_CONTAINERS_3_SRC_S21_SEQUENCE_CONTAINERS_H

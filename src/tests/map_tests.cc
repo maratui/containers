@@ -14,7 +14,7 @@ void CoutMaps(const std::map<K, T> *std_map, const s21::map<K, T> *s21_map) {
 }
 
 template <class K, class T, class... Args>
-void test_map(Args... args) {
+void TestMap(Args... args) {
   std::initializer_list<std::pair<const K, T>> const &items = {
       (std::pair<const K, T>)args...};
   T temp;
@@ -89,8 +89,23 @@ void test_map(Args... args) {
 
   //---------------------------------------------------------------------------
 
-  std::map<K, T> std_operator_overload = std::move(std_move_constructor);
-  s21::map<K, T> s21_operator_overload = std::move(s21_move_constructor);
+  std_default_constructor = std_move_constructor;
+  s21_default_constructor = s21_move_constructor;
+  EXPECT_TRUE(
+      ExpectEqualMaps(&std_default_constructor, &s21_default_constructor));
+  EXPECT_TRUE(ExpectEqualMaps(&std_move_constructor, &s21_move_constructor));
+
+  std_default_constructor = std_const_move_constructor;
+  s21_default_constructor = s21_const_move_constructor;
+  EXPECT_TRUE(
+      ExpectEqualMaps(&std_default_constructor, &s21_default_constructor));
+  EXPECT_TRUE(ExpectEqualMaps(&std_const_move_constructor,
+                              &s21_const_move_constructor));
+
+  std::map<K, T> std_operator_overload;
+  s21::map<K, T> s21_operator_overload;
+  std_operator_overload = std::move(std_move_constructor);
+  s21_operator_overload = std::move(s21_move_constructor);
   EXPECT_TRUE(ExpectEqualMaps(&std_operator_overload, &s21_operator_overload));
   EXPECT_TRUE(ExpectEqualMaps(&std_move_constructor, &s21_move_constructor));
 
@@ -214,6 +229,17 @@ void test_map(Args... args) {
   EXPECT_EQ(*((std_copy_constructor.insert(*item)).first),
             *((s21_copy_constructor.insert(*item)).first));
   EXPECT_TRUE(ExpectEqualMaps(&std_copy_constructor, &s21_copy_constructor));
+
+  std_default_constructor = std_copy_constructor;
+  s21_default_constructor = s21_copy_constructor;
+  EXPECT_TRUE(
+      ExpectEqualMaps(&std_default_constructor, &s21_default_constructor));
+  EXPECT_TRUE(ExpectEqualMaps(&std_copy_constructor, &s21_copy_constructor));
+
+  std_default_constructor = std_default_constructor;
+  s21_default_constructor = s21_default_constructor;
+  EXPECT_TRUE(
+      ExpectEqualMaps(&std_default_constructor, &s21_default_constructor));
 
   --item;
 
@@ -378,9 +404,9 @@ void test_map(Args... args) {
 }
 
 TEST(TestS21Containers, Map) {
-  test_map<char, char>(std::pair(0, 0), std::pair(1, 1), std::pair(2, 0),
-                       std::pair(3, 4), std::pair(4, 127));
-  test_map<int, int>(
+  TestMap<char, char>(std::pair(0, 0), std::pair(1, 1), std::pair(2, 0),
+                      std::pair(3, 4), std::pair(4, 127));
+  TestMap<int, int>(
       std::pair(0, 0), std::pair(1, 1), std::pair(2, -2147483647),
       std::pair(3, 4), std::pair(4, 2147483647), std::pair(5, 2147483647),
       std::pair(6, 2147483647), std::pair(7, 2147483647),
@@ -389,7 +415,7 @@ TEST(TestS21Containers, Map) {
       std::pair(16, 2147483647), std::pair(15, 2147483647),
       std::pair(14, 2147483647), std::pair(13, 2147483647),
       std::pair(12, 2147483647), std::pair(11, 2147483647));
-  test_map<int, int>(
+  TestMap<int, int>(
       std::pair(0, 0), std::pair(1, 1), std::pair(2, -2147483647),
       std::pair(3, 4), std::pair(4, 2147483647), std::pair(5, 2147483647),
       std::pair(6, 2147483647), std::pair(7, 2147483647),
@@ -398,11 +424,11 @@ TEST(TestS21Containers, Map) {
       std::pair(14, 2147483647), std::pair(15, 2147483647),
       std::pair(16, 2147483647), std::pair(17, 2147483647),
       std::pair(18, 2147483647), std::pair(19, 2147483647));
-  test_map<double, double>(std::pair(0, 0), std::pair(1, 1),
-                           std::pair(2, DBL_MIN), std::pair(3, -DBL_MAX),
-                           std::pair(4, DBL_MAX));
-  test_map<A, A>(std::pair(A(""), A(" ")), std::pair(A("one"), A("one ")),
-                 std::pair(A("two"), A("two ")),
-                 std::pair(A("three"), A("three ")),
-                 std::pair(A("four"), A("four ")));
+  TestMap<double, double>(std::pair(0, 0), std::pair(1, 1),
+                          std::pair(2, DBL_MIN), std::pair(3, -DBL_MAX),
+                          std::pair(4, DBL_MAX));
+  TestMap<A, A>(std::pair(A(""), A(" ")), std::pair(A("one"), A("one ")),
+                std::pair(A("two"), A("two ")),
+                std::pair(A("three"), A("three ")),
+                std::pair(A("four"), A("four ")));
 }

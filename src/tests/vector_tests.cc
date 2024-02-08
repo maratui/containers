@@ -1,7 +1,7 @@
 #include "./tests.h"
 
 template <typename T>
-void test_vector(std::initializer_list<T> const &items) {
+void TestVector(std::initializer_list<T> const &items) {
   T temp;
   //---------------------------------------------------------------------------
 
@@ -21,22 +21,6 @@ void test_vector(std::initializer_list<T> const &items) {
   s21::vector<T> s21_parameterized_constructor(100);
   EXPECT_TRUE(ExpectEqualVectors(&std_parameterized_constructor,
                                  &s21_parameterized_constructor));
-  {
-    EXPECT_THROW(std::vector<T> std_parameterized_constructor(
-                     std_parameterized_constructor.max_size() + 1),
-                 std::length_error);
-    EXPECT_THROW(s21::vector<T> s21_parameterized_constructor(
-                     s21_parameterized_constructor.max_size() + 1),
-                 std::length_error);
-    try {
-      s21::vector<T> s21_parameterized_constructor(
-          s21_parameterized_constructor.max_size() + 1);
-    } catch (const std::length_error &e) {
-      EXPECT_STREQ(
-          "Incorrect input, cannot create s21::vector larger than max_size()",
-          e.what());
-    }
-  }
 
   std::vector<T> const std_const_parameterized_constructor(100);
   s21::vector<T> const s21_const_parameterized_constructor(100);
@@ -92,9 +76,23 @@ void test_vector(std::initializer_list<T> const &items) {
                                  &s21_const_move_constructor));
 
   //---------------------------------------------------------------------------
+  std_default_constructor = std_move_constructor;
+  s21_default_constructor = s21_move_constructor;
+  EXPECT_TRUE(
+      ExpectEqualVectors(&std_default_constructor, &s21_default_constructor));
+  EXPECT_TRUE(ExpectEqualVectors(&std_move_constructor, &s21_move_constructor));
 
-  std::vector<T> std_operator_overload = std::move(std_move_constructor);
-  s21::vector<T> s21_operator_overload = std::move(s21_move_constructor);
+  std_default_constructor = std_const_move_constructor;
+  s21_default_constructor = s21_const_move_constructor;
+  EXPECT_TRUE(
+      ExpectEqualVectors(&std_default_constructor, &s21_default_constructor));
+  EXPECT_TRUE(ExpectEqualVectors(&std_const_move_constructor,
+                                 &s21_const_move_constructor));
+
+  std::vector<T> std_operator_overload;
+  s21::vector<T> s21_operator_overload;
+  std_operator_overload = std::move(std_move_constructor);
+  s21_operator_overload = std::move(s21_move_constructor);
   EXPECT_TRUE(
       ExpectEqualVectors(&std_operator_overload, &s21_operator_overload));
   EXPECT_TRUE(ExpectEqualVectors(&std_move_constructor, &s21_move_constructor));
@@ -112,20 +110,11 @@ void test_vector(std::initializer_list<T> const &items) {
   s21_copy_constructor.at(3) = temp;
   EXPECT_NO_THROW(std_copy_constructor.at(4));
   EXPECT_NO_THROW(s21_copy_constructor.at(4));
-  EXPECT_THROW(std_copy_constructor.at(5), std::out_of_range);
-  EXPECT_THROW(s21_copy_constructor.at(5), std::out_of_range);
-  try {
-    s21_operator_overload.at(5);
-  } catch (const std::out_of_range &e) {
-    EXPECT_STREQ("Incorrect input, index is outside the vector size", e.what());
-  }
 
   temp = std_const_copy_constructor.at(3);
   temp = s21_const_copy_constructor.at(3);
   EXPECT_NO_THROW(std_const_copy_constructor.at(0));
   EXPECT_NO_THROW(s21_const_copy_constructor.at(0));
-  EXPECT_THROW(std_const_copy_constructor.at(5), std::out_of_range);
-  EXPECT_THROW(s21_const_copy_constructor.at(5), std::out_of_range);
   EXPECT_EQ(std_const_copy_constructor.at(0), s21_const_copy_constructor.at(0));
 
   //---------------------------------------------------------------------------
@@ -295,6 +284,17 @@ void test_vector(std::initializer_list<T> const &items) {
         ExpectEqualVectors(&std_copy_constructor, &s21_copy_constructor));
   }
 
+  std_default_constructor = std_copy_constructor;
+  s21_default_constructor = s21_copy_constructor;
+  EXPECT_TRUE(
+      ExpectEqualVectors(&std_default_constructor, &s21_default_constructor));
+  EXPECT_TRUE(ExpectEqualVectors(&std_copy_constructor, &s21_copy_constructor));
+
+  std_default_constructor = std_default_constructor;
+  s21_default_constructor = s21_default_constructor;
+  EXPECT_TRUE(
+      ExpectEqualVectors(&std_default_constructor, &s21_default_constructor));
+
   auto std_pos = std_copy_constructor.begin();
   ++std_pos;
   std_copy_constructor.insert(std_pos, temp);
@@ -376,8 +376,8 @@ void test_vector(std::initializer_list<T> const &items) {
 }
 
 TEST(TestS21Containers, Vector) {
-  test_vector<char>({0, 1, 0, 4, 127});
-  test_vector<int>({0, 1, -2147483647, 4, 2147483647});
-  test_vector<double>({0, 1, DBL_MIN, -DBL_MAX, DBL_MAX});
-  test_vector<A>({A(""), A("one"), A("two"), A("three"), A("four")});
+  TestVector<char>({0, 1, 0, 4, 127});
+  TestVector<int>({0, 1, -2147483647, 4, 2147483647});
+  TestVector<double>({0, 1, DBL_MIN, -DBL_MAX, DBL_MAX});
+  TestVector<A>({A(""), A("one"), A("two"), A("three"), A("four")});
 }

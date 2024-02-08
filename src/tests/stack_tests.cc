@@ -1,7 +1,7 @@
 #include "./tests.h"
 
 template <class T>
-void test_stack(std::initializer_list<T> const &items) {
+void TestStack(std::initializer_list<T> const &items) {
   T temp;
   //---------------------------------------------------------------------------
 
@@ -19,6 +19,7 @@ void test_stack(std::initializer_list<T> const &items) {
 
   std::stack<T> std_initializer_list_constructor(items);
   s21::stack<T> s21_initializer_list_constructor(items);
+
   EXPECT_TRUE(ExpectEqualStacks(std_initializer_list_constructor,
                                 s21_initializer_list_constructor));
 
@@ -65,8 +66,23 @@ void test_stack(std::initializer_list<T> const &items) {
 
   //---------------------------------------------------------------------------
 
-  std::stack<T> std_operator_overload = std::move(std_move_constructor);
-  s21::stack<T> s21_operator_overload = std::move(s21_move_constructor);
+  std_default_constructor = std_move_constructor;
+  s21_default_constructor = s21_move_constructor;
+  EXPECT_TRUE(
+      ExpectEqualStacks(std_default_constructor, s21_default_constructor));
+  EXPECT_TRUE(ExpectEqualStacks(std_move_constructor, s21_move_constructor));
+
+  std_default_constructor = std_const_move_constructor;
+  s21_default_constructor = s21_const_move_constructor;
+  EXPECT_TRUE(
+      ExpectEqualStacks(std_default_constructor, s21_default_constructor));
+  EXPECT_TRUE(ExpectEqualStacks(std_const_move_constructor,
+                                s21_const_move_constructor));
+
+  std::stack<T> std_operator_overload;
+  s21::stack<T> s21_operator_overload;
+  std_operator_overload = std::move(std_move_constructor);
+  s21_operator_overload = std::move(s21_move_constructor);
   EXPECT_TRUE(ExpectEqualStacks(std_operator_overload, s21_operator_overload));
   EXPECT_TRUE(ExpectEqualStacks(std_move_constructor, s21_move_constructor));
 
@@ -122,6 +138,17 @@ void test_stack(std::initializer_list<T> const &items) {
     EXPECT_TRUE(ExpectEqualStacks(std_copy_constructor, s21_copy_constructor));
   }
 
+  std_default_constructor = std_copy_constructor;
+  s21_default_constructor = s21_copy_constructor;
+  EXPECT_TRUE(
+      ExpectEqualStacks(std_default_constructor, s21_default_constructor));
+  EXPECT_TRUE(ExpectEqualStacks(std_copy_constructor, s21_copy_constructor));
+
+  std_default_constructor = std_default_constructor;
+  s21_default_constructor = s21_default_constructor;
+  EXPECT_TRUE(
+      ExpectEqualStacks(std_default_constructor, s21_default_constructor));
+
   //---------------------------------------------------------------------------
 
   std_copy_constructor.swap(std_move_constructor);
@@ -133,8 +160,8 @@ void test_stack(std::initializer_list<T> const &items) {
 }
 
 TEST(TestS21Containers, Stack) {
-  test_stack<char>({0, 1, 0, 4, 127});
-  test_stack<int>({0, 1, -2147483647, 4, 2147483647});
-  test_stack<double>({0, 1, DBL_MIN, -DBL_MAX, DBL_MAX});
-  test_stack<A>({A(""), A("one"), A("two"), A("three"), A("four")});
+  TestStack<char>({0, 1, 0, 4, 127});
+  TestStack<int>({0, 1, -2147483647, 4, 2147483647});
+  TestStack<double>({0, 1, DBL_MIN, -DBL_MAX, DBL_MAX});
+  TestStack<A>({A(""), A("one"), A("two"), A("three"), A("four")});
 }

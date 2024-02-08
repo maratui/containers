@@ -1,267 +1,324 @@
-#include <gtest/gtest.h>
+#include "./tests.h"
 
-#include "common_tests.h"
+template <class Key>
+void CoutMaps(const std::set<Key> *std_set, const s21::set<Key> *s21_set) {
+  for (auto std_iter = std_set->begin(), end = std_set->end(); std_iter != end;
+       ++std_iter)
+    std::cout << (*std_iter).first << " " << (*std_iter).second << " ";
+  std::cout << "\n";
 
-TEST(s21_set, constructors) {
-  set<int> v;
-  std::set<int> v_orig;
-  is_equal(v, v_orig);
-
-  v = {1, 3, 2};
-  v_orig = {1, 3, 2};
-  is_equal(v, v_orig);
-
-  v = {6, 2, 1, 0, 78, 0, 7, -1, 90, 3, 8, -234, 98, 33, -0, 11, -99, 1234};
-  v_orig = {6, 2, 1,    0,  78, 0,  7,  -1,  90,
-            3, 8, -234, 98, 33, -0, 11, -99, 1234};
-  set<int> w = v;
-  std::set<int> w_orig = v_orig;
-  is_equal(w, w_orig);
-  v.clear();
-  v_orig.clear();
-
-  set<double> x{-2.3, 4, 6.987654, 0, -0.000001};
-  std::set<double> x_orig{-2.3, 4, 6.987654, 0, -0.000001};
-  is_equal(x, x_orig);
-
-  x = {1.234567,  2.34567,   -0,          -4.567890,   -0.987654,
-       901.1,     88382221,  0.0000002,   8881234.009, -100000.01,
-       123456789, -98765432, -0.000000001};
-  x_orig = {1.234567,  2.34567,   -0,          -4.567890,   -0.987654,
-            901.1,     88382221,  0.0000002,   8881234.009, -100000.01,
-            123456789, -98765432, -0.000000001};
-  set<double> y(x);
-  std::set<double> y_orig(x_orig);
-  is_equal(y, y_orig);
-
-  set<double> z(std::move(x));
-  std::set<double> z_orig(std::move(x_orig));
-  is_equal(z, z_orig);
-  is_equal(x, x_orig);
-
-  x = {11, 2.3, 6.1, 0.1, 3, 1.09, 4.2, 0.1, 7.7, -0.1, -10};
-  x_orig = {11, 2.3, 6.1, 0.1, 3, 1.09, 4.2, 0.1, 7.7, -0.1, -10};
-  is_equal(x, x_orig);
+  for (auto s21_iter = s21_set->begin(), end = s21_set->end(); s21_iter != end;
+       ++s21_iter)
+    std::cout << (*s21_iter).first << " " << (*s21_iter).second << " ";
+  std::cout << "\n";
 }
 
-TEST(s21_set, iterators) {
-  set<int> x{6, 2, 1,    0,  78, 0,  7,  -1,  90,
-             3, 8, -234, 98, 33, -0, 11, -99, 1234};
-  std::set<int> x_orig{6, 2, 1,    0,  78, 0,  7,  -1,  90,
-                       3, 8, -234, 98, 33, -0, 11, -99, 1234};
-  auto it = x.begin();
-  auto it_orig = x_orig.begin();
-  ASSERT_EQ(*it, *it_orig);
+template <class Key, class... Args>
+void TestSet(Args... args) {
+  std::initializer_list<Key> const &items = {(Key)args...};
+  //---------------------------------------------------------------------------
 
-  x.clear();
-  it = x.begin();
-  ASSERT_EQ(it, x.end());
-  EXPECT_ANY_THROW(*it);
+  std::set<Key> std_default_constructor;
+  s21::set<Key> s21_default_constructor;
+  EXPECT_TRUE(ExpectEqualSetBeginEnd(&std_default_constructor,
+                                     &s21_default_constructor));
 
-  x = {6, 2, 1, 0, 78, 0, 7, -1, 90, 3, 8, -234, 98, 33, -0, 11, -99, 1234};
-  x_orig = {6, 2, 1,    0,  78, 0,  7,  -1,  90,
-            3, 8, -234, 98, 33, -0, 11, -99, 1234};
-  it = x.begin();
-  it_orig = x_orig.begin();
-  for (unsigned int i = 0; i < x.size(); ++i, ++it, ++it_orig)
-    ASSERT_EQ(*it, *it_orig);
+  std::set<Key> const std_const_default_constructor;
+  s21::set<Key> const s21_const_default_constructor;
+  EXPECT_TRUE(ExpectEqualSetBeginEnd(&std_const_default_constructor,
+                                     &s21_const_default_constructor));
 
-  x = {6, 2, 1, 0, 78, 0, 7, -1, 90, 3, 8, -234, 98, 33, -0, 11, -99, 1234};
-  it = x.begin();
-  for (unsigned int i = 0; i < x.size() - 1; ++i, ++it)
-    ;
-  ASSERT_EQ(1234, *it);
-}
+  //---------------------------------------------------------------------------
 
-TEST(s21_set, empty) {
-  set<int> x;
-  std::set<int> x_orig;
-  ASSERT_EQ(x.empty(), x_orig.empty());
+  std::set<Key> std_initializer_list_constructor(items);
+  s21::set<Key> s21_initializer_list_constructor(items);
+  EXPECT_TRUE(ExpectEqualSets(&std_initializer_list_constructor,
+                              &s21_initializer_list_constructor));
 
-  x = {9};
-  x_orig = {9};
-  ASSERT_EQ(x.empty(), x_orig.empty());
-}
+  std::set<Key> const std_const_initializer_list_constructor(items);
+  s21::set<Key> const s21_const_initializer_list_constructor(items);
+  EXPECT_TRUE(ExpectEqualSets(&std_const_initializer_list_constructor,
+                              &s21_const_initializer_list_constructor));
 
-TEST(s21_set, size) {
-  set<int> x{1, 2, 3};
-  std::set<int> x_orig{1, 2, 3};
-  ASSERT_EQ(x.size(), x_orig.size());
-}
+  auto std_const_prev_iter = std_const_initializer_list_constructor.end();
+  auto s21_const_prev_iter = s21_const_initializer_list_constructor.end();
+  --std_const_prev_iter;
+  --s21_const_prev_iter;
+  EXPECT_EQ(*std_const_prev_iter, *s21_const_prev_iter);
+  --std_const_prev_iter;
+  --s21_const_prev_iter;
+  EXPECT_EQ(*std_const_prev_iter, *s21_const_prev_iter);
 
-TEST(s21_set, max_size) {
-  set<double> x;
-  std::set<double> x_orig;
-  EXPECT_GE(x.max_size(), 0);
-  EXPECT_GE(x_orig.max_size(), 0);
-}
+  //---------------------------------------------------------------------------
 
-TEST(s21_set, clear) {
-  set<int> x{1, 2, 3};
-  std::set<int> x_orig{1, 2, 3};
-  x.clear();
-  x_orig.clear();
-  is_equal(x, x_orig);
-}
+  std::set<Key> std_copy_constructor(std_initializer_list_constructor);
+  s21::set<Key> s21_copy_constructor(s21_initializer_list_constructor);
+  EXPECT_TRUE(ExpectEqualSets(&std_initializer_list_constructor,
+                              &s21_initializer_list_constructor));
+  EXPECT_TRUE(ExpectEqualSets(&std_copy_constructor, &s21_copy_constructor));
 
-TEST(s21_set, insert) {
-  set<int> x;
-  std::set<int> x_orig;
-  for (int i = -10; i <= 10; i++) {
-    x.insert(i);
-    x_orig.insert(i);
+  std::set<Key> const std_const_copy_constructor(
+      std_const_initializer_list_constructor);
+  s21::set<Key> const s21_const_copy_constructor(
+      s21_const_initializer_list_constructor);
+  EXPECT_TRUE(ExpectEqualSets(&std_const_initializer_list_constructor,
+                              &s21_const_initializer_list_constructor));
+  EXPECT_TRUE(ExpectEqualSets(&std_const_copy_constructor,
+                              &s21_const_copy_constructor));
+
+  //---------------------------------------------------------------------------
+
+  std::set<Key> std_move_constructor(
+      std::move(std_initializer_list_constructor));
+  s21::set<Key> s21_move_constructor(
+      std::move(s21_initializer_list_constructor));
+  EXPECT_TRUE(ExpectEqualSets(&std_move_constructor, &s21_move_constructor));
+  EXPECT_TRUE(ExpectEqualSets(&std_initializer_list_constructor,
+                              &s21_initializer_list_constructor));
+
+  std::set<Key> const std_const_move_constructor(
+      std::move(std_const_initializer_list_constructor));
+  s21::set<Key> const s21_const_move_constructor(
+      std::move(s21_const_initializer_list_constructor));
+  EXPECT_TRUE(ExpectEqualSets(&std_const_move_constructor,
+                              &s21_const_move_constructor));
+  EXPECT_TRUE(ExpectEqualSets(&std_const_initializer_list_constructor,
+                              &s21_const_initializer_list_constructor));
+
+  //---------------------------------------------------------------------------
+
+  std_default_constructor = std_move_constructor;
+  s21_default_constructor = s21_move_constructor;
+  EXPECT_TRUE(
+      ExpectEqualSets(&std_default_constructor, &s21_default_constructor));
+  EXPECT_TRUE(ExpectEqualSets(&std_move_constructor, &s21_move_constructor));
+
+  std_default_constructor = std_const_move_constructor;
+  s21_default_constructor = s21_const_move_constructor;
+  EXPECT_TRUE(
+      ExpectEqualSets(&std_default_constructor, &s21_default_constructor));
+  EXPECT_TRUE(ExpectEqualSets(&std_const_move_constructor,
+                              &s21_const_move_constructor));
+
+  std::set<Key> std_operator_overload;
+  s21::set<Key> s21_operator_overload;
+  std_operator_overload = std::move(std_move_constructor);
+  s21_operator_overload = std::move(s21_move_constructor);
+  EXPECT_TRUE(ExpectEqualSets(&std_operator_overload, &s21_operator_overload));
+  EXPECT_TRUE(ExpectEqualSets(&std_move_constructor, &s21_move_constructor));
+
+  std_operator_overload = std::move(std_operator_overload);
+  s21_operator_overload = std::move(s21_operator_overload);
+  EXPECT_TRUE(ExpectEqualSets(&std_operator_overload, &s21_operator_overload));
+
+  //---------------------------------------------------------------------------
+
+  EXPECT_EQ(*std_copy_constructor.begin(), *s21_copy_constructor.begin());
+  EXPECT_EQ(*std_const_copy_constructor.begin(),
+            *s21_const_copy_constructor.begin());
+  EXPECT_TRUE(
+      ExpectNotEqualSetBeginEnd(&std_copy_constructor, &s21_copy_constructor));
+  EXPECT_TRUE(ExpectNotEqualSetBeginEnd(&std_const_copy_constructor,
+                                        &s21_const_copy_constructor));
+
+  //---------------------------------------------------------------------------
+
+  EXPECT_FALSE(std_copy_constructor.empty());
+  EXPECT_FALSE(s21_copy_constructor.empty());
+  EXPECT_FALSE(std_const_copy_constructor.empty());
+  EXPECT_FALSE(s21_const_copy_constructor.empty());
+  EXPECT_TRUE(std_const_default_constructor.empty());
+  EXPECT_TRUE(s21_const_default_constructor.empty());
+
+  //---------------------------------------------------------------------------
+
+  EXPECT_EQ(std_copy_constructor.size(), s21_copy_constructor.size());
+  EXPECT_EQ(std_const_copy_constructor.size(),
+            s21_const_copy_constructor.size());
+  EXPECT_EQ(std_const_default_constructor.size(),
+            s21_const_default_constructor.size());
+
+  //---------------------------------------------------------------------------
+
+  std_copy_constructor.clear();
+  s21_copy_constructor.clear();
+  EXPECT_TRUE(
+      ExpectEqualSetBeginEnd(&std_copy_constructor, &s21_copy_constructor));
+  EXPECT_TRUE(ExpectEqualSets(&std_copy_constructor, &s21_copy_constructor));
+
+  //---------------------------------------------------------------------------
+
+  auto item = items.end();
+  --item;
+
+  EXPECT_TRUE((std_copy_constructor.insert(*item)).second);
+  EXPECT_TRUE((s21_copy_constructor.insert(*item)).second);
+  EXPECT_FALSE((std_copy_constructor.insert(*item)).second);
+  EXPECT_FALSE((s21_copy_constructor.insert(*item)).second);
+  EXPECT_EQ(std_copy_constructor.size(), s21_copy_constructor.size());
+  EXPECT_EQ((std_copy_constructor.insert(*item)).second,
+            (s21_copy_constructor.insert(*item)).second);
+  EXPECT_EQ(*((std_copy_constructor.insert(*item)).first),
+            *((s21_copy_constructor.insert(*item)).first));
+  EXPECT_TRUE(ExpectEqualSets(&std_copy_constructor, &s21_copy_constructor));
+
+  std_default_constructor = std_copy_constructor;
+  s21_default_constructor = s21_copy_constructor;
+  EXPECT_TRUE(
+      ExpectEqualSets(&std_default_constructor, &s21_default_constructor));
+  EXPECT_TRUE(ExpectEqualSets(&std_copy_constructor, &s21_copy_constructor));
+
+  std_default_constructor = std_default_constructor;
+  s21_default_constructor = s21_default_constructor;
+  EXPECT_TRUE(
+      ExpectEqualSets(&std_default_constructor, &s21_default_constructor));
+
+  for (auto item = items.begin(); item != items.end(); ++item) {
+    std_copy_constructor.insert(*item);
+    s21_copy_constructor.insert(*item);
   }
-  is_equal(x, x_orig);
+  EXPECT_TRUE(ExpectEqualSets(&std_copy_constructor, &s21_copy_constructor));
 
-  auto ret_x = x.insert(1);
-  auto ret_x_orig = x_orig.insert(1);
-  ASSERT_EQ(ret_x.second, ret_x_orig.second);
+  //---------------------------------------------------------------------------
 
-  ret_x = x.insert(11);
-  ret_x_orig = x_orig.insert(11);
-  ASSERT_EQ(ret_x.second, ret_x_orig.second);
-}
+  std_copy_constructor.erase(std_copy_constructor.begin());
+  s21_copy_constructor.erase(s21_copy_constructor.begin());
+  EXPECT_TRUE(ExpectEqualSets(&std_copy_constructor, &s21_copy_constructor));
 
-TEST(s21_set, erase) {
-  set<int> x{6, 2, 1,    0,  78, 0,  7,  -1,  90,
-             3, 8, -234, 98, 33, -0, 11, -99, 1234};
-  std::set<int> x_orig{6, 2, 1,    0,  78, 0,  7,  -1,  90,
-                       3, 8, -234, 98, 33, -0, 11, -99, 1234};
-  auto it = x.begin();
-  auto it_orig = x_orig.begin();
-  for (long unsigned int i = 0; i < x.size() / 2; ++i, ++it, ++it_orig)
+  auto std_pos = std_copy_constructor.begin();
+  ++std_pos;
+  std_copy_constructor.erase(std_pos);
+  auto s21_pos = s21_copy_constructor.begin();
+  ++s21_pos;
+  s21_copy_constructor.erase(s21_pos);
+  EXPECT_TRUE(ExpectEqualSets(&std_copy_constructor, &s21_copy_constructor));
+
+  std_pos = std_copy_constructor.end();
+  --std_pos;
+  std_copy_constructor.erase(std_pos);
+  std_pos = std_copy_constructor.end();
+  --std_pos;
+  --std_pos;
+  std_copy_constructor.erase(std_pos);
+  s21_pos = s21_copy_constructor.end();
+  --s21_pos;
+  s21_copy_constructor.erase(s21_pos);
+  s21_pos = s21_copy_constructor.end();
+  --s21_pos;
+  --s21_pos;
+  s21_copy_constructor.erase(s21_pos);
+  EXPECT_TRUE(ExpectEqualSets(&std_copy_constructor, &s21_copy_constructor));
+
+  for (; !std_copy_constructor.empty() && !s21_copy_constructor.empty();) {
     ;
-  x.erase(it);
-  x_orig.erase(it_orig);
-  is_equal(x, x_orig);
+    std_pos = std_copy_constructor.begin();
+    s21_pos = s21_copy_constructor.begin();
+    std_copy_constructor.erase(std_pos);
+    s21_copy_constructor.erase(s21_pos);
+    EXPECT_TRUE(ExpectEqualSets(&std_copy_constructor, &s21_copy_constructor));
+  }
+  EXPECT_TRUE(std_copy_constructor.empty());
+  EXPECT_TRUE(s21_copy_constructor.empty());
 
-  x = {9, 1, 4};
-  x_orig = {9, 1, 4};
-  it = x.begin();
-  it_orig = x_orig.begin();
-  x.erase(it);
-  x_orig.erase(it_orig);
-  is_equal(x, x_orig);
+  //---------------------------------------------------------------------------
 
-  x = {1234};
-  x_orig = {1234};
-  it_orig = x_orig.begin();
-  it = x.begin();
-  x.erase(it);
-  x_orig.erase(it_orig);
-  is_equal(x, x_orig);
+  for (auto item = items.begin(); item != items.end(); ++item) {
+    std_copy_constructor.insert(*item);
+    s21_copy_constructor.insert(*item);
+  }
+  EXPECT_TRUE(ExpectEqualSets(&std_copy_constructor, &s21_copy_constructor));
 
-  x.clear();
-  it = x.begin();
-  EXPECT_ANY_THROW(x.erase(it));
+  std_copy_constructor.swap(std_move_constructor);
+  s21_copy_constructor.swap(s21_move_constructor);
+  EXPECT_TRUE(ExpectEqualSets(&std_copy_constructor, &s21_copy_constructor));
+  EXPECT_TRUE(ExpectEqualSets(&std_move_constructor, &s21_move_constructor));
 
-  x = {9, 1, 4};
-  int initail_size = x.size();
-  it = x.begin();
-  x.erase(it);
-  ASSERT_EQ(x.size(), initail_size - 1);
+  //---------------------------------------------------------------------------
 
-  x = {-2, -3, -4, -5, -6, -7};
-  initail_size = x.size();
-  it = x.begin();
-  for (unsigned int i = 0; i < x.size() - 1; ++i, ++it)
-    ;
-  x.erase(it);
-  ASSERT_EQ(x.size(), initail_size - 1);
+  std_copy_constructor = std::set<Key>(std_move_constructor);
+  s21_copy_constructor = s21::set<Key>(s21_move_constructor);
 
-  x = {6, 2, 1, 0, 78, 0, 7, -1, 90, 3, 8, -234, 98, 33, -0, 11, -99, 1234};
-  x_orig = {6, 2, 1,    0,  78, 0,  7,  -1,  90,
-            3, 8, -234, 98, 33, -0, 11, -99, 1234};
-  it = x.begin();
-  it_orig = x_orig.begin();
-  x.erase(it);
-  x_orig.erase(it_orig);
-  is_equal(x, x_orig);
+  std_initializer_list_constructor.merge(std_move_constructor);
+  s21_initializer_list_constructor.merge(s21_move_constructor);
+  EXPECT_TRUE(ExpectEqualSets(&std_initializer_list_constructor,
+                              &s21_initializer_list_constructor));
+  EXPECT_TRUE(ExpectEqualSets(&std_move_constructor, &s21_move_constructor));
 
-  x = {6, 2, 1, 0, 78, 0, 7, -1, 90};
-  x_orig = {6, 2, 1, 0, 78, 0, 7, -1, 90};
+  std_initializer_list_constructor.merge(std_move_constructor);
+  s21_initializer_list_constructor.merge(s21_move_constructor);
+  EXPECT_TRUE(ExpectEqualSets(&std_initializer_list_constructor,
+                              &s21_initializer_list_constructor));
+  EXPECT_TRUE(ExpectEqualSets(&std_move_constructor, &s21_move_constructor));
 
-  it = x.begin();
-  it_orig = x_orig.begin();
-  ++it;
-  ++it_orig;
-  x.erase(it);
-  x_orig.erase(it_orig);
-  is_equal(x, x_orig);
+  std_initializer_list_constructor.merge(std_initializer_list_constructor);
+  s21_initializer_list_constructor.merge(s21_initializer_list_constructor);
+  EXPECT_TRUE(ExpectEqualSets(&std_initializer_list_constructor,
+                              &s21_initializer_list_constructor));
 
-  x = {9, 1, 4};
-  it = x.begin();
-  x.clear();
-  ASSERT_EQ(x.size(), 0);
-  EXPECT_ANY_THROW(x.erase(it));
+  //---------------------------------------------------------------------------
+
+  EXPECT_EQ(*std_copy_constructor.find(*(items.begin())),
+            *s21_copy_constructor.find(*(items.begin())));
+
+  //---------------------------------------------------------------------------
+
+  EXPECT_TRUE(s21_copy_constructor.contains(*(items.begin())));
+
+  //---------------------------------------------------------------------------
+
+  {
+    using set_t = typename s21::set<Key>::item_type;
+
+    //---------------------------------------------------------------------------
+
+    std::set<Key> std_set;
+    s21::set<Key> s21_set;
+
+    std_set.emplace();
+    s21_set.insert_many();
+    std_set.emplace();
+    s21_set.insert_many();
+    EXPECT_TRUE(ExpectEqualSets(&std_set, &s21_set));
+
+    std::pair<Key, Key> args[items.size()];
+    {
+      int i = 0;
+      for (auto item : items) {
+        args[i].first = item;
+        args[i++].second = item;
+      }
+    }
+
+    for (auto i = 0; i < 3; i++) {
+      int j = 5;
+      for (Key item : items) {
+        std_set.emplace(item);
+        if (--j <= 0) break;
+      }
+      typename set_t::RBTPtrs *ptrs[5];
+      for (int i = 0; i < 5; i++) {
+        ptrs[i] = new typename set_t::RBTPtrs(nullptr, nullptr, nullptr);
+      }
+      auto ress = s21_set.insert_many(
+          set_t(args[0], s21::Red, ptrs[0]), set_t(args[1], s21::Red, ptrs[1]),
+          set_t(args[2], s21::Red, ptrs[2]), set_t(args[3], s21::Red, ptrs[3]),
+          set_t(args[4], s21::Red, ptrs[4]));
+      EXPECT_TRUE(ExpectEqualSets(&std_set, &s21_set));
+      for (auto res : ress) {
+        EXPECT_TRUE(s21_set.contains(*(res.first)));
+      }
+    }
+
+    //---------------------------------------------------------------------------
+  }
 }
 
-TEST(s21_set, swap) {
-  set<int> x{1, 2, 3};
-  set<int> y;
-  std::set<int> x_orig{1, 2, 3};
-  std::set<int> y_orig;
-  y.swap(x);
-  y_orig.swap(x_orig);
-  is_equal(y, y_orig);
-  is_equal(x, x_orig);
-
-  x.swap(x);
-  x_orig.swap(x_orig);
-  is_equal(x, x_orig);
-}
-
-TEST(s21_set, merge) {
-  set<int> x{1, 2, 3};
-  set<int> y{6, 5, 4, 3};
-  std::set<int> x_orig{1, 2, 3};
-  std::set<int> y_orig{6, 5, 4, 3};
-
-  y.merge(x);
-  y_orig.merge(x_orig);
-  is_equal(y, y_orig);
-}
-
-TEST(s21_set, find) {
-  set<int> x{1, 2, 3};
-  std::set<int> x_orig{1, 2, 3};
-  auto it = x.find(2);
-  auto it_orig = x_orig.find(2);
-  ASSERT_EQ(*it, *it_orig);
-
-  it = x.find(4);
-  it_orig = x_orig.find(4);
-  ASSERT_EQ(it, x.end());
-  ASSERT_EQ(it_orig, x_orig.end());
-}
-
-TEST(s21_set, contains) {
-  set<int> x;
-  ASSERT_EQ(x.contains(4), false);
-
-  x = {1, 2, 3};
-  ASSERT_EQ(x.contains(4), false);
-
-  set<double> y{-0.8563859, 1.9473646};
-  ASSERT_EQ(y.contains(-0.8563855), false);
-  ASSERT_EQ(y.contains(1.9473646), true);
-}
-
-TEST(s21_set, insert_many) {
-  set<double> x{-0.14};
-  auto ret_x = x.insert_many(-0.15);
-  auto ret_x_it = ret_x.begin();
-  std::set<double> x_orig{-0.14};
-  auto ret_orig_x = x_orig.emplace(-0.15);
-  ASSERT_EQ((*ret_x_it).second, ret_orig_x.second);
-
-  ret_x = x.insert_many(-0.15);
-  ret_x_it = ret_x.begin();
-  ret_orig_x = x_orig.emplace(-0.15);
-  ASSERT_EQ((*ret_x_it).second, ret_orig_x.second);
-  is_equal(x, x_orig);
-
-  ret_x = x.insert_many(1.1);
-  ret_orig_x = x_orig.emplace(1.1);
-  is_equal(x, x_orig);
+TEST(TestS21Containers, Set) {
+  TestSet<char>(0, 1, 2, 3, 4);
+  TestSet<int>(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 19, 18, 17, 16, 15, 14, 13, 12,
+               11);
+  TestSet<int>(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,
+               19);
+  TestSet<double>(0, 1, DBL_MIN, -DBL_MAX, DBL_MAX);
+  TestSet<A>(A(""), A("one"), A("two"), A("three"), A("four"));
 }
